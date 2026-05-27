@@ -6,11 +6,17 @@ FE 개발자 포트폴리오용 헬스장 기구 대기 앱 리빌드.
 ## 기술 스택
 | 영역 | 기술 | 배포 |
 |---|---|---|
-| FE | React + Vite + TypeScript | Vercel |
+| FE | React + Vite + TypeScript + SCSS | Vercel |
 | BE | Express + TypeScript | Koyeb |
 | DB | Supabase PostgreSQL + Prisma | Supabase |
 | Auth | Supabase Auth (Google OAuth) | Supabase |
 | 실시간 | Socket.io | BE에 포함 |
+
+## SCSS 규칙
+- 컴포넌트 내부에서 태그 선택자 사용 금지 → 전부 클래스 선택자로
+- 매직 넘버 금지 → `_spacing.scss` / `_functions.scss` 변수 활용
+- `_base.scss`는 전역 리셋/기본 스타일만 (컴포넌트 스타일 X)
+- 구조: `styles/variables` / `base` / `components` / `layout` / `pages`
 
 ## 경로
 - 새 프로젝트: `/Users/lyla/Downloads/waitgym_new/`

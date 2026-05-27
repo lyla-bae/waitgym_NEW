@@ -9,66 +9,54 @@ interface Props {
 
 export default function EquipmentCard({ equipment, onFavoriteToggle, onClick }: Props) {
   const { id, name, imageUrl, isFavorite, currentUsage, waitingCount } = equipment
-
   const isInUse = !!currentUsage
   const hasWaiting = waitingCount !== undefined && waitingCount > 0
 
   return (
-    <div
-      className="flex items-center gap-4 bg-card rounded-lg p-3 cursor-pointer active:opacity-80"
-      onClick={onClick}
-    >
-      <div className="bg-[#293241] rounded-lg p-2 shrink-0">
+    <button className="equipment-card" onClick={onClick} type="button">
+      <div className="equipment-card__image-wrap">
         {imageUrl ? (
-          <img src={imageUrl} alt={name} className="w-[72px] h-[72px] object-contain" />
+          <img src={imageUrl} alt={name} className="equipment-card__image" />
         ) : (
-          <div className="w-[72px] h-[72px]" />
+          <div className="equipment-card__image-placeholder" />
         )}
       </div>
 
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1.5">
-          <p className="font-bold text-base text-white truncate">{name}</p>
+      <div className="equipment-card__info">
+        <div className="equipment-card__title-row">
+          <span className="equipment-card__name">{name}</span>
           <button
+            type="button"
+            className={`equipment-card__favorite${isFavorite ? ' equipment-card__favorite--active' : ''}`}
             onClick={(e) => {
               e.stopPropagation()
               onFavoriteToggle?.(id)
             }}
-            className="shrink-0"
+            aria-label={isFavorite ? '즐겨찾기 취소' : '즐겨찾기'}
+            aria-pressed={isFavorite}
           >
-            <Star
-              size={16}
-              className={isFavorite ? 'fill-accent text-accent' : 'text-muted'}
-            />
+            <Star size={16} />
           </button>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
-          {hasWaiting && (
-            <span className="px-2 py-0.5 rounded bg-accent text-white text-[12px] font-medium">
-              대기중
-            </span>
+        <div className="equipment-card__status">
+          {hasWaiting && <span className="badge badge--waiting">대기중</span>}
+          {!isInUse && !hasWaiting && (
+            <span className="equipment-card__status-available">이용가능</span>
           )}
           {isInUse && !hasWaiting && (
-            <span className="px-2 py-0.5 rounded bg-primary text-white text-[12px] font-medium">
-              이용중
-            </span>
+            <span className="equipment-card__status-in-use">이용중</span>
           )}
           {hasWaiting && (
             <>
-              <span className="text-[13px] font-bold text-accent">
+              <span className="equipment-card__status-dot" aria-hidden="true" />
+              <span className="equipment-card__status-waiting">
                 {waitingCount}명
               </span>
             </>
           )}
-          {!isInUse && !hasWaiting && (
-            <span className="text-[13px] font-bold text-status-blue">이용가능</span>
-          )}
-          {isInUse && !hasWaiting && (
-            <span className="text-[13px] font-bold text-status-blue">이용중</span>
-          )}
         </div>
       </div>
-    </div>
+    </button>
   )
 }

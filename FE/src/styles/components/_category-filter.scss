@@ -1,0 +1,35 @@
+@use '@styles/variables' as *;
+
+.category-filter {
+  display: flex;
+  gap: r(8);
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &__tab {
+    display: flex;
+    align-items: center;
+    gap: r(4);
+    flex-shrink: 0;
+    height: r(30);
+    padding: 0 r(8);
+    border-radius: $card-radius;
+    background-color: $c-card;
+    color: $c-white;
+    font-size: r(12);
+    transition: background-color 0.15s;
+
+    &--active {
+      background-color: $c-primary;
+    }
+  }
+
+  &__tab-icon {
+    display: flex;
+    align-items: center;
+  }
+}

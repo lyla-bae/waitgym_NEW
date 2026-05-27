@@ -28,73 +28,72 @@ export default function EquipmentDetailPage() {
     }
   }
 
-  if (loading) {
-    return <div className="flex justify-center pt-20 text-muted text-sm">불러오는 중...</div>
-  }
-  if (!equipment) {
-    return <div className="flex justify-center pt-20 text-muted text-sm">기구를 찾을 수 없어요</div>
-  }
+  if (loading) return <p className="home-page__empty">불러오는 중...</p>
+  if (!equipment) return <p className="home-page__empty">기구를 찾을 수 없어요</p>
 
   const { name, imageUrl, category, isFavorite, currentUsage, waitingCount } = equipment
   const muscleGroup = (equipment as Equipment & { muscleGroup?: string }).muscleGroup
 
   return (
-    <div className="flex flex-col h-full px-6">
-      <div className="flex items-center justify-between py-4">
-        <button onClick={() => navigate(-1)} className="p-1">
-          <ChevronLeft size={28} className="text-white" />
+    <div className="equipment-detail">
+      <header className="header header--sub">
+        <button className="header__back" onClick={() => navigate(-1)} aria-label="뒤로 가기">
+          <ChevronLeft size={28} />
         </button>
-        <h1 className="text-lg font-bold text-white">{name}</h1>
-        <button onClick={handleFavoriteToggle} className="p-1">
-          <Star
-            size={22}
-            className={isFavorite ? 'fill-accent text-accent' : 'text-muted'}
-          />
+        <h1 className="header__title">{name}</h1>
+        <button
+          className={`equipment-card__favorite${isFavorite ? ' equipment-card__favorite--active' : ''}`}
+          onClick={handleFavoriteToggle}
+          aria-label={isFavorite ? '즐겨찾기 취소' : '즐겨찾기'}
+          aria-pressed={isFavorite}
+        >
+          <Star size={22} />
         </button>
-      </div>
+      </header>
 
-      <div className="flex justify-center py-6">
-        <div className="bg-white rounded-xl p-6">
+      <div className="equipment-detail__image-section">
+        <div className="equipment-detail__image-wrap">
           {imageUrl ? (
-            <img src={imageUrl} alt={name} className="w-32 h-32 object-contain" />
+            <img src={imageUrl} alt={name} className="equipment-detail__image" />
           ) : (
-            <div className="w-32 h-32 bg-gray-200 rounded" />
+            <div className="equipment-detail__image-placeholder" />
           )}
         </div>
       </div>
 
-      <div className="bg-card rounded-xl p-4 space-y-3 mb-4">
-        <div className="flex justify-between items-center">
-          <span className="text-muted text-sm">카테고리</span>
-          <span className="text-white text-sm font-medium">{category}</span>
+      <div className="equipment-detail__info-card">
+        <div className="equipment-detail__info-row">
+          <span className="equipment-detail__info-label">카테고리</span>
+          <span className="equipment-detail__info-value">{category}</span>
         </div>
         {muscleGroup && (
-          <div className="flex justify-between items-center">
-            <span className="text-muted text-sm">주요 근육</span>
-            <span className="text-white text-sm font-medium text-right max-w-[60%]">{muscleGroup}</span>
+          <div className="equipment-detail__info-row">
+            <span className="equipment-detail__info-label">주요 근육</span>
+            <span className="equipment-detail__info-value">{muscleGroup}</span>
           </div>
         )}
-        <div className="flex justify-between items-center">
-          <span className="text-muted text-sm">현재 상태</span>
-          <span className={`text-sm font-bold ${currentUsage ? 'text-accent' : 'text-status-blue'}`}>
+        <div className="equipment-detail__info-row">
+          <span className="equipment-detail__info-label">현재 상태</span>
+          <span className={currentUsage ? 'equipment-detail__status-in-use' : 'equipment-detail__status-available'}>
             {currentUsage ? '이용중' : '이용가능'}
           </span>
         </div>
         {waitingCount !== undefined && waitingCount > 0 && (
-          <div className="flex justify-between items-center">
-            <span className="text-muted text-sm">대기 인원</span>
-            <div className="flex items-center gap-1">
-              <Users size={14} className="text-accent" />
-              <span className="text-accent text-sm font-bold">{waitingCount}명</span>
+          <div className="equipment-detail__info-row">
+            <span className="equipment-detail__info-label">대기 인원</span>
+            <div className="equipment-detail__waiting-count">
+              <Users size={14} />
+              <span>{waitingCount}명</span>
             </div>
           </div>
         )}
       </div>
 
-      <div className="mt-auto pb-6">
+      <div className="equipment-detail__cta">
         <button
+          type="button"
+          className="btn btn--white btn--full"
           onClick={() => navigate(`/waiting/${equipment.id}`)}
-          className="w-full h-12 rounded-lg bg-white text-app font-bold text-base"
         >
           {currentUsage ? '대기하기' : '이용하기'}
         </button>

@@ -1,0 +1,107 @@
+@use '@styles/variables' as *;
+
+body {
+  background-color: $c-bg;
+  color: $c-white;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+#root {
+  width: 100%;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: $c-white;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+}
+
+input {
+  background: none;
+  border: none;
+  color: $c-white;
+  font-family: inherit;
+  font-size: r(14);
+
+  &::placeholder {
+    color: rgba($c-white, 0.5);
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:disabled {
+    color: $c-gray;
+  }
+
+  // 브라우저 기본 검색 UI 제거
+  &[type='search'] {
+    -webkit-appearance: textfield;
+    appearance: textfield;
+
+    &::-webkit-search-decoration,
+    &::-webkit-search-cancel-button,
+    &::-webkit-search-results-button,
+    &::-webkit-search-results-decoration {
+      display: none;
+    }
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.badge {
+  height: r(20);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: r(12);
+  font-weight: 500;
+  border-radius: r(4);
+  padding: 0 r(8);
+
+  &--waiting {
+    background-color: $c-accent;
+    color: $c-white;
+  }
+
+  &--in-use {
+    background-color: $c-primary;
+    color: $c-white;
+  }
+
+  &--my-turn {
+    background-color: $c-primary-light;
+    color: $c-bg;
+  }
+
+  &--complete {
+    background-color: $c-primary;
+    color: $c-white;
+  }
+}

@@ -1,0 +1,41 @@
+@use '@styles/variables' as *;
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: r(48);
+  border-radius: $card-radius;
+  font-size: r(16);
+  font-weight: 700;
+  transition: opacity 0.15s;
+
+  &:active {
+    opacity: 0.85;
+  }
+
+  &--primary {
+    background-color: $c-primary;
+    color: $c-white;
+  }
+
+  &--white {
+    background-color: $c-white;
+    color: $c-bg;
+  }
+
+  &--full {
+    width: 100%;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+}
+
+.btn-wrap {
+  padding: r(16) $screen-padding;
+  display: flex;
+  gap: r(6);
+}

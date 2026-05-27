@@ -1,0 +1,8 @@
+@use 'functions' as *;
+
+$nav-height: r(75);
+$header-height: r(52);
+$content-bottom-padding: calc(#{$nav-height} + #{r(24)});
+$screen-padding: r(24);
+$card-radius: r(8);
+$card-padding: r(8);

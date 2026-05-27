@@ -1,0 +1,44 @@
+@use '@styles/variables' as *;
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: r(12) $screen-padding;
+  border-bottom: 1px solid $c-card;
+  flex-shrink: 0;
+
+  &__brand {
+    font-size: r(24);
+    font-weight: 400;
+    color: $c-white;
+    line-height: 1;
+  }
+
+  &__brand-accent {
+    color: $c-accent;
+  }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    padding: r(4);
+    color: $c-white;
+  }
+
+  // 서브 페이지 헤더 (뒤로가기 + 타이틀)
+  &--sub {
+    .header__title {
+      font-size: r(18);
+      font-weight: 700;
+      color: $c-white;
+    }
+
+    .header__back {
+      display: flex;
+      align-items: center;
+      padding: r(4);
+      color: $c-white;
+    }
+  }
+}
