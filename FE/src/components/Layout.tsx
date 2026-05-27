@@ -16,10 +16,12 @@ export default function Layout() {
 
   return (
     <div className="flex flex-col h-dvh max-w-md mx-auto relative">
-      <header className="flex items-center justify-between px-4 py-3 border-b border-gray-800">
-        <span className="text-xl font-bold text-purple-400">WaitGym</span>
+      <header className="flex items-center justify-between px-6 py-3 border-b border-card">
+        <span className="text-2xl text-white" style={{ fontFamily: 'Pretendard, sans-serif', fontWeight: 400 }}>
+          기다려<span className="text-accent">짐</span>
+        </span>
         <NavLink to="/notifications" className="relative p-1">
-          <Bell size={22} className="text-gray-300" />
+          <Bell size={22} className="text-white" />
         </NavLink>
       </header>
 
@@ -28,7 +30,7 @@ export default function Layout() {
       </main>
 
       {!isWaitingPage && (
-        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-gray-900 border-t border-gray-800 safe-pb z-50">
+        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-app border-t border-card safe-pb z-50">
           <ul className="flex">
             {navItems.map(({ to, icon: Icon, label }) => (
               <li key={to} className="flex-1">
@@ -37,8 +39,8 @@ export default function Layout() {
                   end
                   className={({ isActive }) =>
                     cn(
-                      'flex flex-col items-center gap-1 py-2 text-xs transition-colors',
-                      isActive ? 'text-purple-400' : 'text-gray-500 hover:text-gray-300'
+                      'flex flex-col items-center gap-1 py-2 text-xs transition-opacity',
+                      isActive ? 'text-white opacity-100' : 'text-white opacity-50'
                     )
                   }
                 >

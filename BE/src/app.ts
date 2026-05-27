@@ -9,7 +9,14 @@ import userRouter from './routes/user.routes'
 const app = express()
 
 app.use(cors({
-  origin: process.env.CLIENT_URL ?? 'http://localhost:5173',
+  origin: (origin, callback) => {
+    const isDev = process.env.NODE_ENV !== 'production'
+    if (!origin || (isDev && /^http:\/\/localhost(:\d+)?$/.test(origin)) || origin === process.env.CLIENT_URL) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
   credentials: true,
 }))
 app.use(express.json())
