@@ -1,0 +1,200 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  googleId  String?  @unique
+  avatar    String?
+  points    Int      @default(0)
+  createdAt DateTime @default(now())
+
+  favorites       Favorite[]
+  equipmentUsages EquipmentUsage[]
+  waitingQueues   WaitingQueue[]
+  workoutRoutines WorkoutRoutine[]
+  notifications   Notification[]
+  userMissions    UserMission[]
+  savedGyms       SavedGym[]
+}
+
+model Equipment {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  imageUrl    String?
+  category    String
+  muscleGroup String?
+  createdAt   DateTime @default(now())
+
+  favorites        Favorite[]
+  equipmentUsages  EquipmentUsage[]
+  waitingQueues    WaitingQueue[]
+  routineExercises RoutineExercise[]
+  notifications    Notification[]
+}
+
+model Favorite {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  equipmentId Int
+  createdAt   DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  equipment Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, equipmentId])
+}
+
+model EquipmentUsage {
+  id             Int       @id @default(autoincrement())
+  equipmentId    Int
+  userId         Int
+  startedAt      DateTime  @default(now())
+  endedAt        DateTime?
+  estimatedEndAt DateTime?
+  totalSets      Int       @default(1)
+  restSeconds    Int       @default(180)
+  status         String    @default("IN_USE")
+
+  currentSet          Int       @default(1)
+  setStatus           String    @default("EXERCISING")
+  currentSetStartedAt DateTime?
+  restStartedAt       DateTime?
+
+  createdAt DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  equipment Equipment @relation(fields: [equipmentId], references: [id], onDelete: Restrict)
+
+  @@index([equipmentId, status])
+  @@index([userId, status])
+}
+
+model WaitingQueue {
+  id            Int       @id @default(autoincrement())
+  equipmentId   Int
+  userId        Int
+  queuePosition Int
+  status        String    @default("WAITING")
+  createdAt     DateTime  @default(now())
+  notifiedAt    DateTime?
+  updatedAt     DateTime  @updatedAt
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  equipment Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+
+  @@index([equipmentId, queuePosition])
+  @@index([equipmentId, status])
+}
+
+model WorkoutRoutine {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  name      String
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercises RoutineExercise[]
+
+  @@index([userId, isActive])
+}
+
+model RoutineExercise {
+  id          Int      @id @default(autoincrement())
+  routineId   Int
+  equipmentId Int
+  order       Int
+  targetSets  Int      @default(3)
+  targetReps  String?
+  restSeconds Int      @default(180)
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  routine   WorkoutRoutine @relation(fields: [routineId], references: [id], onDelete: Cascade)
+  equipment Equipment      @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+
+  @@unique([routineId, order])
+  @@index([routineId, order])
+}
+
+model Notification {
+  id            Int       @id @default(autoincrement())
+  userId        Int
+  type          String
+  category      String
+  priority      Int       @default(5)
+  title         String
+  message       String
+  isRead        Boolean   @default(false)
+  equipmentId   Int?
+  equipmentName String?
+  queueId       Int?
+  usageId       Int?
+  metadata      Json?
+  createdAt     DateTime  @default(now())
+  readAt        DateTime?
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  equipment Equipment? @relation(fields: [equipmentId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([userId, isRead])
+}
+
+// 신규: 헬스장 (카카오 API 검색 후 저장)
+model SavedGym {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  kakaoId     String
+  name        String
+  address     String
+  roadAddress String?
+  phone       String?
+  latitude    Float?
+  longitude   Float?
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, kakaoId])
+}
+
+// 신규: 미션 정의
+model Mission {
+  id             Int     @id @default(autoincrement())
+  name           String  @unique
+  description    String
+  condition      String  // TOTAL_SETS, TOTAL_DAYS, TOTAL_EQUIPMENTS, STREAK_DAYS 등
+  conditionValue Int
+  rewardPoints   Int
+  isActive       Boolean @default(true)
+
+  userMissions UserMission[]
+}
+
+// 신규: 유저별 미션 진행도
+model UserMission {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  missionId   Int
+  progress    Int       @default(0)
+  isCompleted Boolean   @default(false)
+  completedAt DateTime?
+  updatedAt   DateTime  @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mission Mission @relation(fields: [missionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, missionId])
+  @@index([userId, isCompleted])
+}
