@@ -16,17 +16,9 @@
     gap: r(12);
   }
 
-  &__logo-wrap {
-    background-color: $c-primary;
-    border-radius: r(16);
-    padding: r(16);
-    color: $c-white;
-  }
-
-  &__title {
-    font-size: r(28);
-    font-weight: 700;
-    color: $c-white;
+  &__logo {
+    height: r(44);
+    width: auto;
   }
 
   &__subtitle {

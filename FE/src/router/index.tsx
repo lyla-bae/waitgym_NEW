@@ -10,6 +10,7 @@ import MissionPage from '@/pages/Mission'
 import RoutinePage from '@/pages/Routine'
 import MyPage from '@/pages/MyPage'
 import NotificationPage from '@/pages/Notification'
+import SelectEquipmentPage from '@/pages/SelectEquipment'
 
 function ProtectedRoute() {
   const { session, isLoading } = useAuthStore()
@@ -40,6 +41,7 @@ const router = createBrowserRouter([
           { path: '/routine', element: <RoutinePage /> },
           { path: '/mypage', element: <MyPage /> },
           { path: '/notifications', element: <NotificationPage /> },
+          { path: '/reservation/select-equipment', element: <SelectEquipmentPage /> },
         ],
       },
     ],

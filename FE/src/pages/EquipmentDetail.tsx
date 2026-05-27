@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ChevronLeft, Star, Users } from 'lucide-react'
 import { equipmentApi } from '@/lib/api'
+import Header from '@/components/Header'
 import type { Equipment } from '@/types'
 
 export default function EquipmentDetailPage() {
@@ -36,20 +37,26 @@ export default function EquipmentDetailPage() {
 
   return (
     <div className="equipment-detail">
-      <header className="header header--sub">
-        <button className="header__back" onClick={() => navigate(-1)} aria-label="뒤로 가기">
-          <ChevronLeft size={28} />
-        </button>
-        <h1 className="header__title">{name}</h1>
-        <button
-          className={`equipment-card__favorite${isFavorite ? ' equipment-card__favorite--active' : ''}`}
-          onClick={handleFavoriteToggle}
-          aria-label={isFavorite ? '즐겨찾기 취소' : '즐겨찾기'}
-          aria-pressed={isFavorite}
-        >
-          <Star size={22} />
-        </button>
-      </header>
+      <Header
+        className="header--sub"
+        leftContent={
+          <button type="button" className="header__back" onClick={() => navigate(-1)} aria-label="뒤로 가기">
+            <ChevronLeft size={24} />
+          </button>
+        }
+        title={name}
+        rightContent={
+          <button
+            type="button"
+            className={`equipment-card__favorite${isFavorite ? ' equipment-card__favorite--active' : ''}`}
+            onClick={handleFavoriteToggle}
+            aria-label={isFavorite ? '즐겨찾기 취소' : '즐겨찾기'}
+            aria-pressed={isFavorite}
+          >
+            <Star size={22} />
+          </button>
+        }
+      />
 
       <div className="equipment-detail__image-section">
         <div className="equipment-detail__image-wrap">

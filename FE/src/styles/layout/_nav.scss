@@ -9,17 +9,16 @@
   max-width: 480px;
   height: $nav-height;
   background-color: $c-bg;
-  border-top: 1px solid $c-card;
+  border-top: 1px solid $c-primary;
   padding-bottom: env(safe-area-inset-bottom, 0px);
   z-index: 50;
 
   &__list {
     display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: r(48);
     height: 100%;
-  }
-
-  &__item {
-    flex: 1;
   }
 
   &__link {
@@ -28,15 +27,13 @@
     align-items: center;
     justify-content: center;
     gap: r(4);
-    height: 100%;
-    font-size: r(12);
+    color: $c-gray;
+    font-size: r(10);
     font-weight: 500;
-    color: $c-white;
-    opacity: 0.5;
-    transition: opacity 0.15s;
+    transition: color 0.15s;
 
     &--active {
-      opacity: 1;
+      color: $c-white;
     }
   }
 }

@@ -1,33 +1,25 @@
 import { Outlet, NavLink, useLocation } from 'react-router-dom'
-import { Home, Trophy, ListChecks, User, Bell } from 'lucide-react'
+import { Dumbbell, Trophy, CircleUserRound } from 'lucide-react'
 
 const navItems = [
-  { to: '/', icon: Home, label: '홈' },
-  { to: '/mission', icon: Trophy, label: '미션' },
-  { to: '/routine', icon: ListChecks, label: '루틴' },
-  { to: '/mypage', icon: User, label: '마이' },
+  { to: '/', icon: Dumbbell, label: '홈' },
+  { to: '/mission', icon: Trophy, label: '미션/랭킹' },
+  { to: '/mypage', icon: CircleUserRound, label: '마이' },
 ]
+
+const NO_NAV_PATHS = ['/waiting', '/reservation', '/workout']
 
 export default function Layout() {
   const location = useLocation()
-  const isWaitingPage = location.pathname.startsWith('/waiting')
+  const hideNav = NO_NAV_PATHS.some((p) => location.pathname.startsWith(p))
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh' }}>
-      <header className="header">
-        <span className="header__brand">
-          기다려<span className="header__brand-accent">짐</span>
-        </span>
-        <NavLink to="/notifications" className="header__action">
-          <Bell size={22} />
-        </NavLink>
-      </header>
-
-      <main style={{ flex: 1, overflow: 'hidden' }}>
+    <div className="layout">
+      <main className="layout__main">
         <Outlet />
       </main>
 
-      {!isWaitingPage && (
+      {!hideNav && (
         <nav className="nav">
           <ul className="nav__list">
             {navItems.map(({ to, icon: Icon, label }) => (
@@ -39,8 +31,8 @@ export default function Layout() {
                     `nav__link${isActive ? ' nav__link--active' : ''}`
                   }
                 >
-                  <Icon size={22} />
-                  {label}
+                  <Icon size={24} strokeWidth={1.5} />
+                  <span>{label}</span>
                 </NavLink>
               </li>
             ))}
