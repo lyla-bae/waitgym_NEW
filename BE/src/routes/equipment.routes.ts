@@ -49,7 +49,7 @@ router.get('/', authMiddleware, async (req: AuthRequest, res) => {
 
 // GET /api/equipment/:id — 상세
 router.get('/:id', authMiddleware, async (req: AuthRequest, res) => {
-  const id = parseInt(req.params.id)
+  const id = parseInt(req.params.id as string)
   const userId = req.userId!
 
   const equipment = await prisma.equipment.findUnique({
@@ -83,7 +83,7 @@ router.get('/:id', authMiddleware, async (req: AuthRequest, res) => {
 
 // POST /api/equipment/:id/favorite — 즐겨찾기 토글
 router.post('/:id/favorite', authMiddleware, async (req: AuthRequest, res) => {
-  const equipmentId = parseInt(req.params.id)
+  const equipmentId = parseInt(req.params.id as string)
   const userId = req.userId!
 
   const existing = await prisma.favorite.findUnique({

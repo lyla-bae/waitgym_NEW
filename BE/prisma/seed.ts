@@ -2,25 +2,20 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
+const BASE_URL = 'https://wqgduwnitffcdwolxxuc.supabase.co/storage/v1/object/public/equipment'
+
 const equipments = [
-  { name: '벤치프레스', category: '가슴', muscleGroup: '대흉근', imageUrl: null },
-  { name: '인클라인 벤치프레스', category: '가슴', muscleGroup: '상부 대흉근', imageUrl: null },
-  { name: '케이블 크로스오버', category: '가슴', muscleGroup: '대흉근', imageUrl: null },
-  { name: '랫풀다운', category: '등', muscleGroup: '광배근', imageUrl: null },
-  { name: '시티드 로우', category: '등', muscleGroup: '광배근', imageUrl: null },
-  { name: '케이블 로우', category: '등', muscleGroup: '광배근', imageUrl: null },
-  { name: '레그프레스', category: '다리', muscleGroup: '대퇴사두근', imageUrl: null },
-  { name: '레그 컬', category: '다리', muscleGroup: '햄스트링', imageUrl: null },
-  { name: '레그 익스텐션', category: '다리', muscleGroup: '대퇴사두근', imageUrl: null },
-  { name: '스미스머신', category: '다리', muscleGroup: '복합', imageUrl: null },
-  { name: '숄더프레스', category: '어깨', muscleGroup: '삼각근', imageUrl: null },
-  { name: '사이드 레터럴 레이즈', category: '어깨', muscleGroup: '측면 삼각근', imageUrl: null },
-  { name: '바이셉스 컬', category: '팔', muscleGroup: '이두근', imageUrl: null },
-  { name: '트라이셉스 익스텐션', category: '팔', muscleGroup: '삼두근', imageUrl: null },
-  { name: '트레드밀', category: '유산소', muscleGroup: null, imageUrl: null },
-  { name: '사이클', category: '유산소', muscleGroup: null, imageUrl: null },
-  { name: '일립티컬', category: '유산소', muscleGroup: null, imageUrl: null },
-  { name: '로잉머신', category: '유산소', muscleGroup: '복합', imageUrl: null },
+  { name: '스미스 머신', category: '다리', muscleGroup: '대퇴사두근, 둔근, 햄스트링, 내전근', imageUrl: `${BASE_URL}/machine-smith.webp` },
+  { name: '스텝밀', category: '유산소', muscleGroup: '전신', imageUrl: `${BASE_URL}/machine-stepmill.webp` },
+  { name: '케이블머신', category: '어깨', muscleGroup: '삼각근, 승모근', imageUrl: `${BASE_URL}/machine-cable.webp` },
+  { name: '랫풀다운', category: '등', muscleGroup: '광배근, 이두', imageUrl: `${BASE_URL}/machine-latpull.webp` },
+  { name: '레그프레스', category: '다리', muscleGroup: '대퇴사두근, 둔근', imageUrl: `${BASE_URL}/machine-legpress.webp` },
+  { name: '레그컬', category: '다리', muscleGroup: '햄스트링', imageUrl: `${BASE_URL}/machine-legcurl.webp` },
+  { name: '풀업', category: '등', muscleGroup: '광배근, 이두, 어깨', imageUrl: `${BASE_URL}/machine-pullup.webp` },
+  { name: '벤치 프레스', category: '가슴', muscleGroup: '대흉근, 삼두, 어깨', imageUrl: `${BASE_URL}/machine-bench.webp` },
+  { name: '백 익스텐션', category: '등', muscleGroup: '척추기립근, 둔근', imageUrl: `${BASE_URL}/machine-backex.webp` },
+  { name: '힙 어브덕션/힙 어덕션', category: '다리', muscleGroup: '둔근, 내전근', imageUrl: `${BASE_URL}/machine-hip.webp` },
+  { name: '트레드밀', category: '유산소', muscleGroup: '전신', imageUrl: `${BASE_URL}/machine-treadmill.webp` },
 ]
 
 const missions = [
