@@ -18,6 +18,15 @@ body {
   overflow: hidden;
 }
 
+.auth-callback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100dvh;
+  color: $c-gray;
+  font-size: r(14);
+}
+
 .layout {
   display: flex;
   flex-direction: column;

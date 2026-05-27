@@ -16,7 +16,7 @@ export default function AuthCallbackPage() {
   }, [navigate])
 
   return (
-    <div className="flex items-center justify-center h-dvh text-gray-400">
+    <div className="auth-callback">
       로그인 처리 중...
     </div>
   )
