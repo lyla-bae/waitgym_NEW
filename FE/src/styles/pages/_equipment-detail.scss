@@ -1,0 +1,86 @@
+@use '@styles/variables' as *;
+
+.equipment-detail {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0 $screen-padding;
+
+  &__image-section {
+    display: flex;
+    justify-content: center;
+    padding: r(24) 0;
+  }
+
+  &__image-wrap {
+    background-color: $c-white;
+    border-radius: r(12);
+    padding: r(24);
+  }
+
+  &__image {
+    width: r(128);
+    height: r(128);
+    object-fit: contain;
+  }
+
+  &__image-placeholder {
+    width: r(128);
+    height: r(128);
+    background-color: $c-placeholder;
+    border-radius: r(8);
+  }
+
+  &__info-card {
+    background-color: $c-card;
+    border-radius: r(12);
+    padding: r(16);
+    display: flex;
+    flex-direction: column;
+    gap: r(12);
+    margin-bottom: r(16);
+  }
+
+  &__info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__info-label {
+    font-size: r(14);
+    color: $c-gray;
+  }
+
+  &__info-value {
+    font-size: r(14);
+    font-weight: 500;
+    color: $c-white;
+    text-align: right;
+    max-width: 60%;
+  }
+
+  &__status-available {
+    color: $c-primary-light;
+    font-weight: 700;
+  }
+
+  &__status-in-use {
+    color: $c-accent;
+    font-weight: 700;
+  }
+
+  &__waiting-count {
+    display: flex;
+    align-items: center;
+    gap: r(4);
+    color: $c-accent;
+    font-size: r(14);
+    font-weight: 700;
+  }
+
+  &__cta {
+    margin-top: auto;
+    padding-bottom: r(24);
+  }
+}
