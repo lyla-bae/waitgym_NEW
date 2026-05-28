@@ -1,0 +1,119 @@
+@use '@styles/variables' as *;
+
+.goal-setting-page {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+
+  .content-scroll {
+    padding-bottom: r(96);
+  }
+
+  &__container {
+    padding: 0 $screen-padding;
+  }
+
+  &__section {
+    margin-bottom: r(24);
+  }
+
+  &__label {
+    font-size: r(13);
+    font-weight: 500;
+    margin-bottom: r(8);
+    color: $c-white;
+  }
+
+  &__box-list {
+    display: flex;
+    flex-direction: column;
+    gap: r(8);
+  }
+
+  &__box {
+    width: 100%;
+    background-color: $c-card;
+    border-radius: $card-radius;
+    padding: r(16);
+    display: flex;
+    flex-direction: column;
+    gap: r(16);
+  }
+
+  &__equipment {
+    display: flex;
+    align-items: center;
+    gap: r(12);
+  }
+
+  &__equipment-img {
+    width: r(40);
+    height: r(40);
+    border-radius: $card-radius;
+    background-color: $c-bg;
+    overflow: hidden;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__equipment-name {
+    font-size: r(16);
+    font-weight: 600;
+    color: $c-white;
+  }
+
+  &__count-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: r(8);
+  }
+
+  &__count {
+    border-radius: $card-radius;
+    padding: r(12) r(8);
+    background-color: $c-modal;
+    display: flex;
+    flex-direction: column;
+    gap: r(4);
+  }
+
+  &__count-title {
+    font-size: r(14);
+    text-align: center;
+    color: $c-white;
+  }
+
+  &__controller {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: r(4);
+  }
+
+  &__ctrl-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: r(30);
+    height: r(30);
+    border-radius: $card-radius;
+    color: $c-white;
+
+    &:disabled {
+      opacity: 0.3;
+    }
+  }
+
+  &__count-num {
+    font-size: r(20);
+    font-weight: 600;
+    text-align: center;
+    color: $c-accent;
+    min-width: r(48);
+  }
+}
