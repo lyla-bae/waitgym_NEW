@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ChevronLeft, UsersRound } from 'lucide-react'
 import Header from '@/components/Header'
-import { equipmentApi } from '@/lib/api'
+import { equipmentApi, waitingApi } from '@/lib/api'
 import type { Equipment } from '@/types'
 
 export default function WaitRequestPage() {
@@ -25,8 +25,8 @@ export default function WaitRequestPage() {
   async function handleRequest() {
     setLoading(true)
     try {
-      await equipmentApi.detail(equipmentId)
-      navigate(`/waiting/${equipmentId}?sets=${sets}&restSeconds=${restSeconds}`, { replace: true })
+      const result = await waitingApi.register({ equipmentId, sets, restSeconds })
+      navigate(`/waiting/${result.id}`, { replace: true })
     } catch (e) {
       console.error(e)
       alert('예약 요청에 실패했습니다.')

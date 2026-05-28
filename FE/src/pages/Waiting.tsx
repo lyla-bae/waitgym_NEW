@@ -2,26 +2,40 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ChevronLeft, UsersRound } from 'lucide-react'
 import Header from '@/components/Header'
-import { equipmentApi } from '@/lib/api'
-import type { Equipment } from '@/types'
+import { useToast } from '@/components/ui/Toast'
+import { waitingApi } from '@/lib/api'
+import type { WaitingQueue, Equipment } from '@/types'
 
 export default function WaitingPage() {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
 
-  const [equipment, setEquipment] = useState<Equipment | null>(null)
+  const [waiting, setWaiting] = useState<(WaitingQueue & { waitingCount: number; equipment: Equipment }) | null>(null)
+  const [cancelling, setCancelling] = useState(false)
+  const { showToast, ToastComponent } = useToast()
 
   useEffect(() => {
-    if (!id) return
-    equipmentApi.detail(Number(id)).then(setEquipment).catch(console.error)
+    waitingApi.my().then((list) => {
+      const found = list.find((w) => w.id === Number(id)) as (WaitingQueue & { waitingCount: number; equipment: Equipment }) | undefined
+      if (found) setWaiting(found)
+    }).catch(console.error)
   }, [id])
 
-  function handleCancel() {
+  async function handleCancel() {
     if (!confirm('대기를 취소하시겠어요?')) return
-    navigate('/reservation/select-equipment', { replace: true })
+    setCancelling(true)
+    try {
+      await waitingApi.cancel(Number(id))
+      navigate('/reservation/select-equipment', { replace: true })
+    } catch (e) {
+      console.error(e)
+      alert('취소에 실패했습니다.')
+    } finally {
+      setCancelling(false)
+    }
   }
 
-  const waitingCount = equipment?.waitingCount ?? 0
+  const waitingCount = waiting?.waitingCount ?? 0
   const estimatedMinutes = Math.ceil(waitingCount * 10)
 
   return (
@@ -33,7 +47,7 @@ export default function WaitingPage() {
           </button>
         }
         rightContent={
-          <button type="button" className="header__cancel" onClick={handleCancel}>
+          <button type="button" className="header__cancel" onClick={handleCancel} disabled={cancelling}>
             대기취소
           </button>
         }
@@ -41,7 +55,7 @@ export default function WaitingPage() {
 
       <section className="waiting-page__content">
         <div className="waiting-page__text-wrap">
-          <h1 className="waiting-page__name">{equipment?.name ?? '불러오는 중...'}</h1>
+          <h1 className="waiting-page__name">{waiting?.equipment?.name ?? '불러오는 중...'}</h1>
           <p className="waiting-page__timer">{estimatedMinutes}분 대기</p>
           <div className="waiting-page__queue">
             <UsersRound size={20} strokeWidth={1.5} />
@@ -55,11 +69,13 @@ export default function WaitingPage() {
         <button
           type="button"
           className="btn btn--white btn--full"
-          onClick={handleCancel}
+          onClick={() => showToast('사용 요청이 완료되었습니다!')}
         >
-          대기 취소
+          사용 요청 보내기
         </button>
       </div>
+
+      <ToastComponent />
     </div>
   )
 }
