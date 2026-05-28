@@ -29,15 +29,16 @@ router.post('/', authMiddleware, async (req: AuthRequest, res, next) => {
       return
     }
 
-    const last = await prisma.waitingQueue.findFirst({
-      where: { equipmentId, status: 'WAITING' },
-      orderBy: { queuePosition: 'desc' },
-    })
-    const queuePosition = (last?.queuePosition ?? 0) + 1
-
-    const waiting = await prisma.waitingQueue.create({
-      data: { userId, equipmentId, queuePosition, status: 'WAITING' },
-      include: { equipment: true },
+    const waiting = await prisma.$transaction(async (tx) => {
+      const last = await tx.waitingQueue.findFirst({
+        where: { equipmentId, status: 'WAITING' },
+        orderBy: { queuePosition: 'desc' },
+      })
+      const queuePosition = (last?.queuePosition ?? 0) + 1
+      return tx.waitingQueue.create({
+        data: { userId, equipmentId, queuePosition, status: 'WAITING' },
+        include: { equipment: true },
+      })
     })
 
     const waitingCount = await prisma.waitingQueue.count({
@@ -45,7 +46,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res, next) => {
     })
     emitEquipmentUpdate(equipmentId, { equipmentId, waitingCount })
 
-    res.status(201).json({ ...waiting, queuePosition, waitingCount })
+    res.status(201).json({ ...waiting, waitingCount })
   } catch (err) {
     next(err)
   }
@@ -99,20 +100,20 @@ router.delete('/:id', authMiddleware, async (req: AuthRequest, res, next) => {
       return
     }
 
-    await prisma.waitingQueue.update({
-      where: { id },
-      data: { status: 'CANCELLED' },
-    })
-
-    // 취소된 순서 뒤 사람들 queuePosition 재정렬
-    await prisma.waitingQueue.updateMany({
-      where: {
-        equipmentId: waiting.equipmentId,
-        status: 'WAITING',
-        queuePosition: { gt: waiting.queuePosition },
-      },
-      data: { queuePosition: { decrement: 1 } },
-    })
+    await prisma.$transaction([
+      prisma.waitingQueue.update({
+        where: { id },
+        data: { status: 'CANCELLED' },
+      }),
+      prisma.waitingQueue.updateMany({
+        where: {
+          equipmentId: waiting.equipmentId,
+          status: 'WAITING',
+          queuePosition: { gt: waiting.queuePosition },
+        },
+        data: { queuePosition: { decrement: 1 } },
+      }),
+    ])
 
     const waitingCount = await prisma.waitingQueue.count({
       where: { equipmentId: waiting.equipmentId, status: 'WAITING' },
