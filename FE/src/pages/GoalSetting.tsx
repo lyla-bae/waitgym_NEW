@@ -48,7 +48,7 @@ export default function GoalSettingPage() {
                 <div className="goal-setting-page__equipment">
                   <div className="goal-setting-page__equipment-img">
                     {imageUrl && (
-                      <img src={decodeURIComponent(imageUrl)} alt={equipmentName} loading="lazy" />
+                      <img src={imageUrl} alt={equipmentName} loading="lazy" />
                     )}
                   </div>
                   <span className="goal-setting-page__equipment-name">{equipmentName}</span>
