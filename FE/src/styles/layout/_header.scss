@@ -1,0 +1,58 @@
+@use '@styles/variables' as *;
+
+.header {
+  &__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: $header-height;
+    padding: 0 $screen-padding;
+    position: relative;
+  }
+
+  &__left,
+  &__right {
+    display: flex;
+    align-items: center;
+    min-width: r(44);
+  }
+
+  &__right {
+    justify-content: flex-end;
+  }
+
+  &__title {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: r(18);
+    font-weight: 600;
+    color: $c-white;
+    white-space: nowrap;
+  }
+
+  &__logo {
+    height: r(22);
+    width: auto;
+  }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    padding: r(4);
+    color: $c-white;
+  }
+
+  &__back {
+    display: flex;
+    align-items: center;
+    padding: r(4);
+    color: $c-white;
+  }
+
+  // 서브 페이지: 하단 구분선
+  &--sub {
+    border-bottom: 1px solid $c-card;
+  }
+}

@@ -1,0 +1,60 @@
+@use '@styles/variables' as *;
+
+.select-equipment-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+
+  &__search {
+    padding: r(12) $screen-padding r(8);
+  }
+
+  &__filter {
+    padding: 0 $screen-padding r(8);
+  }
+
+  &__list {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: none;
+    padding: 0 $screen-padding r(16);
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__equipment-list {
+    display: flex;
+    flex-direction: column;
+    gap: r(8);
+  }
+
+  &__empty {
+    display: flex;
+    justify-content: center;
+    padding-top: r(40);
+    font-size: r(14);
+    color: $c-gray;
+  }
+
+  &__error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: r(40);
+    gap: r(8);
+  }
+
+  &__error-msg {
+    font-size: r(14);
+    color: $c-error;
+  }
+
+  &__retry {
+    font-size: r(14);
+    color: $c-primary;
+    margin-top: r(8);
+  }
+}

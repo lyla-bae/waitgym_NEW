@@ -1,0 +1,55 @@
+@use '@styles/variables' as *;
+
+.login-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 0 $screen-padding;
+  gap: r(40);
+
+  &__brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: r(12);
+  }
+
+  &__logo {
+    height: r(44);
+    width: auto;
+  }
+
+  &__subtitle {
+    font-size: r(14);
+    color: $c-gray;
+    text-align: center;
+  }
+
+  &__actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: r(12);
+  }
+
+  &__google-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: r(12);
+    height: r(52);
+    background-color: $c-white;
+    border-radius: r(12);
+    font-size: r(16);
+    font-weight: 600;
+    color: $c-black;
+    transition: opacity 0.15s;
+
+    &:active {
+      opacity: 0.85;
+    }
+  }
+}

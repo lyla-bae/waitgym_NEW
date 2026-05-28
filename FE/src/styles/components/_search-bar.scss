@@ -1,0 +1,35 @@
+@use '@styles/variables' as *;
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: $c-card;
+  border-radius: $card-radius;
+  padding: 0 r(16);
+  height: r(40);
+
+  &__input {
+    flex: 1;
+    font-size: r(14);
+    color: $c-white;
+
+    &::placeholder {
+      color: rgba($c-white, 0.5);
+    }
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    color: rgba($c-white, 0.5);
+  }
+
+  &__clear {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    color: $c-gray;
+    padding: r(4);
+  }
+}

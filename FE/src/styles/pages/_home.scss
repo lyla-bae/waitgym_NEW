@@ -1,0 +1,79 @@
+@use '@styles/variables' as *;
+
+.home-page {
+  height: 100%;
+  position: relative;
+
+  .content-scroll {
+    height: 100%;
+    overflow-y: auto;
+    scrollbar-width: none;
+    padding-bottom: r(96);
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__greeting {
+    font-size: r(18);
+    margin: 0 0 r(24);
+    line-height: 1.6;
+    font-weight: 500;
+    padding: 0 $screen-padding;
+  }
+
+  &__container {
+    padding: 0 $screen-padding r(80);
+  }
+
+  &__routine-list {
+    display: flex;
+    flex-direction: column;
+    gap: r(8);
+  }
+
+  &__routine-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: r(8);
+    align-items: center;
+    width: 100%;
+    min-height: r(76);
+    border-radius: $card-radius;
+    background-color: $c-card;
+    padding: r(8) $screen-padding;
+    color: $c-white;
+  }
+
+  &__routine-icon {
+    width: r(48);
+    height: r(48);
+    color: $c-primary-light;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__routine-info {
+    display: flex;
+    flex-direction: column;
+    gap: r(4);
+  }
+
+  &__routine-title {
+    font-size: r(18);
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: left;
+  }
+
+  &__routine-detail {
+    display: flex;
+    align-items: center;
+    gap: r(8);
+    font-size: r(13);
+    font-weight: 500;
+    color: $c-gray;
+  }
+}
