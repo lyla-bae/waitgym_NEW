@@ -6,6 +6,9 @@ import { useToast } from '@/components/ui/Toast'
 import { waitingApi } from '@/lib/api'
 import type { WaitingQueue, Equipment } from '@/types'
 
+const COOLDOWN_MS = 5 * 60 * 1000
+const MAX_REQUESTS = 3
+
 export default function WaitingPage() {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
@@ -14,12 +17,22 @@ export default function WaitingPage() {
   const [cancelling, setCancelling] = useState(false)
   const { showToast, ToastComponent } = useToast()
 
+  const [requestCount, setRequestCount] = useState(0)
+  const [lastRequestAt, setLastRequestAt] = useState<number | null>(null)
+  const [now, setNow] = useState(Date.now())
+
   useEffect(() => {
     waitingApi.my().then((list) => {
-      const found = list.find((w) => w.id === Number(id)) as (WaitingQueue & { waitingCount: number; equipment: Equipment }) | undefined
+      const found = list.find((w) => w.id === Number(id))
       if (found) setWaiting(found)
     }).catch(console.error)
   }, [id])
+
+  useEffect(() => {
+    if (!lastRequestAt) return
+    const interval = setInterval(() => setNow(Date.now()), 1000)
+    return () => clearInterval(interval)
+  }, [lastRequestAt])
 
   async function handleCancel() {
     if (!confirm('대기를 취소하시겠어요?')) return
@@ -34,6 +47,18 @@ export default function WaitingPage() {
       setCancelling(false)
     }
   }
+
+  function handleRequest() {
+    showToast('사용 요청이 완료되었습니다!')
+    setRequestCount((v) => v + 1)
+    setLastRequestAt(Date.now())
+  }
+
+  const cooldownRemaining = lastRequestAt ? Math.max(0, COOLDOWN_MS - (now - lastRequestAt)) : 0
+  const isOnCooldown = cooldownRemaining > 0
+  const isMaxReached = requestCount >= MAX_REQUESTS
+  const isDisabled = isOnCooldown || isMaxReached
+
 
   const waitingCount = waiting?.waitingCount ?? 0
   const estimatedMinutes = Math.ceil(waitingCount * 10)
@@ -69,7 +94,8 @@ export default function WaitingPage() {
         <button
           type="button"
           className="btn btn--white btn--full"
-          onClick={() => showToast('사용 요청이 완료되었습니다!')}
+          onClick={handleRequest}
+          disabled={isDisabled}
         >
           사용 요청 보내기
         </button>

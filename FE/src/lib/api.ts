@@ -40,7 +40,7 @@ export const waitingApi = {
       method: 'POST',
       body: JSON.stringify(body),
     }),
-  my: () => authFetch<(WaitingQueue & { waitingCount: number })[]>('/waiting/my'),
+  my: () => authFetch<(WaitingQueue & { waitingCount: number; equipment: Equipment })[]>('/waiting/my'),
   cancel: (id: number) =>
     authFetch<{ message: string }>(`/waiting/${id}`, { method: 'DELETE' }),
 }
