@@ -12,6 +12,7 @@ import MyPage from '@/pages/MyPage'
 import NotificationPage from '@/pages/Notification'
 import SelectEquipmentPage from '@/pages/SelectEquipment'
 import GoalSettingPage from '@/pages/GoalSetting'
+import WaitRequestPage from '@/pages/WaitRequest'
 
 function ProtectedRoute() {
   const { session, isLoading } = useAuthStore()
@@ -44,6 +45,7 @@ const router = createBrowserRouter([
           { path: '/notifications', element: <NotificationPage /> },
           { path: '/reservation/select-equipment', element: <SelectEquipmentPage /> },
           { path: '/reservation/goal-setting', element: <GoalSettingPage /> },
+          { path: '/reservation/wait-request', element: <WaitRequestPage /> },
         ],
       },
     ],

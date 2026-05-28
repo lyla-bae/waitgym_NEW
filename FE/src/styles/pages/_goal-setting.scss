@@ -10,7 +10,7 @@
   }
 
   &__container {
-    padding: 0 $screen-padding;
+    padding: r(16) $screen-padding 0;
   }
 
   &__section {
