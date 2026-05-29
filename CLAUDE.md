@@ -23,7 +23,7 @@ FE 개발자 포트폴리오용 헬스장 기구 대기 앱 리빌드.
 - 구버전 참고: `/Users/lyla/Downloads/새싹/final_project/waitgym/`
 
 ## 브랜치 전략
-- `main` — 배포용, 직접 커밋 금지
+- `main` — 배포용, 직접 커밋 금지 (단, `docs/` 하위 md 파일은 main 직접 푸시 허용)
 - `dev` — 작업 브랜치
 - 작업 완료 시 dev → main PR
 
