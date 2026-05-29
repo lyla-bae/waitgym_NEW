@@ -4,16 +4,23 @@ import { ChevronLeft, UsersRound } from 'lucide-react'
 import Header from '@/components/Header'
 import { useToast } from '@/components/ui/Toast'
 import { waitingApi } from '@/lib/api'
+import { socket } from '@/lib/socket'
 import type { WaitingQueue, Equipment } from '@/types'
 
 const COOLDOWN_MS = 5 * 60 * 1000
 const MAX_REQUESTS = 3
+
+interface EquipmentUpdatedPayload {
+  equipmentId: number
+  waitingCount: number
+}
 
 export default function WaitingPage() {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
 
   const [waiting, setWaiting] = useState<(WaitingQueue & { waitingCount: number; equipment: Equipment }) | null>(null)
+  const [waitingCount, setWaitingCount] = useState(0)
   const [cancelling, setCancelling] = useState(false)
   const { showToast, ToastComponent } = useToast()
 
@@ -24,9 +31,34 @@ export default function WaitingPage() {
   useEffect(() => {
     waitingApi.my().then((list) => {
       const found = list.find((w) => w.id === Number(id))
-      if (found) setWaiting(found)
+      if (found) {
+        setWaiting(found)
+        setWaitingCount(found.waitingCount)
+      }
     }).catch(console.error)
   }, [id])
+
+  // 기구 룸 소켓 연결
+  useEffect(() => {
+    if (!waiting?.equipmentId) return
+
+    const equipmentId = waiting.equipmentId
+    socket.connect()
+    socket.emit('join:equipment', equipmentId)
+
+    function handleEquipmentUpdate(data: EquipmentUpdatedPayload) {
+      if (data.equipmentId === equipmentId) {
+        setWaitingCount(data.waitingCount)
+      }
+    }
+
+    socket.on('equipment:updated', handleEquipmentUpdate)
+
+    return () => {
+      socket.off('equipment:updated', handleEquipmentUpdate)
+      socket.emit('leave:equipment', equipmentId)
+    }
+  }, [waiting?.equipmentId])
 
   useEffect(() => {
     if (!lastRequestAt) return
@@ -48,10 +80,19 @@ export default function WaitingPage() {
     }
   }
 
-  function handleRequest() {
-    showToast('사용 요청이 완료되었습니다!')
-    setRequestCount((v) => v + 1)
-    setLastRequestAt(Date.now())
+  async function handleRequest() {
+    try {
+      const result = await waitingApi.request(Number(id))
+      if (result.myTurn) {
+        showToast('지금 바로 사용할 수 있어요! 내 차례입니다.', { duration: 4000 })
+      } else {
+        showToast('사용 요청이 완료되었습니다!')
+        setRequestCount((v) => v + 1)
+        setLastRequestAt(Date.now())
+      }
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   const cooldownRemaining = lastRequestAt ? Math.max(0, COOLDOWN_MS - (now - lastRequestAt)) : 0
@@ -59,8 +100,6 @@ export default function WaitingPage() {
   const isMaxReached = requestCount >= MAX_REQUESTS
   const isDisabled = isOnCooldown || isMaxReached
 
-
-  const waitingCount = waiting?.waitingCount ?? 0
   const estimatedMinutes = Math.ceil(waitingCount * 10)
 
   return (

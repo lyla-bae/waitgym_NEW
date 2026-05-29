@@ -43,4 +43,10 @@ export const waitingApi = {
   my: () => authFetch<(WaitingQueue & { waitingCount: number; equipment: Equipment })[]>('/waiting/my'),
   cancel: (id: number) =>
     authFetch<{ message: string }>(`/waiting/${id}`, { method: 'DELETE' }),
+  request: (id: number) =>
+    authFetch<{ myTurn: boolean }>(`/waiting/${id}/request`, { method: 'POST' }),
+  start: (id: number) =>
+    authFetch<WaitingQueue & { equipment: Equipment }>(`/waiting/${id}/start`, { method: 'PATCH' }),
+  complete: (id: number) =>
+    authFetch<{ message: string }>(`/waiting/${id}/complete`, { method: 'PATCH' }),
 }

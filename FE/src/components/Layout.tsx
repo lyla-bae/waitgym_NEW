@@ -1,5 +1,8 @@
 import { Outlet, NavLink, useLocation } from 'react-router-dom'
 import { Dumbbell, Trophy, CircleUserRound } from 'lucide-react'
+import { Toast } from '@/components/ui/Toast'
+import { useSocketNotifications } from '@/hooks/useSocketNotifications'
+import { useGlobalToastStore } from '@/stores/globalToastStore'
 
 const navItems = [
   { to: '/', icon: Dumbbell, label: '홈' },
@@ -12,6 +15,9 @@ const NO_NAV_PATHS = ['/waiting', '/reservation', '/workout']
 export default function Layout() {
   const location = useLocation()
   const hideNav = NO_NAV_PATHS.some((p) => location.pathname.startsWith(p))
+  const { toast, clear } = useGlobalToastStore()
+
+  useSocketNotifications()
 
   return (
     <div className="layout">
@@ -38,6 +44,16 @@ export default function Layout() {
             ))}
           </ul>
         </nav>
+      )}
+
+      {toast && (
+        <Toast
+          key={toast.id}
+          message={toast.message}
+          duration={toast.duration}
+          action={toast.action}
+          onClose={clear}
+        />
       )}
     </div>
   )

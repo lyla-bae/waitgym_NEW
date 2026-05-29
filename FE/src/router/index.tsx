@@ -13,6 +13,8 @@ import NotificationPage from '@/pages/Notification'
 import SelectEquipmentPage from '@/pages/SelectEquipment'
 import GoalSettingPage from '@/pages/GoalSetting'
 import WaitRequestPage from '@/pages/WaitRequest'
+import ExercisingPage from '@/pages/Exercising'
+import CompletePage from '@/pages/Complete'
 
 function ProtectedRoute() {
   const { session, isLoading } = useAuthStore()
@@ -46,6 +48,8 @@ const router = createBrowserRouter([
           { path: '/reservation/select-equipment', element: <SelectEquipmentPage /> },
           { path: '/reservation/goal-setting', element: <GoalSettingPage /> },
           { path: '/reservation/wait-request', element: <WaitRequestPage /> },
+          { path: '/workout/exercising', element: <ExercisingPage /> },
+          { path: '/workout/complete', element: <CompletePage /> },
         ],
       },
     ],

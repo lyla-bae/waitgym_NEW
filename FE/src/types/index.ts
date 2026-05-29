@@ -49,7 +49,10 @@ export interface WaitingQueue {
   equipmentId: number
   userId: number
   queuePosition: number
-  status: 'WAITING' | 'NOTIFIED' | 'COMPLETED' | 'CANCELLED' | 'EXPIRED'
+  status: 'WAITING' | 'USING' | 'COMPLETED' | 'CANCELLED'
+  sets: number
+  restSeconds: number
+  startedAt?: string
   createdAt: string
   notifiedAt?: string
 }

@@ -3,26 +3,33 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ChevronLeft, UsersRound } from 'lucide-react'
 import Header from '@/components/Header'
 import { equipmentApi, waitingApi } from '@/lib/api'
+import { useWorkoutStore } from '@/stores/workoutStore'
 import type { Equipment } from '@/types'
 
 export default function WaitRequestPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
 
+  const mode = searchParams.get('mode') // 'start' | null
+  const isStartMode = mode === 'start'
+
   const equipmentId = Number(searchParams.get('equipmentId'))
   const equipmentName = searchParams.get('name') ?? ''
   const sets = Number(searchParams.get('sets') ?? 3)
   const restSeconds = Number(searchParams.get('restSeconds') ?? 60)
+  const waitingId = Number(searchParams.get('waitingId'))
 
   const [equipment, setEquipment] = useState<Equipment | null>(null)
   const [loading, setLoading] = useState(false)
+
+  const startWorkout = useWorkoutStore((s) => s.start)
 
   useEffect(() => {
     if (!equipmentId) return
     equipmentApi.detail(equipmentId).then(setEquipment).catch(console.error)
   }, [equipmentId])
 
-  async function handleRequest() {
+  async function handleRegister() {
     setLoading(true)
     try {
       const result = await waitingApi.register({ equipmentId, sets, restSeconds })
@@ -30,6 +37,25 @@ export default function WaitRequestPage() {
     } catch (e) {
       console.error(e)
       alert('예약 요청에 실패했습니다.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function handleStart() {
+    setLoading(true)
+    try {
+      const result = await waitingApi.start(waitingId)
+      startWorkout({
+        waitingId,
+        equipmentName: result.equipment?.name ?? equipmentName,
+        sets: result.sets,
+        restSeconds: result.restSeconds,
+      })
+      navigate('/workout/exercising', { replace: true })
+    } catch (e) {
+      console.error(e)
+      alert('운동 시작에 실패했습니다.')
     } finally {
       setLoading(false)
     }
@@ -52,12 +78,19 @@ export default function WaitRequestPage() {
       <section className="wait-request-page__content">
         <div className="wait-request-page__text-wrap">
           <h1 className="wait-request-page__name">{equipmentName}</h1>
-          <p className="wait-request-page__timer">{estimatedMinutes}분 대기</p>
-          <div className="wait-request-page__info">
-            <UsersRound size={20} strokeWidth={1.5} />
-            <span className="wait-request-page__waiting-count">{waitingCount}명</span>
-            <span>기다리는중</span>
-          </div>
+          {!isStartMode && (
+            <>
+              <p className="wait-request-page__timer">{estimatedMinutes}분 대기</p>
+              <div className="wait-request-page__info">
+                <UsersRound size={20} strokeWidth={1.5} />
+                <span className="wait-request-page__waiting-count">{waitingCount}명</span>
+                <span>기다리는중</span>
+              </div>
+            </>
+          )}
+          {isStartMode && (
+            <p className="wait-request-page__ready">지금 바로 사용할 수 있어요!</p>
+          )}
         </div>
       </section>
 
@@ -65,10 +98,10 @@ export default function WaitRequestPage() {
         <button
           type="button"
           className="btn btn--white btn--full"
-          onClick={handleRequest}
+          onClick={isStartMode ? handleStart : handleRegister}
           disabled={loading}
         >
-          사용 요청 보내기
+          {isStartMode ? '운동 시작하기' : '대기 등록하기'}
         </button>
       </div>
     </div>
