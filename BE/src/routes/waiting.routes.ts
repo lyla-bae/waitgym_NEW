@@ -96,10 +96,10 @@ router.post('/', authMiddleware, async (req: AuthRequest, res, next) => {
     }
 
     const existing = await prisma.waitingQueue.findFirst({
-      where: { userId, status: 'USING' },
+      where: { userId, equipmentId, status: { in: ['WAITING', 'USING'] } },
     })
     if (existing) {
-      res.status(409).json({ message: '이미 대기 중인 기구가 있습니다.' })
+      res.status(409).json({ message: '이미 해당 기구에 대기 중입니다.' })
       return
     }
 
