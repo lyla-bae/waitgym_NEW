@@ -6,26 +6,23 @@
   --c-progress: #{$c-accent};
 
   &__content {
-    height: 70vh;
+    flex: 1;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 0 r(24);
+    padding: r(24) $screen-padding;
     position: relative;
-    flex: 1;
   }
 
   &__text-wrap {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     gap: r(8);
     width: 100%;
-    position: absolute;
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
+    flex: 1;
   }
 
   &__name {
@@ -63,6 +60,13 @@
     color: $c-gray;
     font-size: r(14);
     font-weight: 500;
+  }
+
+  .btn-wrap {
+    position: static;
+    transform: none;
+    margin-top: auto;
+    width: 100%;
   }
 
   // 휴식 모드
