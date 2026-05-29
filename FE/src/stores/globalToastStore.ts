@@ -18,13 +18,8 @@ interface GlobalToastState {
   clear: () => void
 }
 
-export const useGlobalToastStore = create<GlobalToastState>((set, get) => ({
+export const useGlobalToastStore = create<GlobalToastState>((set) => ({
   toast: null,
-  show: (item) => {
-    // action이 있는 토스트(YOUR_TURN)는 이미 떠 있으면 덮어쓰지 않음
-    const current = get().toast
-    if (current?.action && !item.action) return
-    set({ toast: { id: Date.now().toString(), ...item } })
-  },
+  show: (item) => set({ toast: { id: Date.now().toString(), ...item } }),
   clear: () => set({ toast: null }),
 }))
