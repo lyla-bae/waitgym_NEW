@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { Equipment } from '@/types'
+import type { Equipment, WaitingQueue } from '@/types'
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
@@ -32,4 +32,15 @@ export const equipmentApi = {
   detail: (id: number) => authFetch<Equipment>(`/equipment/${id}`),
   toggleFavorite: (id: number) =>
     authFetch<{ isFavorite: boolean }>(`/equipment/${id}/favorite`, { method: 'POST' }),
+}
+
+export const waitingApi = {
+  register: (body: { equipmentId: number; sets: number; restSeconds: number }) =>
+    authFetch<WaitingQueue & { waitingCount: number }>('/waiting', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+  my: () => authFetch<(WaitingQueue & { waitingCount: number })[]>('/waiting/my'),
+  cancel: (id: number) =>
+    authFetch<{ message: string }>(`/waiting/${id}`, { method: 'DELETE' }),
 }

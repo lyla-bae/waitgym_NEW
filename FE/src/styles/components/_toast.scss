@@ -1,0 +1,29 @@
+@use '@styles/variables' as *;
+
+.toast {
+  position: fixed;
+  top: r(64);
+  left: 50%;
+  transform: translateX(-50%) translateY(r(-8));
+  width: calc(100% - #{r(48)});
+  max-width: calc(480px - #{r(48)});
+  height: r(55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $c-modal;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: $card-radius;
+  color: $c-white;
+  font-size: r(16);
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+  z-index: 100;
+
+  &--visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}

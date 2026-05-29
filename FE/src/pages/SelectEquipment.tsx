@@ -117,7 +117,11 @@ export default function SelectEquipmentPage() {
                 <EquipmentCard
                   equipment={equipment}
                   onFavoriteToggle={handleFavoriteToggle}
-                  onClick={() => navigate(`/equipment/${equipment.id}`)}
+                  onClick={() =>
+                    navigate(
+                      `/reservation/goal-setting?equipmentId=${equipment.id}&name=${encodeURIComponent(equipment.name)}&imageUrl=${encodeURIComponent(equipment.imageUrl ?? '')}`,
+                    )
+                  }
                 />
               </li>
             ))}
