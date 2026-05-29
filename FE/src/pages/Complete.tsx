@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { Dumbbell, Timer } from 'lucide-react'
+import motionClap from '@/assets/images/motion-clap.png'
 import { useWorkoutStore } from '@/stores/workoutStore'
 
 function formatMs(ms: number) {
@@ -12,8 +13,8 @@ function formatDate(date: Date) {
   return date.toLocaleDateString('ko-KR', { year: '2-digit', month: '2-digit', day: '2-digit', weekday: 'short' })
 }
 
-// 조사 처리: 받침 있으면 "을", 없으면 "를"
 function eulReul(name: string) {
+  if (!name) return '를'
   const code = name.charCodeAt(name.length - 1)
   return (code - 0xac00) % 28 > 0 ? '을' : '를'
 }
@@ -31,9 +32,11 @@ export default function CompletePage() {
     <div className="complete-page">
       <main className="complete-page__content">
         <div className="complete-page__title">
-          <div className="complete-page__icon" aria-hidden="true">👏</div>
+          <div className="complete-page__icon">
+            <img src={motionClap} alt="박수" />
+          </div>
           <h1 className="complete-page__heading">
-            {equipmentName}{eulReul(equipmentName || '운동')}<br />
+            {equipmentName}{eulReul(equipmentName)}<br />
             멋지게 성공하셨군요!
           </h1>
           {startedAt && (

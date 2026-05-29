@@ -16,7 +16,7 @@ const TICK = 10
 
 export default function ExercisingPage() {
   const navigate = useNavigate()
-  const { waitingId, equipmentName, sets, restSeconds, currentSet, completeSet, addRestMs, reset } =
+  const { waitingId, equipmentName, sets, restSeconds, currentSet, completeSet, addRestMs } =
     useWorkoutStore()
 
   const [elapsed, setElapsed] = useState(0)
@@ -54,7 +54,6 @@ export default function ExercisingPage() {
     completeSet(workMs)
     if (!waitingId) return
     try { await waitingApi.complete(waitingId) } catch (e) { console.error(e) }
-    reset()
     navigate('/workout/complete', { replace: true })
   }
 
@@ -64,7 +63,6 @@ export default function ExercisingPage() {
       if (intervalRef.current) clearInterval(intervalRef.current)
       if (!waitingId) return
       try { await waitingApi.complete(waitingId) } catch (e) { console.error(e) }
-      reset()
       navigate('/workout/complete', { replace: true })
       return
     }
