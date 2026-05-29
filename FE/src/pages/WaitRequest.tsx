@@ -62,7 +62,29 @@ export default function WaitRequestPage() {
   }
 
   const waitingCount = equipment?.waitingCount ?? 0
+  const isBeingUsed = equipment?.isBeingUsed ?? false
+  const canStartNow = !isStartMode && !isBeingUsed && waitingCount === 0
   const estimatedMinutes = Math.ceil(waitingCount * 10)
+
+  async function handleRegisterAndStart() {
+    setLoading(true)
+    try {
+      const registered = await waitingApi.register({ equipmentId, sets, restSeconds })
+      const started = await waitingApi.start(registered.id)
+      startWorkout({
+        waitingId: registered.id,
+        equipmentName: started.equipment?.name ?? equipmentName,
+        sets: started.sets,
+        restSeconds: started.restSeconds,
+      })
+      navigate('/workout/exercising', { replace: true })
+    } catch (e) {
+      console.error(e)
+      alert('운동 시작에 실패했습니다.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="wait-request-page">
@@ -78,7 +100,9 @@ export default function WaitRequestPage() {
       <section className="wait-request-page__content">
         <div className="wait-request-page__text-wrap">
           <h1 className="wait-request-page__name">{equipmentName}</h1>
-          {!isStartMode && (
+          {(isStartMode || canStartNow) ? (
+            <p className="wait-request-page__ready">지금 바로 사용할 수 있어요!</p>
+          ) : (
             <>
               <p className="wait-request-page__timer">{estimatedMinutes}분 대기</p>
               <div className="wait-request-page__info">
@@ -88,9 +112,6 @@ export default function WaitRequestPage() {
               </div>
             </>
           )}
-          {isStartMode && (
-            <p className="wait-request-page__ready">지금 바로 사용할 수 있어요!</p>
-          )}
         </div>
       </section>
 
@@ -98,10 +119,10 @@ export default function WaitRequestPage() {
         <button
           type="button"
           className="btn btn--white btn--full"
-          onClick={isStartMode ? handleStart : handleRegister}
+          onClick={isStartMode ? handleStart : canStartNow ? handleRegisterAndStart : handleRegister}
           disabled={loading}
         >
-          {isStartMode ? '운동 시작하기' : '대기 등록하기'}
+          {isStartMode || canStartNow ? '운동 시작하기' : '대기 등록하기'}
         </button>
       </div>
     </div>

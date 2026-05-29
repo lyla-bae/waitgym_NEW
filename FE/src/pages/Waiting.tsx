@@ -67,7 +67,6 @@ export default function WaitingPage() {
   }, [lastRequestAt])
 
   async function handleCancel() {
-    if (!confirm('대기를 취소하시겠어요?')) return
     setCancelling(true)
     try {
       await waitingApi.cancel(Number(id))

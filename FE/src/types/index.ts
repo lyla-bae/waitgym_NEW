@@ -17,6 +17,7 @@ export interface Equipment {
   isFavorite?: boolean
   currentUsage?: EquipmentUsage | null
   waitingCount?: number
+  isBeingUsed?: boolean
 }
 
 export type EquipmentCategory =

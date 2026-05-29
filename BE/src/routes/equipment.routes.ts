@@ -52,21 +52,24 @@ router.get('/:id', authMiddleware, async (req: AuthRequest, res) => {
   const id = parseInt(req.params.id as string)
   const userId = req.userId!
 
-  const equipment = await prisma.equipment.findUnique({
-    where: { id },
-    include: {
-      favorites: { where: { userId } },
-      equipmentUsages: {
-        where: { status: 'IN_USE' },
-        take: 1,
-        orderBy: { startedAt: 'desc' },
+  const [equipment, usingCount] = await Promise.all([
+    prisma.equipment.findUnique({
+      where: { id },
+      include: {
+        favorites: { where: { userId } },
+        equipmentUsages: {
+          where: { status: 'IN_USE' },
+          take: 1,
+          orderBy: { startedAt: 'desc' },
+        },
+        waitingQueues: {
+          where: { status: 'WAITING' },
+          orderBy: { queuePosition: 'asc' },
+        },
       },
-      waitingQueues: {
-        where: { status: 'WAITING' },
-        orderBy: { queuePosition: 'asc' },
-      },
-    },
-  })
+    }),
+    prisma.waitingQueue.count({ where: { equipmentId: id, status: 'USING' } }),
+  ])
 
   if (!equipment) {
     res.status(404).json({ message: '기구를 찾을 수 없습니다.' })
@@ -78,6 +81,7 @@ router.get('/:id', authMiddleware, async (req: AuthRequest, res) => {
     isFavorite: equipment.favorites.length > 0,
     currentUsage: equipment.equipmentUsages[0] ?? null,
     waitingCount: equipment.waitingQueues.length,
+    isBeingUsed: usingCount > 0,
   })
 })
 
