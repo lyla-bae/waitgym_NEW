@@ -115,11 +115,13 @@ export default function ExercisingPage() {
         <Header className="header--exercising" />
 
         <main className="exercising-page__content">
-          <CircularTimer
-            progress={progress}
-            label="휴식타이머"
-            time={formatSec(restLeftSec)}
-          />
+          <div className="exercising-page__text-wrap">
+            <CircularTimer
+              progress={progress}
+              label="휴식타이머"
+              time={formatSec(restLeftSec)}
+            />
+          </div>
 
           <div className="btn-wrap">
             <button
