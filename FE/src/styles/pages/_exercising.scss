@@ -64,6 +64,11 @@
     font-weight: 500;
   }
 
+  .btn-wrap .btn--white {
+    min-width: r(160);
+    padding: 0 r(24);
+  }
+
   // 휴식 모드
   &--rest {
     --c-progress: #{$c-accent};
