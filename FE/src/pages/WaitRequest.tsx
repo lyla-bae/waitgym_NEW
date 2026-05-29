@@ -71,13 +71,12 @@ export default function WaitRequestPage() {
   async function handleRegisterAndStart() {
     setLoading(true)
     try {
-      const registered = await waitingApi.register({ equipmentId, sets, restSeconds })
-      const started = await waitingApi.start(registered.id)
+      const result = await waitingApi.quickStart({ equipmentId, sets, restSeconds })
       startWorkout({
-        waitingId: registered.id,
-        equipmentName: started.equipment?.name ?? equipmentName,
-        sets: started.sets,
-        restSeconds: started.restSeconds,
+        waitingId: result.id,
+        equipmentName: result.equipment?.name ?? equipmentName,
+        sets: result.sets,
+        restSeconds: result.restSeconds,
       })
       navigate('/workout/exercising', { replace: true })
     } catch (e) {

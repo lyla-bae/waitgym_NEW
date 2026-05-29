@@ -126,6 +126,58 @@ router.post('/', authMiddleware, async (req: AuthRequest, res, next) => {
   }
 })
 
+// POST /api/waiting/quick-start — 기구 비어있을 때 줄 서기 없이 바로 USING 등록
+router.post('/quick-start', authMiddleware, async (req: AuthRequest, res, next) => {
+  try {
+    const userId = req.userId!
+    const { equipmentId, sets, restSeconds } = req.body as {
+      equipmentId: number
+      sets: number
+      restSeconds: number
+    }
+
+    if (!equipmentId || !sets) {
+      res.status(400).json({ message: '필수 항목이 누락되었습니다.' })
+      return
+    }
+
+    const existing = await prisma.waitingQueue.findFirst({
+      where: { userId, status: { in: ['WAITING', 'USING'] } },
+    })
+    if (existing) {
+      res.status(409).json({ message: '이미 사용 중인 기구가 있습니다.' })
+      return
+    }
+
+    const record = await prisma.waitingQueue.create({
+      data: {
+        userId,
+        equipmentId,
+        queuePosition: 0,
+        status: 'USING',
+        sets,
+        restSeconds,
+        startedAt: new Date(),
+      },
+      include: { equipment: true },
+    })
+
+    scheduleTimeout(`using:${record.id}`, 60 * 60 * 1000, async () => {
+      try {
+        const w = await prisma.waitingQueue.findUnique({ where: { id: record.id } })
+        if (!w || w.status !== 'USING') return
+        await completeWaiting(record.id, w.equipmentId)
+      } catch (err) {
+        console.error('[timeout] force complete error:', err)
+      }
+    })
+
+    res.status(201).json(record)
+  } catch (err) {
+    next(err)
+  }
+})
+
 // GET /api/waiting/my — 내 현재 대기/사용 중 조회
 router.get('/my', authMiddleware, async (req: AuthRequest, res, next) => {
   try {
