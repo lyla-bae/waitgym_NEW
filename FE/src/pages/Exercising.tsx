@@ -101,7 +101,7 @@ export default function ExercisingPage() {
   }
 
   const setIcons = Array.from({ length: sets }).map((_, i) =>
-    currentSet > i + 1 ? (
+    currentSet > i ? (
       <CircleCheck key={i} size={20} strokeWidth={2} className="set-icon set-icon--done" />
     ) : (
       <Circle key={i} size={20} strokeWidth={2} className="set-icon" />
