@@ -79,6 +79,7 @@
       background-color: $c-gray;
       color: $c-white;
       width: r(48);
+      flex: none;
 
       &:disabled {
         opacity: 0.4;
