@@ -175,7 +175,7 @@ export default function ExercisingPage() {
       </main>
 
       <div className="btn-wrap">
-        <button type="button" className="btn btn--white" onClick={handleSetComplete}>
+        <button type="button" className="btn btn--white btn--full" onClick={handleSetComplete}>
           {currentSet < sets ? '세트 완료' : '운동 완료'}
         </button>
       </div>
