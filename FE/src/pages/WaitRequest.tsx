@@ -103,7 +103,7 @@ export default function WaitRequestPage() {
         <div className="wait-request-page__text-wrap">
           <h1 className="wait-request-page__name">{equipmentName}</h1>
           {(isStartMode || canStartNow) ? (
-            <p className="wait-request-page__ready">지금 바로 사용할 수 있어요!</p>
+            <p className="wait-request-page__timer wait-request-page__timer--available">사용 가능</p>
           ) : (
             <>
               <p className="wait-request-page__timer">{estimatedMinutes}분 대기</p>
