@@ -4,13 +4,22 @@ interface CircularTimerProps {
   progress: number  // 0~100, 남은 비율
   label: string
   time: string
+  trackColor?: string
+  progressColor?: string
   children?: ReactNode
 }
 
 const RADIUS = 120
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 
-export default function CircularTimer({ progress, label, time, children }: CircularTimerProps) {
+export default function CircularTimer({
+  progress,
+  label,
+  time,
+  trackColor = '#3d5a80',
+  progressColor = '#ef754d',
+  children,
+}: CircularTimerProps) {
   const offset = CIRCUMFERENCE * (1 - progress / 100)
 
   return (
@@ -19,19 +28,18 @@ export default function CircularTimer({ progress, label, time, children }: Circu
         <circle
           cx="140" cy="140" r={RADIUS}
           fill="none"
-          stroke="var(--c-track)"
           strokeWidth="3"
+          style={{ stroke: trackColor }}
         />
         <circle
           cx="140" cy="140" r={RADIUS}
           fill="none"
-          stroke="var(--c-progress)"
           strokeWidth="3"
+          strokeLinecap="round"
           strokeDasharray={CIRCUMFERENCE}
           strokeDashoffset={offset}
-          strokeLinecap="round"
           transform="rotate(-90 140 140)"
-          style={{ transition: 'stroke-dashoffset 0.5s linear' }}
+          style={{ stroke: progressColor, transition: 'stroke-dashoffset 0.5s linear' }}
         />
       </svg>
       <div className="circular-timer__text-box">
