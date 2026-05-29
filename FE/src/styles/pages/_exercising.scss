@@ -2,6 +2,8 @@
 
 .exercising-page {
   height: 100%;
+  display: flex;
+  flex-direction: column;
   --c-track: #{$c-primary};
   --c-progress: #{$c-accent};
 
