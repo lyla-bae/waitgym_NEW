@@ -120,31 +120,31 @@ export default function ExercisingPage() {
             label="휴식타이머"
             time={formatSec(restLeftSec)}
           />
-        </main>
 
-        <div className="btn-wrap">
-          <button
-            type="button"
-            className="btn btn--gray"
-            onClick={() => handleAdjustRest(-10)}
-            disabled={restLeftSec <= 10}
-            aria-label="휴식 10초 줄이기"
-          >
-            <Minus size={20} />
-          </button>
-          <button type="button" className="btn btn--white" onClick={handleSkipRest}>
-            휴식중단
-          </button>
-          <button
-            type="button"
-            className="btn btn--gray"
-            onClick={() => handleAdjustRest(10)}
-            disabled={restLeftSec >= 600}
-            aria-label="휴식 10초 늘리기"
-          >
-            <Plus size={20} />
-          </button>
-        </div>
+          <div className="btn-wrap">
+            <button
+              type="button"
+              className="btn btn--gray"
+              onClick={() => handleAdjustRest(-10)}
+              disabled={restLeftSec <= 10}
+              aria-label="휴식 10초 줄이기"
+            >
+              <Minus size={20} />
+            </button>
+            <button type="button" className="btn btn--white" onClick={handleSkipRest}>
+              휴식중단
+            </button>
+            <button
+              type="button"
+              className="btn btn--gray"
+              onClick={() => handleAdjustRest(10)}
+              disabled={restLeftSec >= 600}
+              aria-label="휴식 10초 늘리기"
+            >
+              <Plus size={20} />
+            </button>
+          </div>
+        </main>
 
         <p className="visually-hidden" aria-live="polite">
           휴식 중, 남은 시간 {formatSec(restLeftSec)}
@@ -172,13 +172,13 @@ export default function ExercisingPage() {
             {setIcons}
           </div>
         </div>
-      </main>
 
-      <div className="btn-wrap">
-        <button type="button" className="btn btn--white btn--full" onClick={handleSetComplete}>
-          {currentSet < sets ? '세트 완료' : '운동 완료'}
-        </button>
-      </div>
+        <div className="btn-wrap">
+          <button type="button" className="btn btn--white btn--full" onClick={handleSetComplete}>
+            {currentSet < sets ? '세트 완료' : '운동 완료'}
+          </button>
+        </div>
+      </main>
 
       <p className="visually-hidden" aria-live="polite">
         {sets}개 중 {currentSet}세트 완료
