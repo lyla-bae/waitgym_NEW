@@ -74,6 +74,10 @@
   &--rest {
     --c-progress: #{$c-accent};
 
+    .btn-wrap {
+      gap: r(6);
+    }
+
     .btn--gray {
       background-color: $c-gray;
       color: $c-white;
@@ -85,12 +89,8 @@
       }
     }
 
-    .btn-wrap {
-      gap: r(6);
-
-      .btn--white {
-        flex: 1;
-      }
+    .btn--white {
+      flex: 1;
     }
   }
 }
