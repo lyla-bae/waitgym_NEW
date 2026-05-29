@@ -33,29 +33,33 @@ export default function ExercisingPage() {
   const [restTotalSec, setRestTotalSec] = useState(0)
   const restRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  // 운동 타이머
+  // isResting에 따라 운동/휴식 타이머 전환
   useEffect(() => {
-    exerciseRef.current = setInterval(() => {
-      setElapsed((prev) => prev + 10)
-    }, 10)
-    return () => { if (exerciseRef.current) clearInterval(exerciseRef.current) }
-  }, [])
+    if (exerciseRef.current) clearInterval(exerciseRef.current)
+    if (restRef.current) clearInterval(restRef.current)
 
-  // 휴식 타이머 (1초 단위)
-  useEffect(() => {
-    if (!isResting) return
-    restRef.current = setInterval(() => {
-      setRestLeftSec((prev) => {
-        if (prev <= 1) {
-          clearInterval(restRef.current!)
-          setIsResting(false)
-          setElapsed(0)
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
-    return () => { if (restRef.current) clearInterval(restRef.current) }
+    if (isResting) {
+      restRef.current = setInterval(() => {
+        setRestLeftSec((prev) => {
+          if (prev <= 1) {
+            clearInterval(restRef.current!)
+            setIsResting(false)
+            setElapsed(0)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+    } else {
+      exerciseRef.current = setInterval(() => {
+        setElapsed((prev) => prev + 10)
+      }, 10)
+    }
+
+    return () => {
+      if (exerciseRef.current) clearInterval(exerciseRef.current)
+      if (restRef.current) clearInterval(restRef.current)
+    }
   }, [isResting])
 
   async function finishWorkout(workMs: number) {
@@ -82,13 +86,9 @@ export default function ExercisingPage() {
   }
 
   function handleSkipRest() {
-    if (restRef.current) clearInterval(restRef.current)
     addRestMs((restTotalSec - restLeftSec) * 1000)
-    setIsResting(false)
     setElapsed(0)
-    exerciseRef.current = setInterval(() => {
-      setElapsed((prev) => prev + 10)
-    }, 10)
+    setIsResting(false)
   }
 
   function handleAdjustRest(delta: number) {
