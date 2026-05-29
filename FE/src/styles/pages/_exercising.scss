@@ -2,6 +2,8 @@
 
 .exercising-page {
   height: 100%;
+  --c-track: #{$c-primary};
+  --c-progress: #{$c-accent};
 
   &__content {
     height: 70vh;
@@ -38,30 +40,21 @@
     color: $c-primary-light;
   }
 
-  &__rest-label {
-    font-size: r(16);
-    font-weight: 700;
-    color: $c-gray;
-  }
-
-  &__skip {
-    font-size: r(14);
-    font-weight: 500;
-    color: $c-gray;
-    padding: r(8);
-  }
-
   &__sets {
     display: flex;
     align-items: center;
     gap: r(8);
   }
 
-  &__set-icon {
+  .set-icon {
     color: $c-gray;
 
     &--done {
       color: $c-primary-light;
+    }
+
+    &--rest {
+      color: $c-accent;
     }
   }
 
@@ -69,5 +62,66 @@
     color: $c-gray;
     font-size: r(14);
     font-weight: 500;
+  }
+
+  // 휴식 모드
+  &--rest {
+    --c-progress: #{$c-accent};
+
+    .btn--gray {
+      background-color: $c-gray;
+      color: $c-white;
+      width: r(48);
+      flex: none;
+
+      &:disabled {
+        opacity: 0.4;
+      }
+    }
+
+    .btn-wrap {
+      gap: r(6);
+
+      .btn--white {
+        flex: 1;
+      }
+    }
+  }
+}
+
+// 원형 타이머
+.circular-timer {
+  position: relative;
+  display: inline-flex;
+  width: r(280);
+  height: r(280);
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  &__text-box {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: r(8);
+    text-align: center;
+  }
+
+  &__label {
+    font-size: r(16);
+    font-weight: 700;
+    color: $c-white;
+  }
+
+  &__time {
+    font-size: r(48);
+    font-weight: 700;
+    color: $c-accent;
+    line-height: 1.2;
   }
 }
