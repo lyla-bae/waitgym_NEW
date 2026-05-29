@@ -1,0 +1,81 @@
+@use '@styles/variables' as *;
+
+.complete-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: r(40);
+  height: 100vh;
+  padding: 0 r(16);
+  position: relative;
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: r(40);
+    width: 100%;
+  }
+
+  &__title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: r(8);
+    text-align: center;
+  }
+
+  &__icon {
+    font-size: r(64);
+    margin-bottom: r(16);
+    line-height: 1;
+  }
+
+  &__heading {
+    color: $c-white;
+    font-size: r(24);
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  &__date {
+    color: $c-primary-light;
+    font-size: r(16);
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  &__stats {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: r(12);
+    border-radius: r(8);
+    background: $c-card;
+    padding: r(16);
+  }
+
+  &__stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  &__stat-label {
+    display: flex;
+    align-items: center;
+    gap: r(4);
+    font-size: r(16);
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  &__stat-value {
+    font-size: r(16);
+    font-weight: 400;
+    line-height: 1.4;
+    color: $c-accent;
+  }
+}

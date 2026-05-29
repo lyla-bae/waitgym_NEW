@@ -1,0 +1,73 @@
+@use '@styles/variables' as *;
+
+.exercising-page {
+  height: 100%;
+
+  &__content {
+    height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 r(24);
+    position: relative;
+  }
+
+  &__text-wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: r(8);
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+  }
+
+  &__name {
+    font-size: r(20);
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  &__timer {
+    font-size: r(80);
+    font-weight: 700;
+    line-height: 1.4;
+    color: $c-primary-light;
+  }
+
+  &__rest-label {
+    font-size: r(16);
+    font-weight: 700;
+    color: $c-gray;
+  }
+
+  &__skip {
+    font-size: r(14);
+    font-weight: 500;
+    color: $c-gray;
+    padding: r(8);
+  }
+
+  &__sets {
+    display: flex;
+    align-items: center;
+    gap: r(8);
+  }
+
+  &__set-icon {
+    color: $c-gray;
+
+    &--done {
+      color: $c-primary-light;
+    }
+  }
+
+  .header__stop {
+    color: $c-gray;
+    font-size: r(14);
+    font-weight: 500;
+  }
+}
