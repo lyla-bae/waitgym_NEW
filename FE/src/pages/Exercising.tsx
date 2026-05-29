@@ -85,7 +85,6 @@ export default function ExercisingPage() {
   }
 
   async function handleStop() {
-    if (!confirm('운동을 종료하시겠어요?')) return
     await finishWorkout(elapsed)
   }
 

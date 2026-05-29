@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ChevronLeft, UsersRound } from 'lucide-react'
 import Header from '@/components/Header'
+import { useToast } from '@/components/ui/Toast'
 import { equipmentApi, waitingApi } from '@/lib/api'
 import { useWorkoutStore } from '@/stores/workoutStore'
 import type { Equipment } from '@/types'
@@ -9,6 +10,7 @@ import type { Equipment } from '@/types'
 export default function WaitRequestPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const { showToast, ToastComponent } = useToast()
 
   const mode = searchParams.get('mode') // 'start' | null
   const isStartMode = mode === 'start'
@@ -36,7 +38,7 @@ export default function WaitRequestPage() {
       navigate(`/waiting/${result.id}`, { replace: true })
     } catch (e) {
       console.error(e)
-      alert('예약 요청에 실패했습니다.')
+      showToast('예약 요청에 실패했습니다.')
     } finally {
       setLoading(false)
     }
@@ -55,7 +57,7 @@ export default function WaitRequestPage() {
       navigate('/workout/exercising', { replace: true })
     } catch (e) {
       console.error(e)
-      alert('운동 시작에 실패했습니다.')
+      showToast('운동 시작에 실패했습니다.')
     } finally {
       setLoading(false)
     }
@@ -80,7 +82,7 @@ export default function WaitRequestPage() {
       navigate('/workout/exercising', { replace: true })
     } catch (e) {
       console.error(e)
-      alert('운동 시작에 실패했습니다.')
+      showToast('운동 시작에 실패했습니다.')
     } finally {
       setLoading(false)
     }
@@ -125,6 +127,8 @@ export default function WaitRequestPage() {
           {isStartMode || canStartNow ? '운동 시작하기' : '대기 등록하기'}
         </button>
       </div>
+
+      <ToastComponent />
     </div>
   )
 }

@@ -73,7 +73,7 @@ export default function WaitingPage() {
       navigate('/reservation/select-equipment', { replace: true })
     } catch (e) {
       console.error(e)
-      alert('취소에 실패했습니다.')
+      showToast('취소에 실패했습니다.')
     } finally {
       setCancelling(false)
     }
