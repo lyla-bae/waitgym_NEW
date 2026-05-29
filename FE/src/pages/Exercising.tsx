@@ -12,45 +12,54 @@ function formatMs(ms: number) {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
 }
 
-const TICK = 10
+function formatSec(sec: number) {
+  const m = Math.floor(sec / 60)
+  const s = sec % 60
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+}
 
 export default function ExercisingPage() {
   const navigate = useNavigate()
   const { waitingId, equipmentName, sets, restSeconds, currentSet, completeSet, addRestMs } =
     useWorkoutStore()
 
+  // 운동 타이머 (ms)
   const [elapsed, setElapsed] = useState(0)
+  const exerciseRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  // 휴식 타이머 (초)
   const [isResting, setIsResting] = useState(false)
-  const [restLeft, setRestLeft] = useState(0)
-  const [restTotal, setRestTotal] = useState(0)
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const [restLeftSec, setRestLeftSec] = useState(0)
+  const [restTotalSec, setRestTotalSec] = useState(0)
+  const restRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
+  // 운동 타이머
   useEffect(() => {
-    if (intervalRef.current) clearInterval(intervalRef.current)
+    exerciseRef.current = setInterval(() => {
+      setElapsed((prev) => prev + 10)
+    }, 10)
+    return () => { if (exerciseRef.current) clearInterval(exerciseRef.current) }
+  }, [])
 
-    if (isResting) {
-      intervalRef.current = setInterval(() => {
-        setRestLeft((prev) => {
-          if (prev <= TICK) {
-            clearInterval(intervalRef.current!)
-            setIsResting(false)
-            setElapsed(0)
-            return 0
-          }
-          return prev - TICK
-        })
-      }, TICK)
-    } else {
-      intervalRef.current = setInterval(() => {
-        setElapsed((prev) => prev + TICK)
-      }, TICK)
-    }
-
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
+  // 휴식 타이머 (1초 단위)
+  useEffect(() => {
+    if (!isResting) return
+    restRef.current = setInterval(() => {
+      setRestLeftSec((prev) => {
+        if (prev <= 1) {
+          clearInterval(restRef.current!)
+          setIsResting(false)
+          setElapsed(0)
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+    return () => { if (restRef.current) clearInterval(restRef.current) }
   }, [isResting])
 
   async function finishWorkout(workMs: number) {
-    if (intervalRef.current) clearInterval(intervalRef.current)
+    if (exerciseRef.current) clearInterval(exerciseRef.current)
     completeSet(workMs)
     if (!waitingId) return
     try { await waitingApi.complete(waitingId) } catch (e) { console.error(e) }
@@ -60,28 +69,31 @@ export default function ExercisingPage() {
   async function handleSetComplete() {
     const isLast = completeSet(elapsed)
     if (isLast) {
-      if (intervalRef.current) clearInterval(intervalRef.current)
+      if (exerciseRef.current) clearInterval(exerciseRef.current)
       if (!waitingId) return
       try { await waitingApi.complete(waitingId) } catch (e) { console.error(e) }
       navigate('/workout/complete', { replace: true })
       return
     }
-    const totalMs = restSeconds * 1000
-    setRestTotal(totalMs)
-    setRestLeft(totalMs)
+    if (exerciseRef.current) clearInterval(exerciseRef.current)
+    setRestTotalSec(restSeconds)
+    setRestLeftSec(restSeconds)
     setIsResting(true)
   }
 
   function handleSkipRest() {
-    if (intervalRef.current) clearInterval(intervalRef.current)
-    addRestMs(restTotal - restLeft)
+    if (restRef.current) clearInterval(restRef.current)
+    addRestMs((restTotalSec - restLeftSec) * 1000)
     setIsResting(false)
     setElapsed(0)
+    exerciseRef.current = setInterval(() => {
+      setElapsed((prev) => prev + 10)
+    }, 10)
   }
 
-  function handleAdjustRest(deltaSeconds: number) {
-    setRestLeft((prev) => Math.max(0, Math.min(prev + deltaSeconds * 1000, 600000)))
-    setRestTotal((prev) => Math.max(0, Math.min(prev + deltaSeconds * 1000, 600000)))
+  function handleAdjustRest(delta: number) {
+    setRestLeftSec((prev) => Math.max(1, Math.min(prev + delta, 600)))
+    setRestTotalSec((prev) => Math.max(1, Math.min(prev + delta, 600)))
   }
 
   async function handleStop() {
@@ -89,15 +101,15 @@ export default function ExercisingPage() {
   }
 
   const setIcons = Array.from({ length: sets }).map((_, i) =>
-    currentSet > i + 1 || (currentSet === i + 1 && isResting) ? (
-      <CircleCheck key={i} size={20} strokeWidth={2} className={`set-icon set-icon--done${isResting ? ' set-icon--rest' : ''}`} />
+    currentSet > i + 1 ? (
+      <CircleCheck key={i} size={20} strokeWidth={2} className="set-icon set-icon--done" />
     ) : (
       <Circle key={i} size={20} strokeWidth={2} className="set-icon" />
     )
   )
 
   if (isResting) {
-    const progress = restTotal > 0 ? (restLeft / restTotal) * 100 : 0
+    const progress = restTotalSec > 0 ? (restLeftSec / restTotalSec) * 100 : 0
     return (
       <div className="exercising-page exercising-page--rest">
         <Header className="header--exercising" />
@@ -106,12 +118,8 @@ export default function ExercisingPage() {
           <CircularTimer
             progress={progress}
             label="휴식타이머"
-            time={formatMs(restLeft)}
-          >
-            <div className="exercising-page__sets" aria-hidden="true">
-              {setIcons}
-            </div>
-          </CircularTimer>
+            time={formatSec(restLeftSec)}
+          />
         </main>
 
         <div className="btn-wrap">
@@ -119,7 +127,7 @@ export default function ExercisingPage() {
             type="button"
             className="btn btn--gray"
             onClick={() => handleAdjustRest(-10)}
-            disabled={restLeft < 11000}
+            disabled={restLeftSec <= 10}
             aria-label="휴식 10초 줄이기"
           >
             <Minus size={20} />
@@ -131,7 +139,7 @@ export default function ExercisingPage() {
             type="button"
             className="btn btn--gray"
             onClick={() => handleAdjustRest(10)}
-            disabled={restLeft >= 600000}
+            disabled={restLeftSec >= 600}
             aria-label="휴식 10초 늘리기"
           >
             <Plus size={20} />
@@ -139,7 +147,7 @@ export default function ExercisingPage() {
         </div>
 
         <p className="visually-hidden" aria-live="polite">
-          휴식 중, 남은 시간 {formatMs(restLeft)}
+          휴식 중, 남은 시간 {formatSec(restLeftSec)}
         </p>
       </div>
     )

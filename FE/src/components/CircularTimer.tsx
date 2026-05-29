@@ -39,7 +39,7 @@ export default function CircularTimer({
           strokeDasharray={CIRCUMFERENCE}
           strokeDashoffset={offset}
           transform="rotate(-90 140 140)"
-          style={{ stroke: progressColor, transition: 'stroke-dashoffset 0.5s linear' }}
+          style={{ stroke: progressColor, transition: 'stroke-dashoffset 0.9s linear' }}
         />
       </svg>
       <div className="circular-timer__text-box">
