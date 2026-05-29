@@ -24,7 +24,7 @@ export default function CircularTimer({
 
   return (
     <div className="circular-timer">
-      <svg viewBox="0 0 280 280" width="280" height="280">
+      <svg viewBox="0 0 280 280" width="100%" height="100%">
         <circle
           cx="140" cy="140" r={RADIUS}
           fill="none"
