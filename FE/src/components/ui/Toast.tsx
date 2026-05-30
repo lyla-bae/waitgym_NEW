@@ -1,12 +1,18 @@
 import { useEffect, useState } from 'react'
 
+interface ToastAction {
+  label: string
+  onClick: () => void
+}
+
 interface ToastProps {
   message: string
   duration?: number
+  action?: ToastAction
   onClose: () => void
 }
 
-export function Toast({ message, duration = 2000, onClose }: ToastProps) {
+export function Toast({ message, duration = 2000, action, onClose }: ToastProps) {
   const [visible, setVisible] = useState(true)
 
   useEffect(() => {
@@ -18,22 +24,47 @@ export function Toast({ message, duration = 2000, onClose }: ToastProps) {
   }, [duration, onClose])
 
   return (
-    <div className={`toast${visible ? ' toast--visible' : ''}`}>
-      {message}
+    <div className={`toast${visible ? ' toast--visible' : ''}${action ? ' toast--with-action' : ''}`}>
+      <span className="toast__message">{message}</span>
+      {action && (
+        <button
+          type="button"
+          className="toast__action"
+          onClick={() => {
+            action.onClick()
+            onClose()
+          }}
+        >
+          {action.label}
+        </button>
+      )}
     </div>
   )
 }
 
-export function useToast() {
-  const [toast, setToast] = useState<string | null>(null)
+interface ToastOptions {
+  message: string
+  duration?: number
+  action?: ToastAction
+}
 
-  function showToast(message: string) {
-    setToast(message)
+export function useToast() {
+  const [toast, setToast] = useState<ToastOptions | null>(null)
+
+  function showToast(message: string, options?: Omit<ToastOptions, 'message'>) {
+    setToast({ message, ...options })
   }
 
   function ToastComponent() {
     if (!toast) return null
-    return <Toast message={toast} onClose={() => setToast(null)} />
+    return (
+      <Toast
+        message={toast.message}
+        duration={toast.duration}
+        action={toast.action}
+        onClose={() => setToast(null)}
+      />
+    )
   }
 
   return { showToast, ToastComponent }

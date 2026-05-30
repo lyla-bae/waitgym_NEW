@@ -40,7 +40,18 @@ export const waitingApi = {
       method: 'POST',
       body: JSON.stringify(body),
     }),
-  my: () => authFetch<(WaitingQueue & { waitingCount: number })[]>('/waiting/my'),
+  my: () => authFetch<(WaitingQueue & { waitingCount: number; equipment: Equipment })[]>('/waiting/my'),
   cancel: (id: number) =>
     authFetch<{ message: string }>(`/waiting/${id}`, { method: 'DELETE' }),
+  request: (id: number) =>
+    authFetch<{ myTurn: boolean }>(`/waiting/${id}/request`, { method: 'POST' }),
+  start: (id: number) =>
+    authFetch<WaitingQueue & { equipment: Equipment }>(`/waiting/${id}/start`, { method: 'PATCH' }),
+  complete: (id: number) =>
+    authFetch<{ message: string }>(`/waiting/${id}/complete`, { method: 'PATCH' }),
+  quickStart: (body: { equipmentId: number; sets: number; restSeconds: number }) =>
+    authFetch<WaitingQueue & { equipment: Equipment }>('/waiting/quick-start', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
 }

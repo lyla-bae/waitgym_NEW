@@ -84,6 +84,9 @@ model WaitingQueue {
   userId        Int
   queuePosition Int
   status        String    @default("WAITING")
+  sets          Int       @default(3)
+  restSeconds   Int       @default(60)
+  startedAt     DateTime?
   createdAt     DateTime  @default(now())
   notifiedAt    DateTime?
   updatedAt     DateTime  @updatedAt

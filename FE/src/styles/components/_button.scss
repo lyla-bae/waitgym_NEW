@@ -54,4 +54,8 @@
     rgba($c-bg, 0) 0%,
     rgba($c-bg, 1) 100%
   );
+
+  > .btn {
+    flex: 1;
+  }
 }
