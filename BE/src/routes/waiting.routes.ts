@@ -236,6 +236,8 @@ router.post('/:id/request', authMiddleware, async (req: AuthRequest, res, next) 
       where: { equipmentId: waiting.equipmentId, status: 'USING' },
     })
 
+    console.log('[request] equipmentId:', waiting.equipmentId, 'currentUser:', currentUser?.userId ?? 'none')
+
     if (!currentUser) {
       // 아무도 사용 중이 아님 = 내가 1번 → 내 차례 알림
       const equipment = await prisma.equipment.findUnique({ where: { id: waiting.equipmentId } })
@@ -252,6 +254,7 @@ router.post('/:id/request', authMiddleware, async (req: AuthRequest, res, next) 
     const waitingCount = await prisma.waitingQueue.count({
       where: { equipmentId: waiting.equipmentId, status: 'WAITING' },
     })
+    console.log('[request] sending HURRY_UP to userId:', currentUser.userId, 'waitingCount:', waitingCount)
     emitUserNotification(currentUser.userId, {
       type: 'HURRY_UP',
       equipmentId: waiting.equipmentId,

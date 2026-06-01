@@ -26,6 +26,7 @@ export function useSocketNotifications() {
 
     socket.connect()
     socket.emit('join:user', user.id)
+    console.log('[socket] join:user', user.id)
 
     function handleNotification(data: NotificationPayload) {
       if (data.type === 'YOUR_TURN' && data.waitingId && data.equipmentName) {
