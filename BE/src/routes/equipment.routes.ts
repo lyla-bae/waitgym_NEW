@@ -24,7 +24,13 @@ router.get('/', authMiddleware, async (req: AuthRequest, res) => {
         orderBy: { startedAt: 'desc' },
       },
       _count: {
-        select: { waitingQueues: { where: { status: 'WAITING' } } },
+        select: {
+          waitingQueues: { where: { status: 'WAITING' } },
+        },
+      },
+      waitingQueues: {
+        where: { status: 'USING' },
+        take: 1,
       },
     },
     orderBy: { name: 'asc' },
@@ -35,8 +41,10 @@ router.get('/', authMiddleware, async (req: AuthRequest, res) => {
     isFavorite: e.favorites.length > 0,
     currentUsage: e.equipmentUsages[0] ?? null,
     waitingCount: e._count.waitingQueues,
+    isBeingUsed: e.waitingQueues.length > 0,
     favorites: undefined,
     equipmentUsages: undefined,
+    waitingQueues: undefined,
     _count: undefined,
   }))
 
