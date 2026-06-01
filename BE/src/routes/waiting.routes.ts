@@ -309,7 +309,7 @@ router.patch('/:id/start', authMiddleware, async (req: AuthRequest, res, next) =
       include: { equipment: true },
     })
 
-    // 1시간 초과 시 강제 완료
+    // 30분 초과 시 강제 완료
     scheduleTimeout(`using:${id}`, 30 * 60 * 1000, async () => {
       try {
         const w = await prisma.waitingQueue.findUnique({ where: { id } })
