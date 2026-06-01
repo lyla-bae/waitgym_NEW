@@ -7,7 +7,7 @@ export function initSocket(server: HttpServer) {
   io = new SocketServer(server, {
     cors: {
       origin: process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : '*',
-      credentials: true,
+      credentials: process.env.NODE_ENV === 'production',
     },
   })
 
