@@ -91,6 +91,7 @@ export default function WaitingPage() {
       }
     } catch (e) {
       console.error(e)
+      showToast('사용 요청 전송에 실패했습니다.')
     }
   }
 

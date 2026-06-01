@@ -8,8 +8,8 @@ interface Props {
 }
 
 export default function EquipmentCard({ equipment, onFavoriteToggle, onClick }: Props) {
-  const { id, name, imageUrl, isFavorite, currentUsage, waitingCount } = equipment
-  const isInUse = !!currentUsage
+  const { id, name, imageUrl, isFavorite, isBeingUsed, waitingCount } = equipment
+  const isInUse = !!isBeingUsed
   const hasWaiting = waitingCount !== undefined && waitingCount > 0
 
   return (
