@@ -149,6 +149,14 @@ router.post('/quick-start', authMiddleware, async (req: AuthRequest, res, next) 
       return
     }
 
+    const equipmentInUse = await prisma.waitingQueue.findFirst({
+      where: { equipmentId, status: 'USING' },
+    })
+    if (equipmentInUse) {
+      res.status(409).json({ message: '현재 사용 중인 기구입니다.' })
+      return
+    }
+
     const record = await prisma.waitingQueue.create({
       data: {
         userId,
@@ -273,6 +281,23 @@ router.patch('/:id/start', authMiddleware, async (req: AuthRequest, res, next) =
     }
     if (waiting.status !== 'WAITING') {
       res.status(400).json({ message: '대기 중인 상태가 아닙니다.' })
+      return
+    }
+
+    const firstInQueue = await prisma.waitingQueue.findFirst({
+      where: { equipmentId: waiting.equipmentId, status: 'WAITING' },
+      orderBy: { queuePosition: 'asc' },
+    })
+    if (!firstInQueue || firstInQueue.userId !== userId) {
+      res.status(403).json({ message: '아직 차례가 아닙니다.' })
+      return
+    }
+
+    const currentUsing = await prisma.waitingQueue.findFirst({
+      where: { equipmentId: waiting.equipmentId, status: 'USING' },
+    })
+    if (currentUsing) {
+      res.status(409).json({ message: '현재 사용 중인 기구입니다.' })
       return
     }
 
