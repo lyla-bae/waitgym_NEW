@@ -28,7 +28,7 @@
 
 ## 3. 라우팅 구조
 
-```
+```text
 /login                         — 로그인 (Google OAuth)
 /auth/callback                 — OAuth 콜백 처리
 
@@ -71,17 +71,17 @@
 
 ### `WaitingQueue` 상태머신
 
-```
+```text
 WAITING ──→ USING ──→ COMPLETED
    │                      ↑
-   └──→ CANCELLED         │ (1시간 초과 시 자동)
+   └──→ CANCELLED         │ (30분 초과 시 자동)
          ↑
     5분 미응답 시 자동
 ```
 
 - `WAITING`: 대기 등록 완료, 순서 기다리는 중
 - `USING`: 운동 시작 (start API 호출 후)
-- `COMPLETED`: 운동 완료 (complete API 호출 또는 1시간 초과 강제)
+- `COMPLETED`: 운동 완료 (complete API 호출 또는 30분 초과 강제)
 - `CANCELLED`: 취소 (직접 취소 또는 내 차례 알림 5분 미응답)
 
 ---
@@ -101,6 +101,7 @@ WAITING ──→ USING ──→ COMPLETED
 | 메서드 | 경로 | 설명 |
 |---|---|---|
 | POST | `/` | 대기 등록 (equipmentId·sets·restSeconds) |
+| POST | `/quick-start` | 즉시 시작 — 기구 비어있을 때 USING으로 바로 전환 |
 | GET | `/my` | 내 현재 대기/사용 중 조회 |
 | POST | `/:id/request` | 사용 요청 — 현재 사용자에게 독촉 알림 전송 |
 | PATCH | `/:id/start` | 운동 시작 (WAITING → USING) |
@@ -161,17 +162,17 @@ WAITING ──→ USING ──→ COMPLETED
 
 ### 기구가 비어있을 때 (isBeingUsed=false, waitingCount=0)
 
-```
+```text
 기구 상세 [이용하기]
   → GoalSetting (세트·휴식 설정)
-  → WaitRequest "운동 시작하기" → register + 즉시 start
+  → WaitRequest "운동 시작하기" → quick-start API
   → Exercising (세트 타이머)
   → Complete (완료 화면)
 ```
 
 ### 기구가 사용 중 / 대기 있을 때
 
-```
+```text
 기구 상세 [대기하기]
   → GoalSetting (세트·휴식 설정)
   → WaitRequest "대기 등록하기" → WAITING 등록
@@ -188,7 +189,7 @@ WAITING ──→ USING ──→ COMPLETED
 | 상황 | 시간 | 처리 |
 |---|---|---|
 | 내 차례 알림 후 미응답 | 5분 | CANCELLED → 다음 대기자 알림 |
-| USING 상태 초과 | 1시간 | 강제 COMPLETED → 다음 대기자 알림 |
+| USING 상태 초과 | 30분 | 강제 COMPLETED → 다음 대기자 알림 |
 
 ---
 
@@ -218,7 +219,7 @@ WAITING ──→ USING ──→ COMPLETED
 
 | 우선순위 | 페이지/기능 | 비고 |
 |---|---|---|
-| 높음 | 로그인 페이지 UI | Supabase Google OAuth 버튼 |
+| 높음 | 로그인 페이지 UI | ✅ 완료 |
 | 중간 | 미션/랭킹 (`/mission`) | UserMission API + 포인트 |
 | 중간 | 루틴 관리 (`/routine`) | dnd-kit 드래그 정렬 |
 | 중간 | 마이페이지 (`/mypage`) | 프로필·포인트·기록 |
@@ -231,7 +232,7 @@ WAITING ──→ USING ──→ COMPLETED
 
 ## 9. SCSS 구조
 
-```
+```text
 styles/
 ├── variables/   _colors, _spacing, _functions, _index
 ├── base/        _reset, _base, _font
