@@ -43,6 +43,7 @@ export default function ExercisingPage() {
         setRestLeftSec((prev) => {
           if (prev <= 1) {
             clearInterval(restRef.current!)
+            addRestMs(restTotalSec * 1000)
             setIsResting(false)
             setElapsed(0)
             return 0
