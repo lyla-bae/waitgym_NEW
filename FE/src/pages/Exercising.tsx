@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { CircleCheck, Circle, Plus, Minus } from 'lucide-react'
 import Header from '@/components/Header'
 import CircularTimer from '@/components/CircularTimer'
+import { useToast } from '@/components/ui/Toast'
 import { waitingApi } from '@/lib/api'
 import { useWorkoutStore } from '@/stores/workoutStore'
 
@@ -20,6 +21,7 @@ function formatSec(sec: number) {
 
 export default function ExercisingPage() {
   const navigate = useNavigate()
+  const { showToast, ToastComponent } = useToast()
   const { waitingId, equipmentName, sets, restSeconds, currentSet, completeSet, addRestMs } =
     useWorkoutStore()
 
@@ -67,8 +69,14 @@ export default function ExercisingPage() {
     if (exerciseRef.current) clearInterval(exerciseRef.current)
     completeSet(workMs)
     if (!waitingId) return
-    try { await waitingApi.complete(waitingId) } catch (e) { console.error(e) }
-    navigate('/workout/complete', { replace: true })
+    try {
+      await waitingApi.complete(waitingId)
+      navigate('/workout/complete', { replace: true })
+    } catch (e) {
+      console.error(e)
+      showToast('완료 처리에 실패했습니다. 다시 시도해주세요.')
+      exerciseRef.current = setInterval(() => setElapsed((prev) => prev + 10), 10)
+    }
   }
 
   async function handleSetComplete() {
@@ -76,8 +84,14 @@ export default function ExercisingPage() {
     if (isLast) {
       if (exerciseRef.current) clearInterval(exerciseRef.current)
       if (!waitingId) return
-      try { await waitingApi.complete(waitingId) } catch (e) { console.error(e) }
-      navigate('/workout/complete', { replace: true })
+      try {
+        await waitingApi.complete(waitingId)
+        navigate('/workout/complete', { replace: true })
+      } catch (e) {
+        console.error(e)
+        showToast('완료 처리에 실패했습니다. 다시 시도해주세요.')
+        exerciseRef.current = setInterval(() => setElapsed((prev) => prev + 10), 10)
+      }
       return
     }
     if (exerciseRef.current) clearInterval(exerciseRef.current)
@@ -186,6 +200,7 @@ export default function ExercisingPage() {
       <p className="visually-hidden" aria-live="polite">
         {sets}개 중 {currentSet}세트 완료
       </p>
+      <ToastComponent />
     </div>
   )
 }

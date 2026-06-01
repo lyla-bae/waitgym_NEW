@@ -170,7 +170,7 @@ router.post('/quick-start', authMiddleware, async (req: AuthRequest, res, next) 
       include: { equipment: true },
     })
 
-    scheduleTimeout(`using:${record.id}`, 60 * 60 * 1000, async () => {
+    scheduleTimeout(`using:${record.id}`, 30 * 60 * 1000, async () => {
       try {
         const w = await prisma.waitingQueue.findUnique({ where: { id: record.id } })
         if (!w || w.status !== 'USING') return
@@ -310,7 +310,7 @@ router.patch('/:id/start', authMiddleware, async (req: AuthRequest, res, next) =
     })
 
     // 1시간 초과 시 강제 완료
-    scheduleTimeout(`using:${id}`, 60 * 60 * 1000, async () => {
+    scheduleTimeout(`using:${id}`, 30 * 60 * 1000, async () => {
       try {
         const w = await prisma.waitingQueue.findUnique({ where: { id } })
         if (!w || w.status !== 'USING') return
