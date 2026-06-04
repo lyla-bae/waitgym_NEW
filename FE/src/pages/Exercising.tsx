@@ -115,8 +115,11 @@ export default function ExercisingPage() {
   }
 
   function handleAdjustRest(delta: number) {
-    setRestLeftSec((prev) => Math.max(1, Math.min(prev + delta, 600)))
-    setRestTotalSec((prev) => Math.max(1, Math.min(prev + delta, 600)))
+    setRestLeftSec((prev) => {
+      const newLeft = Math.max(1, Math.min(prev + delta, 600))
+      setRestTotalSec((prevTotal) => Math.max(prevTotal, newLeft))
+      return newLeft
+    })
   }
 
   async function handleStop() {
