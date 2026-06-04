@@ -48,6 +48,60 @@
 
 ---
 
-## Day 3 — 예정
-- 웨이팅 플로우 (세트/휴식 타이머)
-- Socket.io 실시간 대기열
+## Day 3 — 웨이팅 플로우 + 실시간 + 세트 타이머
+
+### 완료
+
+#### BE 웨이팅 API
+- `POST /api/waiting` 대기 등록, `POST /api/waiting/quick-start` 즉시 시작
+- `PATCH /:id/start` 운동 시작, `PATCH /:id/complete` 운동 완료, `DELETE /:id` 취소
+- `POST /:id/request` 사용 요청 (독촉 알림)
+- 대기 등록/취소에 트랜잭션 적용, queuePosition 자동 재정렬
+- 30분 강제 완료 타임아웃 처리
+
+#### Socket.io 실시간
+- `equipment:updated` — 대기 등록·취소 시 브로드캐스트 (`waitingCount`)
+- `notification:new` — `YOUR_TURN` / `HURRY_UP` 유저 개인 알림
+
+#### FE 페이지
+- `GoalSetting` — 세트 수(1~8)·휴식 시간(10초 단위) 설정
+- `WaitRequest` — 대기 등록 / 운동 시작 / 즉시 시작 분기 처리
+- `Waiting` — 실시간 대기 인원, 사용 요청, 취소
+- `Exercising` — 운동 스톱워치 + 휴식 카운트다운 (CircularTimer), 세트 완료·종료
+- `Complete` — 총 운동/휴식 시간 표시
+
+#### 상태 관리 및 공통 컴포넌트
+- `workoutStore` (Zustand) — 세트/휴식 설정값 전달
+- `globalToastStore` — 전역 토스트 (액션 버튼 지원)
+- `CircularTimer` SVG 원형 타이머 컴포넌트
+
+### 버그 수정
+- CodeRabbit 리뷰 반영 (에러 처리, imageUrl 디코딩)
+- CircularTimer CSS 변수 미적용 버그
+- 휴식 자연 종료 시 `addRestMs` 누락
+- 휴식 후 운동 타이머 재시작 안 되는 버그
+- 세트 아이콘 첫 세트부터 체크되도록 수정
+
+---
+
+## Day 4 — 로그인 UI + 안정화
+
+### 완료
+
+#### 로그인
+- 로그인 페이지 구버전 디자인으로 재작업
+- 익명 로그인 추가 (Supabase signInAnonymously)
+- BE auth 미들웨어 익명 유저 처리 추가
+
+#### 기구 목록 버그 수정
+- 기구 목록 API `isBeingUsed` 필드 추가
+- 이용 중 색상 표시 수정
+
+#### Socket.io
+- 개발 환경 CORS wildcard 허용
+- credentials + wildcard 충돌 수정
+
+#### 기타
+- `workout` 페이지 진입 가드 추가
+- 운동 완료 API 실패 처리 개선
+- `quick-start` / `start` 기구 점유 중복 방지 추가
