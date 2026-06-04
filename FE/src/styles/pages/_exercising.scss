@@ -1,0 +1,130 @@
+@use '@styles/variables' as *;
+
+.exercising-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  --c-track: #{$c-primary};
+  --c-progress: #{$c-accent};
+
+  &__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: r(24) $screen-padding;
+    position: relative;
+  }
+
+  &__text-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: r(8);
+    width: 100%;
+    flex: 1;
+  }
+
+  &__name {
+    font-size: r(20);
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  &__timer {
+    font-size: r(80);
+    font-weight: 700;
+    line-height: 1.4;
+    color: $c-primary-light;
+  }
+
+  &__sets {
+    display: flex;
+    align-items: center;
+    gap: r(8);
+  }
+
+  .set-icon {
+    color: $c-gray;
+
+    &--done {
+      color: $c-primary-light;
+    }
+
+    &--rest {
+      color: $c-accent;
+    }
+  }
+
+  .header__stop {
+    color: $c-gray;
+    font-size: r(14);
+    font-weight: 500;
+  }
+
+  .btn-wrap {
+    position: static;
+    transform: none;
+    margin-top: auto;
+    width: 100%;
+  }
+
+  // 휴식 모드
+  &--rest {
+    --c-progress: #{$c-accent};
+
+    .btn--gray {
+      background-color: $c-gray;
+      color: $c-white;
+      width: r(48);
+      flex: none;
+
+      &:disabled {
+        opacity: 0.4;
+      }
+    }
+
+    .btn--white {
+      flex: 1;
+    }
+  }
+}
+
+// 원형 타이머
+.circular-timer {
+  position: relative;
+  display: inline-flex;
+  width: 20rem;
+  height: 20rem;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  &__text-box {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: r(8);
+    text-align: center;
+  }
+
+  &__label {
+    font-size: r(16);
+    font-weight: 700;
+    color: $c-white;
+  }
+
+  &__time {
+    font-size: r(64);
+    font-weight: 700;
+    color: $c-accent;
+    line-height: 1.2;
+  }
+}

@@ -25,5 +25,25 @@
   &--visible {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+  }
+
+  &--with-action {
+    justify-content: space-between;
+    padding: 0 r(16);
+  }
+
+  &__message {
+    flex: 1;
+    text-align: left;
+  }
+
+  &__action {
+    flex-shrink: 0;
+    font-size: r(14);
+    font-weight: 700;
+    color: $c-accent;
+    padding: r(4) r(8);
+    white-space: nowrap;
   }
 }

@@ -100,9 +100,13 @@ export default function EquipmentDetailPage() {
         <button
           type="button"
           className="btn btn--white btn--full"
-          onClick={() => navigate(`/waiting/${equipment.id}`)}
+          onClick={() =>
+            navigate(
+              `/reservation/goal-setting?equipmentId=${equipment.id}&name=${encodeURIComponent(equipment.name)}&imageUrl=${encodeURIComponent(equipment.imageUrl ?? '')}`,
+            )
+          }
         >
-          {currentUsage ? '대기하기' : '이용하기'}
+          {equipment.isBeingUsed || (equipment.waitingCount ?? 0) > 0 ? '대기하기' : '이용하기'}
         </button>
       </div>
     </div>
