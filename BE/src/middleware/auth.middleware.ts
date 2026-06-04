@@ -25,17 +25,14 @@ export async function authMiddleware(req: AuthRequest, res: Response, next: Next
     return
   }
 
-  // 익명 유저는 email 없음 → id 기준으로 조회/생성
-  const email = user.email ?? `anon_${user.id}@waitgym.local`
-  let dbUser = await prisma.user.findFirst({
-    where: { OR: [{ email }, { googleId: user.id }] },
-  })
+  // DB에서 유저 조회 (없으면 생성)
+  let dbUser = await prisma.user.findUnique({ where: { email: user.email! } })
   if (!dbUser) {
     dbUser = await prisma.user.create({
       data: {
-        email,
-        name: user.user_metadata?.full_name ?? '익명 사용자',
-        googleId: user.id,
+        email: user.email!,
+        name: user.user_metadata?.full_name ?? user.email!,
+        googleId: user.user_metadata?.provider_id,
         avatar: user.user_metadata?.avatar_url,
       },
     })
