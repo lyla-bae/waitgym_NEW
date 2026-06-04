@@ -22,7 +22,7 @@ function formatSec(sec: number) {
 export default function ExercisingPage() {
   const navigate = useNavigate()
   const { showToast, ToastComponent } = useToast()
-  const { waitingId, equipmentName, sets, restSeconds, currentSet, completeSet, addRestMs } =
+  const { waitingId, equipmentName, sets, restSeconds, currentSet, totalWorkMs, totalRestMs, completeSet, addRestMs } =
     useWorkoutStore()
 
   // 운동 타이머 (ms)
@@ -34,6 +34,7 @@ export default function ExercisingPage() {
   const [restLeftSec, setRestLeftSec] = useState(0)
   const [restTotalSec, setRestTotalSec] = useState(0)
   const restRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const restStartedAtRef = useRef<number>(0)
 
   // isResting에 따라 운동/휴식 타이머 전환
   useEffect(() => {
@@ -45,7 +46,7 @@ export default function ExercisingPage() {
         setRestLeftSec((prev) => {
           if (prev <= 1) {
             clearInterval(restRef.current!)
-            addRestMs(restTotalSec * 1000)
+            addRestMs(Date.now() - restStartedAtRef.current)
             setIsResting(false)
             setElapsed(0)
             return 0
@@ -70,7 +71,10 @@ export default function ExercisingPage() {
     completeSet(workMs)
     if (!waitingId) return
     try {
-      await waitingApi.complete(waitingId)
+      await waitingApi.complete(waitingId, {
+        actualWorkMs: totalWorkMs + workMs,
+        actualRestMs: totalRestMs,
+      })
       navigate('/workout/complete', { replace: true })
     } catch (e) {
       console.error(e)
@@ -85,7 +89,10 @@ export default function ExercisingPage() {
       if (exerciseRef.current) clearInterval(exerciseRef.current)
       if (!waitingId) return
       try {
-        await waitingApi.complete(waitingId)
+        await waitingApi.complete(waitingId, {
+          actualWorkMs: totalWorkMs + elapsed,
+          actualRestMs: totalRestMs,
+        })
         navigate('/workout/complete', { replace: true })
       } catch (e) {
         console.error(e)
@@ -97,11 +104,12 @@ export default function ExercisingPage() {
     if (exerciseRef.current) clearInterval(exerciseRef.current)
     setRestTotalSec(restSeconds)
     setRestLeftSec(restSeconds)
+    restStartedAtRef.current = Date.now()
     setIsResting(true)
   }
 
   function handleSkipRest() {
-    addRestMs((restTotalSec - restLeftSec) * 1000)
+    addRestMs(Date.now() - restStartedAtRef.current)
     setElapsed(0)
     setIsResting(false)
   }

@@ -47,8 +47,11 @@ export const waitingApi = {
     authFetch<{ myTurn: boolean }>(`/waiting/${id}/request`, { method: 'POST' }),
   start: (id: number) =>
     authFetch<WaitingQueue & { equipment: Equipment }>(`/waiting/${id}/start`, { method: 'PATCH' }),
-  complete: (id: number) =>
-    authFetch<{ message: string }>(`/waiting/${id}/complete`, { method: 'PATCH' }),
+  complete: (id: number, body?: { actualWorkMs?: number; actualRestMs?: number }) =>
+    authFetch<{ message: string }>(`/waiting/${id}/complete`, {
+      method: 'PATCH',
+      body: body ? JSON.stringify(body) : undefined,
+    }),
   quickStart: (body: { equipmentId: number; sets: number; restSeconds: number }) =>
     authFetch<WaitingQueue & { equipment: Equipment }>('/waiting/quick-start', {
       method: 'POST',

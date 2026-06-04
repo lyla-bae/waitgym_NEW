@@ -67,12 +67,12 @@ async function notifyNextUser(equipmentId: number) {
 }
 
 // 운동 완료 처리 (USING → COMPLETED) + 다음 대기자 알림
-async function completeWaiting(id: number, equipmentId: number) {
+async function completeWaiting(id: number, equipmentId: number, actualWorkMs?: number, actualRestMs?: number) {
   clearActiveTimeout(`using:${id}`)
 
   await prisma.waitingQueue.update({
     where: { id },
-    data: { status: 'COMPLETED' },
+    data: { status: 'COMPLETED', ...(actualWorkMs != null && { actualWorkMs }), ...(actualRestMs != null && { actualRestMs }) },
   })
 
   const waitingCount = await prisma.waitingQueue.count({ where: { equipmentId, status: 'WAITING' } })
@@ -334,6 +334,7 @@ router.patch('/:id/complete', authMiddleware, async (req: AuthRequest, res, next
   try {
     const userId = req.userId!
     const id = parseInt(req.params.id as string)
+    const { actualWorkMs, actualRestMs } = req.body as { actualWorkMs?: number; actualRestMs?: number }
 
     const waiting = await prisma.waitingQueue.findUnique({ where: { id } })
     if (!waiting) {
@@ -349,7 +350,7 @@ router.patch('/:id/complete', authMiddleware, async (req: AuthRequest, res, next
       return
     }
 
-    await completeWaiting(id, waiting.equipmentId)
+    await completeWaiting(id, waiting.equipmentId, actualWorkMs, actualRestMs)
 
     res.json({ message: '운동이 완료되었습니다.' })
   } catch (err) {

@@ -87,6 +87,8 @@ model WaitingQueue {
   sets          Int       @default(3)
   restSeconds   Int       @default(60)
   startedAt     DateTime?
+  actualWorkMs  Int?
+  actualRestMs  Int?
   createdAt     DateTime  @default(now())
   notifiedAt    DateTime?
   updatedAt     DateTime  @updatedAt
