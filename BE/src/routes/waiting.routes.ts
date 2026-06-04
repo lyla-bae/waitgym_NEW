@@ -66,18 +66,79 @@ async function notifyNextUser(equipmentId: number) {
   })
 }
 
+function calculateStreak(dates: Date[]): number {
+  if (dates.length === 0) return 0
+  const kstDates = [...new Set(dates.map(d => {
+    const kst = new Date(d.getTime() + 9 * 60 * 60 * 1000)
+    return kst.toISOString().split('T')[0]
+  }))].sort().reverse()
+  const now = new Date()
+  const todayKST = new Date(now.getTime() + 9 * 60 * 60 * 1000).toISOString().split('T')[0]
+  const yesterdayKST = new Date(now.getTime() + 9 * 60 * 60 * 1000 - 86400000).toISOString().split('T')[0]
+  if (kstDates[0] !== todayKST && kstDates[0] !== yesterdayKST) return 0
+  let streak = 1
+  for (let i = 1; i < kstDates.length; i++) {
+    const diff = (new Date(kstDates[i - 1]).getTime() - new Date(kstDates[i]).getTime()) / 86400000
+    if (Math.round(diff) === 1) streak++
+    else break
+  }
+  return streak
+}
+
+async function updateMissionProgress(userId: number): Promise<{ id: number; name: string; rewardPoints: number }[]> {
+  const missions = await prisma.mission.findMany({ where: { isActive: true } })
+  const completedQueues = await prisma.waitingQueue.findMany({
+    where: { userId, status: 'COMPLETED' },
+    select: { sets: true, equipmentId: true, createdAt: true },
+  })
+
+  const totalSets = completedQueues.reduce((sum, q) => sum + q.sets, 0)
+  const distinctEquipments = new Set(completedQueues.map(q => q.equipmentId)).size
+  const streakDays = calculateStreak(completedQueues.map(q => q.createdAt))
+
+  const newlyCompleted: { id: number; name: string; rewardPoints: number }[] = []
+
+  for (const mission of missions) {
+    let progress = 0
+    if (mission.condition === 'TOTAL_SETS') progress = totalSets
+    else if (mission.condition === 'TOTAL_EQUIPMENTS') progress = distinctEquipments
+    else if (mission.condition === 'STREAK_DAYS') progress = streakDays
+
+    const existing = await prisma.userMission.findUnique({
+      where: { userId_missionId: { userId, missionId: mission.id } },
+    })
+    if (existing?.isCompleted) continue
+
+    const isNowCompleted = progress >= mission.conditionValue
+    await prisma.userMission.upsert({
+      where: { userId_missionId: { userId, missionId: mission.id } },
+      update: { progress, isCompleted: isNowCompleted, ...(isNowCompleted && { completedAt: new Date() }) },
+      create: { userId, missionId: mission.id, progress, isCompleted: isNowCompleted, ...(isNowCompleted && { completedAt: new Date() }) },
+    })
+
+    if (isNowCompleted) {
+      await prisma.user.update({ where: { id: userId }, data: { points: { increment: mission.rewardPoints } } })
+      newlyCompleted.push({ id: mission.id, name: mission.name, rewardPoints: mission.rewardPoints })
+    }
+  }
+
+  return newlyCompleted
+}
+
 // 운동 완료 처리 (USING → COMPLETED) + 다음 대기자 알림
 async function completeWaiting(id: number, equipmentId: number, actualWorkMs?: number, actualRestMs?: number) {
   clearActiveTimeout(`using:${id}`)
 
-  await prisma.waitingQueue.update({
+  const { userId } = await prisma.waitingQueue.update({
     where: { id },
     data: { status: 'COMPLETED', ...(actualWorkMs != null && { actualWorkMs }), ...(actualRestMs != null && { actualRestMs }) },
+    select: { userId: true },
   })
 
   const waitingCount = await prisma.waitingQueue.count({ where: { equipmentId, status: 'WAITING' } })
   emitEquipmentUpdate(equipmentId, { equipmentId, waitingCount })
   await notifyNextUser(equipmentId)
+  return updateMissionProgress(userId)
 }
 
 // POST /api/waiting — 대기 등록
@@ -350,9 +411,9 @@ router.patch('/:id/complete', authMiddleware, async (req: AuthRequest, res, next
       return
     }
 
-    await completeWaiting(id, waiting.equipmentId, actualWorkMs, actualRestMs)
+    const completedMissions = await completeWaiting(id, waiting.equipmentId, actualWorkMs, actualRestMs)
 
-    res.json({ message: '운동이 완료되었습니다.' })
+    res.json({ message: '운동이 완료되었습니다.', completedMissions })
   } catch (err) {
     next(err)
   }

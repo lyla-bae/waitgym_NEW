@@ -22,7 +22,7 @@ function formatSec(sec: number) {
 export default function ExercisingPage() {
   const navigate = useNavigate()
   const { showToast, ToastComponent } = useToast()
-  const { waitingId, equipmentName, sets, restSeconds, currentSet, totalWorkMs, totalRestMs, completeSet, addRestMs } =
+  const { waitingId, equipmentName, sets, restSeconds, currentSet, totalWorkMs, totalRestMs, completeSet, addRestMs, setCompletedMissions } =
     useWorkoutStore()
 
   // 운동 타이머 (ms)
@@ -71,10 +71,11 @@ export default function ExercisingPage() {
     completeSet(workMs)
     if (!waitingId) return
     try {
-      await waitingApi.complete(waitingId, {
+      const result = await waitingApi.complete(waitingId, {
         actualWorkMs: totalWorkMs + workMs,
         actualRestMs: totalRestMs,
       })
+      if (result.completedMissions?.length) setCompletedMissions(result.completedMissions)
       navigate('/workout/complete', { replace: true })
     } catch (e) {
       console.error(e)
@@ -89,10 +90,11 @@ export default function ExercisingPage() {
       if (exerciseRef.current) clearInterval(exerciseRef.current)
       if (!waitingId) return
       try {
-        await waitingApi.complete(waitingId, {
+        const result = await waitingApi.complete(waitingId, {
           actualWorkMs: totalWorkMs + elapsed,
           actualRestMs: totalRestMs,
         })
+        if (result.completedMissions?.length) setCompletedMissions(result.completedMissions)
         navigate('/workout/complete', { replace: true })
       } catch (e) {
         console.error(e)

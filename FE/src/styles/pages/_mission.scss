@@ -1,0 +1,288 @@
+@use '@styles/variables' as *;
+
+.mission-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .content-scroll {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: none;
+    padding-bottom: $content-bottom-padding;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__tabs {
+    display: flex;
+    gap: r(16);
+  }
+
+  &__tab {
+    font-size: r(18);
+    font-weight: 600;
+    color: $c-gray;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    &--active {
+      color: $c-white;
+    }
+  }
+
+  &__container {
+    padding: 0 $screen-padding;
+  }
+
+  &__greeting {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: r(24) 0 r(20);
+  }
+
+  &__greeting-msg {
+    font-size: r(18);
+    font-weight: 500;
+    line-height: 1.6;
+    color: $c-white;
+
+    strong {
+      font-weight: 700;
+    }
+  }
+
+  &__greeting-img {
+    width: r(64);
+    height: r(64);
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: r(12);
+  }
+
+  &__count {
+    font-size: r(14);
+    color: $c-gray;
+  }
+
+  &__ranking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__date-range {
+    font-size: r(14);
+    color: $c-gray;
+  }
+
+  &__empty {
+    text-align: center;
+    color: $c-gray;
+    font-size: r(14);
+    padding: r(40) 0;
+  }
+
+  &__loading {
+    text-align: center;
+    color: $c-gray;
+    padding: r(40) 0;
+  }
+}
+
+.mission-list {
+  display: flex;
+  flex-direction: column;
+  gap: r(8);
+
+  &__item {
+    background: $c-card;
+    border-radius: $card-radius;
+    padding: r(16);
+    display: flex;
+    flex-direction: column;
+    gap: r(10);
+
+    &--done {
+      opacity: 0.6;
+    }
+  }
+
+  &__info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__title {
+    font-size: r(15);
+    font-weight: 600;
+    color: $c-white;
+  }
+
+  &__points {
+    font-size: r(14);
+    font-weight: 500;
+    color: $c-accent;
+  }
+
+  &__progress {
+    display: flex;
+    align-items: center;
+    gap: r(8);
+  }
+
+  &__bar {
+    flex: 1;
+
+    &.MuiLinearProgress-root {
+      height: r(6);
+      border-radius: r(3);
+      background-color: $c-primary;
+
+      .MuiLinearProgress-bar {
+        background-color: $c-primary-light;
+        border-radius: r(3);
+      }
+    }
+  }
+
+  &__fraction {
+    font-size: r(13);
+    color: $c-gray;
+    white-space: nowrap;
+    min-width: r(36);
+    text-align: right;
+  }
+}
+
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: r(8);
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: r(12);
+    background: $c-card;
+    border-radius: $card-radius;
+    padding: r(12) r(16);
+
+    &--me {
+      .ranking-list__rank,
+      .ranking-list__name {
+        color: $c-accent;
+      }
+    }
+  }
+
+  &__rank {
+    font-size: r(16);
+    font-weight: 700;
+    color: $c-gray;
+    min-width: r(20);
+    text-align: center;
+  }
+
+  &__user {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: r(10);
+  }
+
+  &__avatar {
+    width: r(36);
+    height: r(36);
+    border-radius: 50%;
+    overflow: hidden;
+    background: $c-primary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__avatar-placeholder {
+    font-size: r(16);
+    font-weight: 600;
+    color: $c-white;
+  }
+
+  &__name {
+    font-size: r(15);
+    font-weight: 500;
+    color: $c-white;
+  }
+
+  &__points {
+    font-size: r(15);
+    font-weight: 600;
+    color: $c-primary-light;
+  }
+}
+
+.mission-drawer {
+  background: $c-modal;
+  padding: r(24) $screen-padding r(40);
+  display: flex;
+  flex-direction: column;
+  gap: r(20);
+  border-radius: r(20) r(20) 0 0;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: r(8);
+    color: $c-accent;
+
+    h2 {
+      font-size: r(20);
+      font-weight: 700;
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: r(8);
+  }
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: $c-card;
+    border-radius: $card-radius;
+    padding: r(12) r(16);
+  }
+
+  &__name {
+    font-size: r(15);
+    font-weight: 500;
+    color: $c-white;
+  }
+
+  &__points {
+    font-size: r(15);
+    font-weight: 700;
+    color: $c-accent;
+  }
+}
