@@ -81,6 +81,7 @@ function MissionTab({ userName }: { userName: string }) {
                   <span className="mission-list__title">{m.name}</span>
                   <span className="mission-list__points">{m.rewardPoints}pt</span>
                 </div>
+                <span className="mission-list__desc">{m.description}</span>
                 <div className="mission-list__progress">
                   <LinearProgress
                     variant="determinate"

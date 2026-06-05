@@ -130,6 +130,12 @@
     color: $c-white;
   }
 
+  &__desc {
+    font-size: r(13);
+    color: $c-gray;
+    line-height: 1.4;
+  }
+
   &__points {
     font-size: r(14);
     font-weight: 500;
