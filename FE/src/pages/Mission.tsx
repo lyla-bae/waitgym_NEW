@@ -79,7 +79,7 @@ function MissionTab({ userName }: { userName: string }) {
               <li key={m.id} className={`mission-list__item${m.isCompleted ? ' mission-list__item--done' : ''}`}>
                 <div className="mission-list__info">
                   <span className="mission-list__title">{m.name}</span>
-                  <span className="mission-list__points">{m.rewardPoints}pt</span>
+                  <span className="mission-list__points">{m.rewardPoints}점</span>
                 </div>
                 <span className="mission-list__desc">{m.description}</span>
                 <div className="mission-list__progress">
@@ -160,7 +160,7 @@ function RankingTab({ myId }: { myId?: number }) {
                     </div>
                     <span className="ranking-list__name">{rankUser.name}</span>
                   </div>
-                  <span className="ranking-list__points">{rankUser.points.toLocaleString()}pt</span>
+                  <span className="ranking-list__points">{rankUser.points.toLocaleString()}점</span>
                 </li>
               ))}
             </ul>
