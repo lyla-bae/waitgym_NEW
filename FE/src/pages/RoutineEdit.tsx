@@ -1,7 +1,6 @@
 import { useState, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ChevronLeft, CirclePlus, GripVertical, Minus, Plus, Trash2 } from 'lucide-react'
-import Drawer from '@mui/material/Drawer'
 import {
   DndContext,
   closestCenter,
@@ -22,6 +21,7 @@ import {
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { CSS } from '@dnd-kit/utilities'
 import Header from '@/components/Header'
+import ConfirmDrawer from '@/components/ConfirmDrawer'
 import { routineApi } from '@/lib/api'
 import { useRoutineStore, type RoutineExerciseItem } from '@/stores/routineStore'
 
@@ -34,45 +34,15 @@ function formatSeconds(s: number) {
   return `${sec}초`
 }
 
-function ConfirmDrawer({
-  open,
-  onClose,
-  onConfirm,
-  children,
-}: {
-  open: boolean
-  onClose: () => void
-  onConfirm: () => void
-  children: React.ReactNode
-}) {
-  return (
-    <Drawer
-      anchor="bottom"
-      open={open}
-      onClose={onClose}
-      slotProps={{ paper: { style: { background: 'transparent' } } }}
-    >
-      <div className="routine-confirm-drawer">
-        {children}
-        <div className="routine-confirm-drawer__btns">
-          <button type="button" className="btn btn--primary" onClick={onClose}>취소</button>
-          <button type="button" className="btn btn--white" onClick={onConfirm}>확인</button>
-        </div>
-      </div>
-    </Drawer>
-  )
-}
-
 function SortableExerciseItem({
   item,
   onUpdate,
-  onRemove,
+  onRemoveRequest,
 }: {
   item: RoutineExerciseItem
   onUpdate: (id: number, field: 'targetSets' | 'restSeconds', delta: number) => void
-  onRemove: (id: number) => void
+  onRemoveRequest: (id: number) => void
 }) {
-  const [showRemoveDrawer, setShowRemoveDrawer] = useState(false)
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: item.equipmentId,
   })
@@ -84,7 +54,6 @@ function SortableExerciseItem({
   }
 
   return (
-    <>
     <li ref={setNodeRef} style={style} className="routine-edit__box">
       <div className="routine-edit__equipment">
         <div className="routine-edit__equip-info">
@@ -99,7 +68,7 @@ function SortableExerciseItem({
           <button
             type="button"
             className="routine-edit__remove-btn"
-            onClick={() => setShowRemoveDrawer(true)}
+            onClick={() => onRemoveRequest(item.equipmentId)}
             aria-label={`${item.equipment.name} 삭제`}
           >
             <Trash2 size={16} strokeWidth={1.5} />
@@ -144,17 +113,6 @@ function SortableExerciseItem({
         </div>
       </div>
     </li>
-    <ConfirmDrawer
-      open={showRemoveDrawer}
-      onClose={() => setShowRemoveDrawer(false)}
-      onConfirm={() => { onRemove(item.equipmentId); setShowRemoveDrawer(false) }}
-    >
-      <p className="routine-confirm-drawer__title">
-        정말 운동을<br />
-        <strong className="routine-confirm-drawer__accent">삭제</strong>하시겠어요?
-      </p>
-    </ConfirmDrawer>
-    </>
   )
 }
 
@@ -165,10 +123,10 @@ export default function RoutineEditPage() {
   const [isSaving, setIsSaving] = useState(false)
   const [showDeleteDrawer, setShowDeleteDrawer] = useState(false)
   const [showBackDrawer, setShowBackDrawer] = useState(false)
+  const [removeTargetId, setRemoveTargetId] = useState<number | null>(null)
 
   const { name, exercises, setName, setExercises, removeExercise, updateExercise } = useRoutineStore()
 
-  // 초기 상태 저장 (변경감지용)
   const initialState = useRef({ name, exercises: JSON.stringify(exercises) })
 
   function hasChanges() {
@@ -295,7 +253,7 @@ export default function RoutineEditPage() {
                       key={item.equipmentId}
                       item={item}
                       onUpdate={updateExercise}
-                      onRemove={removeExercise}
+                      onRemoveRequest={setRemoveTargetId}
                     />
                   ))}
                 </ul>
@@ -334,6 +292,17 @@ export default function RoutineEditPage() {
       >
         <p className="routine-confirm-drawer__title">
           이 루틴을<br />
+          <strong className="routine-confirm-drawer__accent">삭제</strong>하시겠어요?
+        </p>
+      </ConfirmDrawer>
+
+      <ConfirmDrawer
+        open={removeTargetId !== null}
+        onClose={() => setRemoveTargetId(null)}
+        onConfirm={() => { removeExercise(removeTargetId!); setRemoveTargetId(null) }}
+      >
+        <p className="routine-confirm-drawer__title">
+          정말 운동을<br />
           <strong className="routine-confirm-drawer__accent">삭제</strong>하시겠어요?
         </p>
       </ConfirmDrawer>
