@@ -8,7 +8,8 @@ import AuthCallbackPage from '@/pages/AuthCallback'
 import EquipmentDetailPage from '@/pages/EquipmentDetail'
 import WaitingPage from '@/pages/Waiting'
 import MissionPage from '@/pages/Mission'
-import RoutinePage from '@/pages/Routine'
+import RoutineEditPage from '@/pages/RoutineEdit'
+import RoutineSelectEquipmentPage from '@/pages/RoutineSelectEquipment'
 import MyPage from '@/pages/MyPage'
 import NotificationPage from '@/pages/Notification'
 import SelectEquipmentPage from '@/pages/SelectEquipment'
@@ -49,7 +50,9 @@ const router = createBrowserRouter([
           { path: '/equipment/:id', element: <EquipmentDetailPage /> },
           { path: '/waiting/:id', element: <WaitingPage /> },
           { path: '/mission', element: <MissionPage /> },
-          { path: '/routine', element: <RoutinePage /> },
+          { path: '/routine/new', element: <RoutineEditPage /> },
+          { path: '/routine/:id/edit', element: <RoutineEditPage /> },
+          { path: '/routine/select-equipment', element: <RoutineSelectEquipmentPage /> },
           { path: '/mypage', element: <MyPage /> },
           { path: '/notifications', element: <NotificationPage /> },
           { path: '/reservation/select-equipment', element: <SelectEquipmentPage /> },

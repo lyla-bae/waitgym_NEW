@@ -57,4 +57,9 @@
     color: $c-primary;
     margin-top: r(8);
   }
+
+  &__routine-edit {
+    font-size: r(15);
+    color: $c-gray;
+  }
 }

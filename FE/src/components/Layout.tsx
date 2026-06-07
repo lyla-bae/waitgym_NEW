@@ -10,7 +10,7 @@ const navItems = [
   { to: '/mypage', icon: CircleUserRound, label: '마이' },
 ]
 
-const NO_NAV_PATHS = ['/waiting', '/reservation', '/workout']
+const NO_NAV_PATHS = ['/waiting', '/reservation', '/workout', '/routine/']
 
 export default function Layout() {
   const location = useLocation()

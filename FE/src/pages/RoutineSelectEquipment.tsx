@@ -1,24 +1,25 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, Search, Star } from 'lucide-react'
 import { equipmentApi } from '@/lib/api'
 import Header from '@/components/Header'
 import EquipmentCard from '@/components/EquipmentCard'
+import { useRoutineStore } from '@/stores/routineStore'
 import type { Equipment } from '@/types'
 
 const CATEGORIES = ['전체', '즐겨찾기', '가슴', '등', '다리', '어깨', '팔', '유산소'] as const
 
-export default function SelectEquipmentPage() {
+export default function RoutineSelectEquipmentPage() {
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
-  const routineId = searchParams.get('routineId')
-  const routineName = searchParams.get('routineName')
-  const isRoutineMode = !!routineId
+  const { exercises, addExercises } = useRoutineStore()
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState<string>('전체')
   const [equipments, setEquipments] = useState<Equipment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [selected, setSelected] = useState<Equipment[]>([])
+
+  const alreadyAdded = new Set(exercises.map((e) => e.equipmentId))
 
   const fetchEquipments = useCallback(async () => {
     setLoading(true)
@@ -54,6 +55,18 @@ export default function SelectEquipmentPage() {
     }
   }
 
+  function toggleSelect(eq: Equipment) {
+    if (alreadyAdded.has(eq.id)) return
+    setSelected((prev) =>
+      prev.some((e) => e.id === eq.id) ? prev.filter((e) => e.id !== eq.id) : [...prev, eq],
+    )
+  }
+
+  function handleAdd() {
+    addExercises(selected)
+    navigate(-1)
+  }
+
   return (
     <div className="select-equipment-page">
       <Header
@@ -63,18 +76,7 @@ export default function SelectEquipmentPage() {
             <ChevronLeft size={24} />
           </button>
         }
-        title={isRoutineMode ? (routineName ?? '루틴') : '기구 선택'}
-        rightContent={
-          isRoutineMode ? (
-            <button
-              type="button"
-              className="select-equipment-page__routine-edit"
-              onClick={() => navigate(`/routine/${routineId}/edit`)}
-            >
-              수정
-            </button>
-          ) : null
-        }
+        title="기구 선택"
       />
 
       <div className="select-equipment-page__search">
@@ -127,22 +129,31 @@ export default function SelectEquipmentPage() {
           <p className="select-equipment-page__empty">기구를 찾을 수 없어요</p>
         ) : (
           <ul className="select-equipment-page__equipment-list">
-            {equipments.map((equipment) => (
-              <li key={equipment.id}>
-                <EquipmentCard
-                  equipment={equipment}
-                  onFavoriteToggle={handleFavoriteToggle}
-                  onClick={() =>
-                    navigate(
-                      `/reservation/goal-setting?equipmentId=${equipment.id}&name=${encodeURIComponent(equipment.name)}&imageUrl=${encodeURIComponent(equipment.imageUrl ?? '')}`,
-                    )
-                  }
-                />
-              </li>
-            ))}
+            {equipments.map((equipment) => {
+              const isAdded = alreadyAdded.has(equipment.id)
+              const isSelected = selected.some((e) => e.id === equipment.id)
+              return (
+                <li key={equipment.id} className={`routine-equip-select__item${isSelected ? ' routine-equip-select__item--selected' : ''}${isAdded ? ' routine-equip-select__item--added' : ''}`}>
+                  <EquipmentCard
+                    equipment={equipment}
+                    onFavoriteToggle={handleFavoriteToggle}
+                    onClick={() => toggleSelect(equipment)}
+                  />
+                  {isAdded && <span className="routine-equip-select__badge">추가됨</span>}
+                </li>
+              )
+            })}
           </ul>
         )}
       </section>
+
+      {selected.length > 0 && (
+        <div className="btn-wrap">
+          <button type="button" className="btn btn--white btn--full" onClick={handleAdd}>
+            {selected.length}개 추가
+          </button>
+        </div>
+      )}
     </div>
   )
 }
