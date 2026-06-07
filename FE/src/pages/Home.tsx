@@ -5,6 +5,7 @@ import Header from '@/components/Header'
 import { useAuthStore } from '@/stores/authStore'
 import { useRoutineStore } from '@/stores/routineStore'
 import { routineApi } from '@/lib/api'
+import { useGlobalToastStore } from '@/stores/globalToastStore'
 import logo from '@/assets/images/logo.svg'
 import type { WorkoutRoutine, RoutineExercise } from '@/types'
 
@@ -18,11 +19,12 @@ export default function HomePage() {
 
   const [routines, setRoutines] = useState<RoutineWithMeta[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const toast = useGlobalToastStore((s) => s.show)
 
   useEffect(() => {
     routineApi.list()
       .then((data) => setRoutines(data as RoutineWithMeta[]))
-      .catch(console.error)
+      .catch(() => toast({ message: '루틴 목록을 불러오지 못했습니다.' }))
       .finally(() => setIsLoading(false))
   }, [])
 

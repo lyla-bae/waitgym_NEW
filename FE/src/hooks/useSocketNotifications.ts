@@ -23,11 +23,12 @@ export function useSocketNotifications() {
 
   useEffect(() => {
     if (!user?.id) return
+    const userId = user.id
 
     // connect 이벤트 시마다 재입장 (재연결 시에도 room 유지)
     function handleConnect() {
-      socket.emit('join:user', user!.id)
-      console.log('[socket] join:user', user!.id)
+      socket.emit('join:user', userId)
+      console.log('[socket] join:user', userId)
     }
 
     socket.on('connect', handleConnect)
@@ -55,6 +56,7 @@ export function useSocketNotifications() {
     socket.on('notification:new', handleNotification)
 
     return () => {
+      socket.emit('leave:user', userId)
       socket.off('connect', handleConnect)
       socket.off('notification:new', handleNotification)
     }

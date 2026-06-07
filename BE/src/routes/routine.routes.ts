@@ -42,6 +42,7 @@ router.get('/', authMiddleware, async (req: AuthRequest, res) => {
 // GET /api/routines/:id
 router.get('/:id', authMiddleware, async (req: AuthRequest, res) => {
   const id = parseInt(req.params.id as string)
+  if (isNaN(id)) { res.status(400).json({ message: '유효하지 않은 ID입니다.' }); return }
   const userId = req.userId!
 
   const routine = await prisma.workoutRoutine.findFirst({
@@ -74,8 +75,17 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
     res.status(400).json({ message: '루틴 이름을 입력해주세요.' })
     return
   }
-  if (!exercises?.length) {
+  if (!Array.isArray(exercises) || !exercises.length) {
     res.status(400).json({ message: '운동을 추가해주세요.' })
+    return
+  }
+  const invalidExercise = exercises.find(
+    (e) => !Number.isInteger(e.equipmentId) ||
+      e.targetSets < 1 || e.targetSets > 8 ||
+      e.restSeconds < 0 || e.restSeconds > 300,
+  )
+  if (invalidExercise) {
+    res.status(400).json({ message: '운동 항목 값이 유효하지 않습니다.' })
     return
   }
 
@@ -103,10 +113,20 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
 // PUT /api/routines/:id
 router.put('/:id', authMiddleware, async (req: AuthRequest, res) => {
   const id = parseInt(req.params.id as string)
+  if (isNaN(id)) { res.status(400).json({ message: '유효하지 않은 ID입니다.' }); return }
   const userId = req.userId!
   const { name, exercises } = req.body as {
     name: string
     exercises: { equipmentId: number; targetSets: number; restSeconds: number }[]
+  }
+
+  if (!name?.trim()) {
+    res.status(400).json({ message: '루틴 이름을 입력해주세요.' })
+    return
+  }
+  if (!Array.isArray(exercises) || !exercises.length) {
+    res.status(400).json({ message: '운동을 추가해주세요.' })
+    return
   }
 
   const existing = await prisma.workoutRoutine.findFirst({ where: { id, userId } })

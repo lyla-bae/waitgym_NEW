@@ -37,6 +37,10 @@ export function initSocket(server: HttpServer) {
       console.log(`[Socket] ${socket.id} joined user:${userId}`)
     })
 
+    socket.on('leave:user', (userId: number) => {
+      socket.leave(`user:${userId}`)
+    })
+
     socket.on('disconnect', () => {
       console.log(`[Socket] disconnected: ${socket.id}`)
     })

@@ -14,7 +14,8 @@ export default function SelectEquipmentPage() {
   const [searchParams] = useSearchParams()
   const routineId = searchParams.get('routineId')
   const routineName = searchParams.get('routineName')
-  const isRoutineMode = !!routineId
+  const parsedRoutineId = routineId ? parseInt(routineId) : null
+  const isRoutineMode = !!parsedRoutineId && !isNaN(parsedRoutineId)
 
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState<string>('전체')
@@ -29,7 +30,7 @@ export default function SelectEquipmentPage() {
     setError(null)
     try {
       const [routine, allEquipments] = await Promise.all([
-        routineApi.detail(parseInt(routineId!)),
+        routineApi.detail(parsedRoutineId!),
         equipmentApi.list(),
       ])
       const equipmentMap = new Map(allEquipments.map((eq) => [eq.id, eq]))
@@ -42,7 +43,7 @@ export default function SelectEquipmentPage() {
     } finally {
       setLoading(false)
     }
-  }, [routineId])
+  }, [parsedRoutineId])
 
   // 일반모드: 전체 기구 목록
   const fetchEquipments = useCallback(async () => {
@@ -102,7 +103,7 @@ export default function SelectEquipmentPage() {
             <button
               type="button"
               className="select-equipment-page__routine-edit"
-              onClick={() => navigate(`/routine/${routineId}/edit`)}
+              onClick={() => navigate(`/routine/${parsedRoutineId}/edit`)}
             >
               수정
             </button>

@@ -14,7 +14,7 @@ export default function RoutinePage() {
 
   useEffect(() => {
     routineApi.list()
-      .then((data) => setRoutines(data as any))
+      .then((data) => setRoutines(data as typeof routines))
       .catch(console.error)
       .finally(() => setIsLoading(false))
   }, [])
@@ -27,12 +27,14 @@ export default function RoutinePage() {
   function handleEdit(routine: WorkoutRoutine & { exerciseCount: number; estimatedMinutes: number }) {
     setName(routine.name)
     setExercises(
-      (routine.exercises as RoutineExercise[]).map((e) => ({
-        equipmentId: e.equipmentId,
-        equipment: e.equipment!,
-        targetSets: e.targetSets,
-        restSeconds: e.restSeconds,
-      })),
+      (routine.exercises as RoutineExercise[])
+        .filter((e) => !!e.equipment)
+        .map((e) => ({
+          equipmentId: e.equipmentId,
+          equipment: e.equipment!,
+          targetSets: e.targetSets,
+          restSeconds: e.restSeconds,
+        })),
     )
     navigate(`/routine/${routine.id}/edit`)
   }

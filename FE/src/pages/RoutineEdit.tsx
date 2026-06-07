@@ -155,6 +155,7 @@ export default function RoutineEditPage() {
     if (!over || active.id === over.id) return
     const oldIndex = exercises.findIndex((e) => e.equipmentId === active.id)
     const newIndex = exercises.findIndex((e) => e.equipmentId === over.id)
+    if (oldIndex === -1 || newIndex === -1) return
     setExercises(arrayMove(exercises, oldIndex, newIndex))
   }
 

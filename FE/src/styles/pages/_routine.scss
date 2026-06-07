@@ -305,7 +305,7 @@
     position: relative;
 
     &--selected .equipment-card {
-      outline: 2px solid $c-primary-light;
+      outline: r(2) solid $c-primary-light;
       border-radius: $card-radius;
     }
 

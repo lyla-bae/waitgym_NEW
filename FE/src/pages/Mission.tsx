@@ -93,7 +93,7 @@ function MissionTab({ userName }: { userName: string }) {
                 <div className="mission-list__progress">
                   <LinearProgress
                     variant="determinate"
-                    value={Math.min((m.progress / m.conditionValue) * 100, 100)}
+                    value={m.conditionValue > 0 ? Math.min((m.progress / m.conditionValue) * 100, 100) : 0}
                     className="mission-list__bar"
                   />
                   <span className="mission-list__fraction">

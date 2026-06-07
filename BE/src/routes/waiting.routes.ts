@@ -89,12 +89,12 @@ async function updateMissionProgress(userId: number): Promise<{ id: number; name
   const missions = await prisma.mission.findMany({ where: { isActive: true } })
   const completedQueues = await prisma.waitingQueue.findMany({
     where: { userId, status: 'COMPLETED' },
-    select: { sets: true, equipmentId: true, createdAt: true },
+    select: { sets: true, equipmentId: true, updatedAt: true },
   })
 
   const totalSets = completedQueues.reduce((sum, q) => sum + q.sets, 0)
   const distinctEquipments = new Set(completedQueues.map(q => q.equipmentId)).size
-  const streakDays = calculateStreak(completedQueues.map(q => q.createdAt))
+  const streakDays = calculateStreak(completedQueues.map(q => q.updatedAt))
 
   const newlyCompleted: { id: number; name: string; rewardPoints: number }[] = []
 

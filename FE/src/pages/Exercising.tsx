@@ -75,7 +75,7 @@ export default function ExercisingPage() {
         actualWorkMs: totalWorkMs + workMs,
         actualRestMs: totalRestMs,
       })
-      if (result.completedMissions?.length) setCompletedMissions(result.completedMissions)
+      setCompletedMissions(result.completedMissions ?? [])
       navigate('/workout/complete', { replace: true })
     } catch (e) {
       console.error(e)
@@ -94,7 +94,7 @@ export default function ExercisingPage() {
           actualWorkMs: totalWorkMs + elapsed,
           actualRestMs: totalRestMs,
         })
-        if (result.completedMissions?.length) setCompletedMissions(result.completedMissions)
+        setCompletedMissions(result.completedMissions ?? [])
         navigate('/workout/complete', { replace: true })
       } catch (e) {
         console.error(e)
