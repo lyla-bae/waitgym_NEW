@@ -34,12 +34,14 @@ export default function HomePage() {
   function handleEdit(routine: RoutineWithMeta) {
     setName(routine.name)
     setExercises(
-      (routine.exercises as RoutineExercise[]).map((e) => ({
-        equipmentId: e.equipmentId,
-        equipment: e.equipment!,
-        targetSets: e.targetSets,
-        restSeconds: e.restSeconds,
-      })),
+      (routine.exercises as RoutineExercise[])
+        .filter((e) => !!e.equipment)
+        .map((e) => ({
+          equipmentId: e.equipmentId,
+          equipment: e.equipment!,
+          targetSets: e.targetSets,
+          restSeconds: e.restSeconds,
+        })),
     )
     navigate(`/routine/${routine.id}/edit`)
   }

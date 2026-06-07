@@ -24,6 +24,7 @@ import Header from '@/components/Header'
 import ConfirmDrawer from '@/components/ConfirmDrawer'
 import { routineApi } from '@/lib/api'
 import { useRoutineStore, type RoutineExerciseItem } from '@/stores/routineStore'
+import { useGlobalToastStore } from '@/stores/globalToastStore'
 
 function formatSeconds(s: number) {
   if (s === 0) return '없음'
@@ -126,6 +127,7 @@ export default function RoutineEditPage() {
   const [removeTargetId, setRemoveTargetId] = useState<number | null>(null)
 
   const { name, exercises, setName, setExercises, removeExercise, updateExercise } = useRoutineStore()
+  const toast = useGlobalToastStore((s) => s.show)
 
   const initialState = useRef({ name, exercises: JSON.stringify(exercises) })
 
@@ -176,6 +178,7 @@ export default function RoutineEditPage() {
       navigate('/', { replace: true })
     } catch (e) {
       console.error(e)
+      toast({ message: '저장에 실패했습니다. 다시 시도해주세요.' })
     } finally {
       setIsSaving(false)
     }
@@ -188,6 +191,7 @@ export default function RoutineEditPage() {
       navigate('/', { replace: true })
     } catch (e) {
       console.error(e)
+      toast({ message: '삭제에 실패했습니다. 다시 시도해주세요.' })
     }
   }
 

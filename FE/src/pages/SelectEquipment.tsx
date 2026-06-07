@@ -4,6 +4,7 @@ import { ChevronLeft, Search, Star } from 'lucide-react'
 import { equipmentApi, routineApi } from '@/lib/api'
 import Header from '@/components/Header'
 import EquipmentCard from '@/components/EquipmentCard'
+import { useGlobalToastStore } from '@/stores/globalToastStore'
 import type { Equipment } from '@/types'
 
 const CATEGORIES = ['전체', '즐겨찾기', '가슴', '등', '다리', '어깨', '팔', '유산소'] as const
@@ -20,6 +21,7 @@ export default function SelectEquipmentPage() {
   const [equipments, setEquipments] = useState<Equipment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const toast = useGlobalToastStore((s) => s.show)
 
   // 루틴모드: 루틴의 기구 목록만 표시
   const fetchRoutineEquipments = useCallback(async () => {
@@ -81,6 +83,7 @@ export default function SelectEquipmentPage() {
       }
     } catch (e) {
       console.error(e)
+      toast({ message: '즐겨찾기 변경에 실패했습니다.' })
     }
   }
 

@@ -115,24 +115,25 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res) => {
     return
   }
 
-  await prisma.routineExercise.deleteMany({ where: { routineId: id } })
-
-  const routine = await prisma.workoutRoutine.update({
-    where: { id },
-    data: {
-      name: name.trim(),
-      exercises: {
-        create: exercises.map((e, i) => ({
-          equipmentId: e.equipmentId,
-          order: i + 1,
-          targetSets: e.targetSets,
-          restSeconds: e.restSeconds,
-        })),
+  const routine = await prisma.$transaction(async (tx) => {
+    await tx.routineExercise.deleteMany({ where: { routineId: id } })
+    return tx.workoutRoutine.update({
+      where: { id },
+      data: {
+        name: name.trim(),
+        exercises: {
+          create: exercises.map((e, i) => ({
+            equipmentId: e.equipmentId,
+            order: i + 1,
+            targetSets: e.targetSets,
+            restSeconds: e.restSeconds,
+          })),
+        },
       },
-    },
-    include: {
-      exercises: { include: { equipment: true }, orderBy: { order: 'asc' } },
-    },
+      include: {
+        exercises: { include: { equipment: true }, orderBy: { order: 'asc' } },
+      },
+    })
   })
 
   res.json(routine)
