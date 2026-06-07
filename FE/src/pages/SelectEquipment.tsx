@@ -26,12 +26,13 @@ export default function SelectEquipmentPage() {
     setLoading(true)
     setError(null)
     try {
-      const routine = await routineApi.detail(parseInt(routineId!))
-      const ids = new Set(routine.exercises.map((e) => e.equipmentId))
-      const allEquipments = await equipmentApi.list()
-      // 루틴 운동 순서대로 정렬
+      const [routine, allEquipments] = await Promise.all([
+        routineApi.detail(parseInt(routineId!)),
+        equipmentApi.list(),
+      ])
+      const equipmentMap = new Map(allEquipments.map((eq) => [eq.id, eq]))
       const ordered = routine.exercises
-        .map((ex) => allEquipments.find((eq) => eq.id === ex.equipmentId))
+        .map((ex) => equipmentMap.get(ex.equipmentId))
         .filter((eq): eq is Equipment => !!eq)
       setEquipments(ordered)
     } catch (e) {
