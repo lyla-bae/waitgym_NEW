@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ChevronLeft, UsersRound } from 'lucide-react'
 import Header from '@/components/Header'
-import { useToast } from '@/components/ui/Toast'
 import { waitingApi } from '@/lib/api'
+import { useGlobalToastStore } from '@/stores/globalToastStore'
 import { socket } from '@/lib/socket'
 import type { WaitingQueue, Equipment } from '@/types'
 
@@ -22,7 +22,7 @@ export default function WaitingPage() {
   const [waiting, setWaiting] = useState<(WaitingQueue & { waitingCount: number; equipment: Equipment }) | null>(null)
   const [waitingCount, setWaitingCount] = useState(0)
   const [cancelling, setCancelling] = useState(false)
-  const { showToast, ToastComponent } = useToast()
+  const toast = useGlobalToastStore((s) => s.show)
 
   const [requestCount, setRequestCount] = useState(0)
   const [lastRequestAt, setLastRequestAt] = useState<number | null>(null)
@@ -73,7 +73,7 @@ export default function WaitingPage() {
       navigate('/reservation/select-equipment', { replace: true })
     } catch (e) {
       console.error(e)
-      showToast('취소에 실패했습니다.')
+      toast({ message: '취소에 실패했습니다.' })
     } finally {
       setCancelling(false)
     }
@@ -83,15 +83,15 @@ export default function WaitingPage() {
     try {
       const result = await waitingApi.request(Number(id))
       if (result.myTurn) {
-        showToast('지금 바로 사용할 수 있어요! 내 차례입니다.', { duration: 4000 })
+        toast({ message: '지금 바로 사용할 수 있어요! 내 차례입니다.', duration: 4000 })
       } else {
-        showToast('사용 요청이 완료되었습니다!')
+        toast({ message: '사용 요청이 완료되었습니다!' })
         setRequestCount((v) => v + 1)
         setLastRequestAt(Date.now())
       }
     } catch (e) {
       console.error(e)
-      showToast('사용 요청 전송에 실패했습니다.')
+      toast({ message: '사용 요청 전송에 실패했습니다.' })
     }
   }
 
@@ -106,7 +106,7 @@ export default function WaitingPage() {
     <div className="waiting-page">
       <Header
         leftContent={
-          <button type="button" className="header__back" onClick={() => navigate(-1)} aria-label="뒤로가기">
+          <button type="button" className="header__back" onClick={() => navigate('/reservation/select-equipment', { replace: true })} aria-label="뒤로가기">
             <ChevronLeft size={24} />
           </button>
         }
@@ -140,7 +140,6 @@ export default function WaitingPage() {
         </button>
       </div>
 
-      <ToastComponent />
     </div>
   )
 }

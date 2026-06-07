@@ -6,8 +6,15 @@ let io: SocketServer
 export function initSocket(server: HttpServer) {
   io = new SocketServer(server, {
     cors: {
-      origin: process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : '*',
-      credentials: process.env.NODE_ENV === 'production',
+      origin: (origin, callback) => {
+        const isDev = process.env.NODE_ENV !== 'production'
+        if (!origin || (isDev && /^http:\/\/localhost(:\d+)?$/.test(origin)) || origin === process.env.CLIENT_URL) {
+          callback(null, true)
+        } else {
+          callback(new Error('Not allowed by CORS'))
+        }
+      },
+      credentials: true,
     },
   })
 
@@ -28,6 +35,10 @@ export function initSocket(server: HttpServer) {
     socket.on('join:user', (userId: number) => {
       socket.join(`user:${userId}`)
       console.log(`[Socket] ${socket.id} joined user:${userId}`)
+    })
+
+    socket.on('leave:user', (userId: number) => {
+      socket.leave(`user:${userId}`)
     })
 
     socket.on('disconnect', () => {

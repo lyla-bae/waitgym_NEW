@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { CircleCheck, Circle, Plus, Minus } from 'lucide-react'
 import Header from '@/components/Header'
 import CircularTimer from '@/components/CircularTimer'
-import { useToast } from '@/components/ui/Toast'
 import { waitingApi } from '@/lib/api'
+import { useGlobalToastStore } from '@/stores/globalToastStore'
 import { useWorkoutStore } from '@/stores/workoutStore'
 
 function formatMs(ms: number) {
@@ -21,8 +21,8 @@ function formatSec(sec: number) {
 
 export default function ExercisingPage() {
   const navigate = useNavigate()
-  const { showToast, ToastComponent } = useToast()
-  const { waitingId, equipmentName, sets, restSeconds, currentSet, totalWorkMs, totalRestMs, completeSet, addRestMs } =
+  const toast = useGlobalToastStore((s) => s.show)
+  const { waitingId, equipmentName, sets, restSeconds, currentSet, totalWorkMs, totalRestMs, completeSet, addRestMs, setCompletedMissions } =
     useWorkoutStore()
 
   // 운동 타이머 (ms)
@@ -71,14 +71,15 @@ export default function ExercisingPage() {
     completeSet(workMs)
     if (!waitingId) return
     try {
-      await waitingApi.complete(waitingId, {
+      const result = await waitingApi.complete(waitingId, {
         actualWorkMs: totalWorkMs + workMs,
         actualRestMs: totalRestMs,
       })
+      setCompletedMissions(result.completedMissions ?? [])
       navigate('/workout/complete', { replace: true })
     } catch (e) {
       console.error(e)
-      showToast('완료 처리에 실패했습니다. 다시 시도해주세요.')
+      toast({ message: '완료 처리에 실패했습니다. 다시 시도해주세요.' })
       exerciseRef.current = setInterval(() => setElapsed((prev) => prev + 10), 10)
     }
   }
@@ -89,14 +90,15 @@ export default function ExercisingPage() {
       if (exerciseRef.current) clearInterval(exerciseRef.current)
       if (!waitingId) return
       try {
-        await waitingApi.complete(waitingId, {
+        const result = await waitingApi.complete(waitingId, {
           actualWorkMs: totalWorkMs + elapsed,
           actualRestMs: totalRestMs,
         })
+        setCompletedMissions(result.completedMissions ?? [])
         navigate('/workout/complete', { replace: true })
       } catch (e) {
         console.error(e)
-        showToast('완료 처리에 실패했습니다. 다시 시도해주세요.')
+        toast({ message: '완료 처리에 실패했습니다. 다시 시도해주세요.' })
         exerciseRef.current = setInterval(() => setElapsed((prev) => prev + 10), 10)
       }
       return
@@ -211,7 +213,6 @@ export default function ExercisingPage() {
       <p className="visually-hidden" aria-live="polite">
         {sets}개 중 {currentSet}세트 완료
       </p>
-      <ToastComponent />
     </div>
   )
 }

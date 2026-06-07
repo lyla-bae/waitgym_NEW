@@ -50,14 +50,14 @@
     width: r(40);
     height: r(40);
     border-radius: $card-radius;
-    background-color: $c-bg;
+    background-color: $c-white;
     overflow: hidden;
     flex-shrink: 0;
 
     img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
     }
   }
 
@@ -85,7 +85,7 @@
   &__count-title {
     font-size: r(14);
     text-align: center;
-    color: $c-white;
+    color: $c-gray;
   }
 
   &__controller {

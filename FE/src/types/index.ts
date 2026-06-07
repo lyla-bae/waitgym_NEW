@@ -106,6 +106,19 @@ export interface Mission {
   rewardPoints: number
 }
 
+export interface MissionWithProgress extends Mission {
+  progress: number
+  isCompleted: boolean
+  completedAt?: string | null
+}
+
+export interface RankingUser {
+  id: number
+  name: string
+  avatar?: string
+  points: number
+}
+
 export interface UserMission {
   id: number
   userId: number

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ChevronLeft, Star, Users } from 'lucide-react'
 import { equipmentApi } from '@/lib/api'
 import Header from '@/components/Header'
+import { useGlobalToastStore } from '@/stores/globalToastStore'
 import type { Equipment } from '@/types'
 
 export default function EquipmentDetailPage() {
@@ -10,6 +11,7 @@ export default function EquipmentDetailPage() {
   const navigate = useNavigate()
   const [equipment, setEquipment] = useState<Equipment | null>(null)
   const [loading, setLoading] = useState(true)
+  const toast = useGlobalToastStore((s) => s.show)
 
   useEffect(() => {
     if (!id) return
@@ -26,6 +28,7 @@ export default function EquipmentDetailPage() {
       setEquipment((prev) => (prev ? { ...prev, isFavorite } : prev))
     } catch (e) {
       console.error(e)
+      toast({ message: '즐겨찾기 변경에 실패했습니다.' })
     }
   }
 

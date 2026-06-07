@@ -1,0 +1,361 @@
+@use '@styles/variables' as *;
+
+// 루틴 목록
+.routine-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .content-scroll {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: none;
+    padding-bottom: $content-bottom-padding;
+    &::-webkit-scrollbar { display: none; }
+  }
+
+  &__container {
+    padding: r(16) $screen-padding 0;
+  }
+
+  &__loading {
+    text-align: center;
+    color: $c-gray;
+    padding: r(40) 0;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: r(8);
+  }
+
+  &__card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    column-gap: r(8);
+    width: 100%;
+    min-height: r(76);
+    background: $c-card;
+    border-radius: $card-radius;
+    padding: r(8) r(16);
+    color: $c-white;
+
+    &--empty {
+      cursor: pointer;
+    }
+  }
+
+  &__icon {
+    width: r(48);
+    height: r(48);
+    color: $c-primary-light;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__info {
+    text-align: left;
+  }
+
+  &__name {
+    font-size: r(18);
+    font-weight: 600;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__detail {
+    margin-top: r(4);
+    display: flex;
+    align-items: center;
+    gap: r(8);
+
+    span {
+      font-size: r(13);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: r(8);
+
+      &:not(:last-child)::after {
+        content: '';
+        display: inline-block;
+        width: r(4);
+        height: r(4);
+        border-radius: 50%;
+        background: $c-white;
+        opacity: 0.5;
+      }
+    }
+  }
+
+  &__edit-btn {
+    padding: r(8);
+    color: $c-gray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+// 루틴 생성/수정
+.routine-edit-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  .content-scroll {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: none;
+    padding-bottom: r(100);
+    &::-webkit-scrollbar { display: none; }
+  }
+}
+
+.routine-edit {
+  &__container {
+    padding: 0 $screen-padding;
+  }
+
+  &__section {
+    margin-bottom: r(24);
+  }
+
+  &__label {
+    display: block;
+    font-size: r(13);
+    font-weight: 500;
+    color: $c-gray;
+    margin-bottom: r(8);
+  }
+
+  &__input {
+    width: 100%;
+    background: $c-card;
+    border-radius: $card-radius;
+    padding: r(14) r(16);
+    font-size: r(15);
+    color: $c-white;
+    border: none;
+    outline: none;
+
+    &::placeholder {
+      color: $c-gray;
+    }
+  }
+
+  &__add-btn {
+    width: 100%;
+    background: $c-card;
+    color: $c-white;
+    border-radius: $card-radius;
+    display: flex;
+    align-items: center;
+    gap: r(12);
+    padding: r(16);
+    margin-bottom: r(8);
+    font-size: r(15);
+    font-weight: 600;
+  }
+
+  &__add-icon {
+    color: $c-primary-light;
+    display: flex;
+    align-items: center;
+  }
+
+  &__box-list {
+    display: flex;
+    flex-direction: column;
+    gap: r(8);
+  }
+
+  &__box {
+    background: $c-card;
+    border-radius: $card-radius;
+    padding: r(16);
+    display: flex;
+    flex-direction: column;
+    gap: r(16);
+    touch-action: pan-y;
+  }
+
+  &__equipment {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__equip-info {
+    display: flex;
+    align-items: center;
+    gap: r(12);
+  }
+
+  &__equip-img {
+    width: r(40);
+    height: r(40);
+    border-radius: r(8);
+    background: $c-white;
+    overflow: hidden;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  &__equip-name {
+    font-size: r(15);
+    font-weight: 600;
+    color: $c-white;
+  }
+
+  &__equip-actions {
+    display: flex;
+    align-items: center;
+    gap: r(4);
+  }
+
+  &__remove-btn {
+    color: $c-gray;
+    padding: r(4);
+    display: flex;
+    align-items: center;
+  }
+
+  &__drag-btn {
+    color: $c-primary-light;
+    cursor: grab;
+    touch-action: none;
+    padding: r(4);
+    display: flex;
+    align-items: center;
+  }
+
+  &__count-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: r(8);
+  }
+
+  &__count {
+    background: $c-modal;
+    border-radius: $card-radius;
+    padding: r(12) r(8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: r(4);
+  }
+
+  &__count-title {
+    font-size: r(14);
+    font-weight: 400;
+    color: $c-gray;
+  }
+
+  &__controller {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: r(4);
+  }
+
+  &__ctrl-btn {
+    width: r(30);
+    height: r(30);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: r(6);
+
+    &:disabled {
+      opacity: 0.4;
+    }
+  }
+
+  &__count-num {
+    font-size: r(18);
+    font-weight: 600;
+    color: $c-accent;
+    min-width: r(40);
+    text-align: center;
+  }
+
+  &__delete-txt {
+    font-size: r(15);
+    color: $c-gray;
+  }
+}
+
+// 루틴용 기구 선택 - select-equipment-page UI 재사용, 선택 상태만 추가
+.routine-equip-select {
+  &__item {
+    position: relative;
+
+    &--selected .equipment-card {
+      outline: r(2) solid $c-primary-light;
+      border-radius: $card-radius;
+    }
+
+    &--added {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  }
+
+  &__badge {
+    position: absolute;
+    top: r(8);
+    right: r(8);
+    font-size: r(11);
+    font-weight: 500;
+    color: $c-primary-light;
+    background: rgba($c-primary, 0.8);
+    padding: r(2) r(6);
+    border-radius: r(4);
+    pointer-events: none;
+  }
+}
+
+// 루틴 확인 바텀시트
+.routine-confirm-drawer {
+  background: $c-bg;
+  border-radius: r(12) r(12) 0 0;
+  padding: r(24) $screen-padding r(40);
+  display: flex;
+  flex-direction: column;
+  gap: r(24);
+
+  &__title {
+    font-size: r(18);
+    font-weight: 600;
+    color: $c-white;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  &__accent {
+    color: $c-accent;
+  }
+
+  &__btns {
+    display: flex;
+    gap: r(8);
+
+    > .btn {
+      flex: 1;
+    }
+  }
+}

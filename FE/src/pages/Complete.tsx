@@ -1,6 +1,9 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Dumbbell, Timer } from 'lucide-react'
+import { CheckCircle2, Dumbbell, Timer } from 'lucide-react'
+import Drawer from '@mui/material/Drawer'
 import motionClap from '@/assets/images/motion-clap.png'
+import motionTrophy from '@/assets/images/motion-trophy.png'
 import { useWorkoutStore } from '@/stores/workoutStore'
 
 function formatMs(ms: number) {
@@ -21,7 +24,8 @@ function eulReul(name: string) {
 
 export default function CompletePage() {
   const navigate = useNavigate()
-  const { equipmentName, startedAt, totalWorkMs, totalRestMs, reset } = useWorkoutStore()
+  const { equipmentName, startedAt, totalWorkMs, totalRestMs, completedMissions, reset } = useWorkoutStore()
+  const [drawerOpen, setDrawerOpen] = useState(completedMissions.length > 0)
 
   function handleConfirm() {
     reset()
@@ -65,6 +69,35 @@ export default function CompletePage() {
           확인
         </button>
       </div>
+
+      <Drawer
+        anchor="bottom"
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        slotProps={{ paper: { style: { background: 'transparent' } } }}
+      >
+        <div className="mission-drawer">
+          <div className="mission-drawer__header">
+            <img src={motionTrophy} alt="트로피" className="mission-drawer__trophy" />
+            <h2>미션 달성!</h2>
+            <p className="mission-drawer__total">
+              +{completedMissions.reduce((sum, m) => sum + m.rewardPoints, 0).toLocaleString()}점 획득했어요!
+            </p>
+          </div>
+          <ul className="mission-drawer__list">
+            {completedMissions.map((m) => (
+              <li key={m.id} className="mission-drawer__item">
+                <CheckCircle2 size={18} className="mission-drawer__check" aria-hidden="true" />
+                <span className="mission-drawer__name">{m.name}</span>
+                <span className="mission-drawer__points">+{m.rewardPoints}점</span>
+              </li>
+            ))}
+          </ul>
+          <button type="button" className="btn btn--white btn--full" onClick={() => setDrawerOpen(false)}>
+            확인
+          </button>
+        </div>
+      </Drawer>
     </div>
   )
 }

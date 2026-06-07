@@ -1,28 +1,71 @@
+import { useNavigate } from 'react-router-dom'
+import { Bell, User, Dumbbell, Star, Headset, Settings, FileCheck2 } from 'lucide-react'
+import Header from '@/components/Header'
 import { useAuthStore } from '@/stores/authStore'
-import { LogOut } from 'lucide-react'
+import { useGlobalToastStore } from '@/stores/globalToastStore'
 
 export default function MyPage() {
   const { user, signOut } = useAuthStore()
+  const navigate = useNavigate()
+  const toast = useGlobalToastStore((s) => s.show)
+
+  const comingSoon = () => toast({ message: '준비중입니다.' })
+
+  const MENU_ITEMS = [
+    { icon: User,       label: '개인정보 수정',    action: comingSoon },
+    { icon: Dumbbell,   label: '이용 헬스장 변경',  action: () => navigate('/gym-finder') },
+    { icon: Star,       label: '즐겨찾기한 기구',   action: comingSoon },
+    { icon: Headset,    label: '고객센터',          action: comingSoon },
+    { icon: Settings,   label: '앱 설정',           action: comingSoon },
+    { icon: FileCheck2, label: '서비스 약관',        action: comingSoon },
+  ]
 
   return (
-    <div className="p-4 flex flex-col gap-4">
-      <div className="flex items-center gap-3">
-        {user?.avatar && (
-          <img src={user.avatar} alt={user.name} className="w-12 h-12 rounded-full" />
-        )}
-        <div>
-          <p className="font-semibold">{user?.name}</p>
-          <p className="text-sm text-gray-400">{user?.email}</p>
+    <div className="mypage">
+      <Header
+        className="header--sub"
+        title="내 정보"
+        rightContent={
+          <button type="button" className="header__action" onClick={() => navigate('/notifications')} aria-label="알림">
+            <Bell size={24} strokeWidth={1.5} />
+          </button>
+        }
+      />
+
+      <div className="content-scroll">
+        <div className="mypage__container">
+          <div className="mypage__greeting">
+            <div className="mypage__greeting-msg">
+              <p>안녕하세요</p>
+              <span>{user?.name}</span>님
+            </div>
+            {user?.avatar ? (
+              <div className="mypage__greeting-avatar">
+                <img src={user.avatar} alt={user.name} />
+              </div>
+            ) : (
+              <div className="mypage__greeting-avatar-placeholder">
+                {user?.name?.[0] ?? '?'}
+              </div>
+            )}
+          </div>
+
+          <ul className="mypage__menu-list">
+            {MENU_ITEMS.map(({ icon: Icon, label, action }) => (
+              <li key={label}>
+                <button type="button" className="mypage__menu" onClick={action}>
+                  <Icon size={20} strokeWidth={1.5} />
+                  {label}
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          <button type="button" className="mypage__logout" onClick={signOut}>
+            로그아웃
+          </button>
         </div>
       </div>
-
-      <button
-        onClick={signOut}
-        className="flex items-center gap-2 text-red-400 text-sm mt-4"
-      >
-        <LogOut size={16} />
-        로그아웃
-      </button>
     </div>
   )
 }
