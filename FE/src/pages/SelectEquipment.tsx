@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ChevronLeft, Search, Star } from 'lucide-react'
-import { equipmentApi } from '@/lib/api'
+import { equipmentApi, routineApi } from '@/lib/api'
 import Header from '@/components/Header'
 import EquipmentCard from '@/components/EquipmentCard'
 import type { Equipment } from '@/types'
@@ -14,12 +14,34 @@ export default function SelectEquipmentPage() {
   const routineId = searchParams.get('routineId')
   const routineName = searchParams.get('routineName')
   const isRoutineMode = !!routineId
+
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState<string>('전체')
   const [equipments, setEquipments] = useState<Equipment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // 루틴모드: 루틴의 기구 목록만 표시
+  const fetchRoutineEquipments = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const routine = await routineApi.detail(parseInt(routineId!))
+      const ids = new Set(routine.exercises.map((e) => e.equipmentId))
+      const allEquipments = await equipmentApi.list()
+      // 루틴 운동 순서대로 정렬
+      const ordered = routine.exercises
+        .map((ex) => allEquipments.find((eq) => eq.id === ex.equipmentId))
+        .filter((eq): eq is Equipment => !!eq)
+      setEquipments(ordered)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '알 수 없는 오류')
+    } finally {
+      setLoading(false)
+    }
+  }, [routineId])
+
+  // 일반모드: 전체 기구 목록
   const fetchEquipments = useCallback(async () => {
     setLoading(true)
     setError(null)
@@ -38,9 +60,16 @@ export default function SelectEquipmentPage() {
   }, [activeCategory, search])
 
   useEffect(() => {
+    if (isRoutineMode) {
+      fetchRoutineEquipments()
+    }
+  }, [isRoutineMode, fetchRoutineEquipments])
+
+  useEffect(() => {
+    if (isRoutineMode) return
     const timer = setTimeout(fetchEquipments, search ? 300 : 0)
     return () => clearTimeout(timer)
-  }, [fetchEquipments, search])
+  }, [isRoutineMode, fetchEquipments, search])
 
   const handleFavoriteToggle = async (id: number) => {
     try {
@@ -77,41 +106,45 @@ export default function SelectEquipmentPage() {
         }
       />
 
-      <div className="select-equipment-page__search">
-        <div className="search-bar">
-          <input
-            type="search"
-            className="search-bar__input"
-            placeholder="기구명, 부위를 검색해보세요"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            aria-label="기구 검색"
-          />
-          <span className="search-bar__icon" aria-hidden="true">
-            <Search size={20} />
-          </span>
-        </div>
-      </div>
+      {!isRoutineMode && (
+        <>
+          <div className="select-equipment-page__search">
+            <div className="search-bar">
+              <input
+                type="search"
+                className="search-bar__input"
+                placeholder="기구명, 부위를 검색해보세요"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                aria-label="기구 검색"
+              />
+              <span className="search-bar__icon" aria-hidden="true">
+                <Search size={20} />
+              </span>
+            </div>
+          </div>
 
-      <div className="select-equipment-page__filter">
-        <div className="category-filter">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              className={`category-filter__tab${activeCategory === cat ? ' category-filter__tab--active' : ''}`}
-              onClick={() => setActiveCategory(cat)}
-            >
-              {cat === '즐겨찾기' && (
-                <span className="category-filter__tab-icon" aria-hidden="true">
-                  <Star size={12} fill={activeCategory === '즐겨찾기' ? 'white' : 'none'} />
-                </span>
-              )}
-              {cat}
-            </button>
-          ))}
-        </div>
-      </div>
+          <div className="select-equipment-page__filter">
+            <div className="category-filter">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  className={`category-filter__tab${activeCategory === cat ? ' category-filter__tab--active' : ''}`}
+                  onClick={() => setActiveCategory(cat)}
+                >
+                  {cat === '즐겨찾기' && (
+                    <span className="category-filter__tab-icon" aria-hidden="true">
+                      <Star size={12} fill={activeCategory === '즐겨찾기' ? 'white' : 'none'} />
+                    </span>
+                  )}
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
 
       <section className="select-equipment-page__list">
         {loading ? (
@@ -119,7 +152,7 @@ export default function SelectEquipmentPage() {
         ) : error ? (
           <div className="select-equipment-page__error">
             <p className="select-equipment-page__error-msg">오류: {error}</p>
-            <button type="button" className="select-equipment-page__retry" onClick={fetchEquipments}>
+            <button type="button" className="select-equipment-page__retry" onClick={isRoutineMode ? fetchRoutineEquipments : fetchEquipments}>
               다시 시도
             </button>
           </div>
@@ -131,7 +164,7 @@ export default function SelectEquipmentPage() {
               <li key={equipment.id}>
                 <EquipmentCard
                   equipment={equipment}
-                  onFavoriteToggle={handleFavoriteToggle}
+                  onFavoriteToggle={!isRoutineMode ? handleFavoriteToggle : undefined}
                   onClick={() =>
                     navigate(
                       `/reservation/goal-setting?equipmentId=${equipment.id}&name=${encodeURIComponent(equipment.name)}&imageUrl=${encodeURIComponent(equipment.imageUrl ?? '')}`,
