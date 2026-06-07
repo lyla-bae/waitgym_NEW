@@ -297,45 +297,6 @@
     font-size: r(15);
     color: $c-gray;
   }
-
-  &__dialog-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    padding: 0 $screen-padding;
-  }
-
-  &__dialog {
-    background: $c-modal;
-    border-radius: r(16);
-    padding: r(28) r(24) r(20);
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: r(20);
-  }
-
-  &__dialog-msg {
-    font-size: r(18);
-    font-weight: 600;
-    color: $c-white;
-    text-align: center;
-    line-height: 1.6;
-
-    strong {
-      color: $c-accent;
-    }
-  }
-
-  &__dialog-btns {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: r(8);
-  }
 }
 
 // 루틴용 기구 선택 - select-equipment-page UI 재사용, 선택 상태만 추가
@@ -365,5 +326,36 @@
     padding: r(2) r(6);
     border-radius: r(4);
     pointer-events: none;
+  }
+}
+
+// 루틴 확인 바텀시트
+.routine-confirm-drawer {
+  background: $c-bg;
+  border-radius: r(12) r(12) 0 0;
+  padding: r(24) $screen-padding r(40);
+  display: flex;
+  flex-direction: column;
+  gap: r(24);
+
+  &__title {
+    font-size: r(18);
+    font-weight: 600;
+    color: $c-white;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  &__accent {
+    color: $c-accent;
+  }
+
+  &__btns {
+    display: flex;
+    gap: r(8);
+
+    > .btn {
+      flex: 1;
+    }
   }
 }

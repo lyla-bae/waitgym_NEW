@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ChevronLeft, CirclePlus, GripVertical, Minus, Plus, Trash2 } from 'lucide-react'
+import Drawer from '@mui/material/Drawer'
 import {
   DndContext,
   closestCenter,
@@ -33,6 +34,35 @@ function formatSeconds(s: number) {
   return `${sec}초`
 }
 
+function ConfirmDrawer({
+  open,
+  onClose,
+  onConfirm,
+  children,
+}: {
+  open: boolean
+  onClose: () => void
+  onConfirm: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <Drawer
+      anchor="bottom"
+      open={open}
+      onClose={onClose}
+      slotProps={{ paper: { style: { background: 'transparent' } } }}
+    >
+      <div className="routine-confirm-drawer">
+        {children}
+        <div className="routine-confirm-drawer__btns">
+          <button type="button" className="btn btn--primary" onClick={onClose}>취소</button>
+          <button type="button" className="btn btn--white" onClick={onConfirm}>확인</button>
+        </div>
+      </div>
+    </Drawer>
+  )
+}
+
 function SortableExerciseItem({
   item,
   onUpdate,
@@ -42,6 +72,7 @@ function SortableExerciseItem({
   onUpdate: (id: number, field: 'targetSets' | 'restSeconds', delta: number) => void
   onRemove: (id: number) => void
 }) {
+  const [showRemoveDrawer, setShowRemoveDrawer] = useState(false)
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: item.equipmentId,
   })
@@ -53,6 +84,7 @@ function SortableExerciseItem({
   }
 
   return (
+    <>
     <li ref={setNodeRef} style={style} className="routine-edit__box">
       <div className="routine-edit__equipment">
         <div className="routine-edit__equip-info">
@@ -67,7 +99,7 @@ function SortableExerciseItem({
           <button
             type="button"
             className="routine-edit__remove-btn"
-            onClick={() => onRemove(item.equipmentId)}
+            onClick={() => setShowRemoveDrawer(true)}
             aria-label={`${item.equipment.name} 삭제`}
           >
             <Trash2 size={16} strokeWidth={1.5} />
@@ -88,23 +120,11 @@ function SortableExerciseItem({
         <div className="routine-edit__count">
           <span className="routine-edit__count-title">세트</span>
           <div className="routine-edit__controller">
-            <button
-              type="button"
-              className="routine-edit__ctrl-btn"
-              onClick={() => onUpdate(item.equipmentId, 'targetSets', -1)}
-              disabled={item.targetSets <= 1}
-              aria-label="세트 줄이기"
-            >
+            <button type="button" className="routine-edit__ctrl-btn" onClick={() => onUpdate(item.equipmentId, 'targetSets', -1)} disabled={item.targetSets <= 1} aria-label="세트 줄이기">
               <Minus size={20} strokeWidth={1.5} />
             </button>
             <span className="routine-edit__count-num">{item.targetSets}</span>
-            <button
-              type="button"
-              className="routine-edit__ctrl-btn"
-              onClick={() => onUpdate(item.equipmentId, 'targetSets', 1)}
-              disabled={item.targetSets >= 8}
-              aria-label="세트 늘리기"
-            >
+            <button type="button" className="routine-edit__ctrl-btn" onClick={() => onUpdate(item.equipmentId, 'targetSets', 1)} disabled={item.targetSets >= 8} aria-label="세트 늘리기">
               <Plus size={20} strokeWidth={1.5} />
             </button>
           </div>
@@ -113,29 +133,28 @@ function SortableExerciseItem({
         <div className="routine-edit__count">
           <span className="routine-edit__count-title">휴식</span>
           <div className="routine-edit__controller">
-            <button
-              type="button"
-              className="routine-edit__ctrl-btn"
-              onClick={() => onUpdate(item.equipmentId, 'restSeconds', -10)}
-              disabled={item.restSeconds <= 0 || (item.targetSets > 1 && item.restSeconds <= 10)}
-              aria-label="휴식 줄이기"
-            >
+            <button type="button" className="routine-edit__ctrl-btn" onClick={() => onUpdate(item.equipmentId, 'restSeconds', -10)} disabled={item.restSeconds <= 0 || (item.targetSets > 1 && item.restSeconds <= 10)} aria-label="휴식 줄이기">
               <Minus size={20} strokeWidth={1.5} />
             </button>
             <span className="routine-edit__count-num">{formatSeconds(item.restSeconds)}</span>
-            <button
-              type="button"
-              className="routine-edit__ctrl-btn"
-              onClick={() => onUpdate(item.equipmentId, 'restSeconds', 10)}
-              disabled={item.targetSets < 2 || item.restSeconds >= 300}
-              aria-label="휴식 늘리기"
-            >
+            <button type="button" className="routine-edit__ctrl-btn" onClick={() => onUpdate(item.equipmentId, 'restSeconds', 10)} disabled={item.targetSets < 2 || item.restSeconds >= 300} aria-label="휴식 늘리기">
               <Plus size={20} strokeWidth={1.5} />
             </button>
           </div>
         </div>
       </div>
     </li>
+    <ConfirmDrawer
+      open={showRemoveDrawer}
+      onClose={() => setShowRemoveDrawer(false)}
+      onConfirm={() => { onRemove(item.equipmentId); setShowRemoveDrawer(false) }}
+    >
+      <p className="routine-confirm-drawer__title">
+        정말 운동을<br />
+        <strong className="routine-confirm-drawer__accent">삭제</strong>하시겠어요?
+      </p>
+    </ConfirmDrawer>
+    </>
   )
 }
 
@@ -144,9 +163,26 @@ export default function RoutineEditPage() {
   const { id } = useParams<{ id: string }>()
   const isEdit = !!id
   const [isSaving, setIsSaving] = useState(false)
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [showDeleteDrawer, setShowDeleteDrawer] = useState(false)
+  const [showBackDrawer, setShowBackDrawer] = useState(false)
 
   const { name, exercises, setName, setExercises, removeExercise, updateExercise } = useRoutineStore()
+
+  // 초기 상태 저장 (변경감지용)
+  const initialState = useRef({ name, exercises: JSON.stringify(exercises) })
+
+  function hasChanges() {
+    return name !== initialState.current.name ||
+      JSON.stringify(exercises) !== initialState.current.exercises
+  }
+
+  function handleBack() {
+    if (hasChanges()) {
+      setShowBackDrawer(true)
+    } else {
+      navigate(-1)
+    }
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -179,7 +215,7 @@ export default function RoutineEditPage() {
       } else {
         await routineApi.create(body)
       }
-      navigate('/routine', { replace: true })
+      navigate('/', { replace: true })
     } catch (e) {
       console.error(e)
     } finally {
@@ -191,7 +227,7 @@ export default function RoutineEditPage() {
     if (!id) return
     try {
       await routineApi.remove(parseInt(id))
-      navigate('/routine', { replace: true })
+      navigate('/', { replace: true })
     } catch (e) {
       console.error(e)
     }
@@ -203,14 +239,14 @@ export default function RoutineEditPage() {
         <Header
           className="header--sub"
           leftContent={
-            <button type="button" className="header__back" onClick={() => navigate(-1)} aria-label="뒤로가기">
+            <button type="button" className="header__back" onClick={handleBack} aria-label="뒤로가기">
               <ChevronLeft size={24} />
             </button>
           }
           title={isEdit ? '루틴 설정' : '루틴 만들기'}
           rightContent={
             isEdit ? (
-              <button type="button" className="routine-edit__delete-txt" onClick={() => setShowDeleteConfirm(true)}>
+              <button type="button" className="routine-edit__delete-txt" onClick={() => setShowDeleteDrawer(true)}>
                 삭제
               </button>
             ) : null
@@ -272,7 +308,7 @@ export default function RoutineEditPage() {
       <div className="btn-wrap">
         <button
           type="button"
-          className={`btn btn--white btn--full${!name.trim() || exercises.length === 0 ? ' btn--disabled' : ''}`}
+          className="btn btn--white btn--full"
           disabled={!name.trim() || exercises.length === 0 || isSaving}
           onClick={handleSave}
         >
@@ -280,20 +316,27 @@ export default function RoutineEditPage() {
         </button>
       </div>
 
-      {showDeleteConfirm && (
-        <div className="routine-edit__dialog-overlay" onClick={() => setShowDeleteConfirm(false)}>
-          <div className="routine-edit__dialog" onClick={(e) => e.stopPropagation()}>
-            <p className="routine-edit__dialog-msg">
-              이 루틴을<br />
-              <strong>삭제</strong>하시겠어요?
-            </p>
-            <div className="routine-edit__dialog-btns">
-              <button type="button" className="btn btn--gray" onClick={() => setShowDeleteConfirm(false)}>취소</button>
-              <button type="button" className="btn btn--white" onClick={handleDelete}>확인</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDrawer
+        open={showBackDrawer}
+        onClose={() => setShowBackDrawer(false)}
+        onConfirm={() => navigate(-1)}
+      >
+        <p className="routine-confirm-drawer__title">
+          변경사항을 <strong className="routine-confirm-drawer__accent">저장</strong>하지 않고<br />
+          페이지를 나가시겠어요?
+        </p>
+      </ConfirmDrawer>
+
+      <ConfirmDrawer
+        open={showDeleteDrawer}
+        onClose={() => setShowDeleteDrawer(false)}
+        onConfirm={handleDelete}
+      >
+        <p className="routine-confirm-drawer__title">
+          이 루틴을<br />
+          <strong className="routine-confirm-drawer__accent">삭제</strong>하시겠어요?
+        </p>
+      </ConfirmDrawer>
     </div>
   )
 }
