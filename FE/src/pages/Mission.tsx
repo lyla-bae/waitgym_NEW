@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import LinearProgress from '@mui/material/LinearProgress'
+import { Bell, CalendarClock } from 'lucide-react'
 import Header from '@/components/Header'
 import { missionApi } from '@/lib/api'
 import { useAuthStore } from '@/stores/authStore'
@@ -12,6 +14,7 @@ type Tab = 'mission' | 'ranking'
 export default function MissionPage() {
   const [tab, setTab] = useState<Tab>('mission')
   const { user } = useAuthStore()
+  const navigate = useNavigate()
 
   return (
     <div className="mission-page">
@@ -34,6 +37,11 @@ export default function MissionPage() {
               랭킹
             </button>
           </nav>
+        }
+        rightContent={
+          <button type="button" className="header__action" onClick={() => navigate('/notifications')} aria-label="알림">
+            <Bell size={24} strokeWidth={1.5} />
+          </button>
         }
       />
       <div className="content-scroll">
@@ -137,17 +145,20 @@ function RankingTab({ myId }: { myId?: number }) {
       ) : (
         <div className="mission-page__section">
           <div className="mission-page__ranking-header">
-            <span className="mission-page__date-range">{fmt(monday)} ~ {fmt(sunday)}</span>
-            <span className="mission-page__count">상위 {ranking.length}명</span>
+            <div className="mission-page__date-wrap">
+              <CalendarClock size={16} />
+              <span className="mission-page__date-range">{fmt(monday)} ~ {fmt(sunday)}</span>
+            </div>
+            <span className="mission-page__count">참여자 {ranking.length}명</span>
           </div>
           {ranking.length === 0 ? (
-            <p className="mission-page__empty">아직 포인트를 획득한 유저가 없어요</p>
+            <p className="mission-page__empty">아직 이번 주 기록이 없어요</p>
           ) : (
             <ul className="ranking-list">
               {ranking.map((rankUser, i) => (
                 <li
                   key={rankUser.id}
-                  className={`ranking-list__item${rankUser.id === myId ? ' ranking-list__item--me' : ''}`}
+                  className={`ranking-list__item${i === 0 ? ' ranking-list__item--top1' : ''}`}
                 >
                   <span className="ranking-list__rank">{i + 1}</span>
                   <div className="ranking-list__user">

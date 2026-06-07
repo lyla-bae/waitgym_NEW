@@ -81,6 +81,13 @@
     align-items: center;
   }
 
+  &__date-wrap {
+    display: flex;
+    align-items: center;
+    gap: r(4);
+    color: $c-gray;
+  }
+
   &__date-range {
     font-size: r(14);
     color: $c-gray;
@@ -184,20 +191,23 @@
     border-radius: $card-radius;
     padding: r(12) r(16);
 
-    &--me {
-      .ranking-list__rank,
-      .ranking-list__name {
-        color: $c-accent;
-      }
+    &--top1 {
+      background: $c-primary;
     }
   }
 
   &__rank {
-    font-size: r(16);
+    width: r(20);
+    height: r(20);
+    border-radius: r(20);
+    background: $c-modal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: r(12);
     font-weight: 700;
-    color: $c-gray;
-    min-width: r(20);
-    text-align: center;
+    color: $c-white;
+    flex-shrink: 0;
   }
 
   &__user {
