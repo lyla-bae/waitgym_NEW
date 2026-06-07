@@ -41,7 +41,7 @@ export function useSocketNotifications() {
           duration: 5 * 60 * 1000,
           action: {
             label: '지금 이동',
-            onClick: () => navigateRef.current(`/reservation/wait-request?mode=start&waitingId=${data.waitingId}`),
+            onClick: () => navigateRef.current(`/reservation/wait-request?mode=start&waitingId=${data.waitingId}&name=${encodeURIComponent(data.equipmentName ?? '')}`),
           },
         })
       } else if (data.type === 'HURRY_UP' && data.waitingCount != null) {

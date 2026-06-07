@@ -92,7 +92,7 @@ export default function WaitRequestPage() {
       <Header
         className="header--sub"
         leftContent={
-          <button type="button" className="header__back" onClick={() => navigate(-1)} aria-label="뒤로가기">
+          <button type="button" className="header__back" onClick={() => isStartMode ? navigate('/', { replace: true }) : navigate(-1)} aria-label="뒤로가기">
             <ChevronLeft size={24} />
           </button>
         }
