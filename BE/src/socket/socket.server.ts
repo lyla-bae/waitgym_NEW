@@ -6,8 +6,15 @@ let io: SocketServer
 export function initSocket(server: HttpServer) {
   io = new SocketServer(server, {
     cors: {
-      origin: process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : '*',
-      credentials: process.env.NODE_ENV === 'production',
+      origin: (origin, callback) => {
+        const isDev = process.env.NODE_ENV !== 'production'
+        if (!origin || (isDev && /^http:\/\/localhost(:\d+)?$/.test(origin)) || origin === process.env.CLIENT_URL) {
+          callback(null, true)
+        } else {
+          callback(new Error('Not allowed by CORS'))
+        }
+      },
+      credentials: true,
     },
   })
 

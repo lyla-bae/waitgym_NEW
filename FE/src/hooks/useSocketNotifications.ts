@@ -24,9 +24,15 @@ export function useSocketNotifications() {
   useEffect(() => {
     if (!user?.id) return
 
+    // connect 이벤트 시마다 재입장 (재연결 시에도 room 유지)
+    function handleConnect() {
+      socket.emit('join:user', user!.id)
+      console.log('[socket] join:user', user!.id)
+    }
+
+    socket.on('connect', handleConnect)
     socket.connect()
-    socket.emit('join:user', user.id)
-    console.log('[socket] join:user', user.id)
+    if (socket.connected) handleConnect()
 
     function handleNotification(data: NotificationPayload) {
       if (data.type === 'YOUR_TURN' && data.waitingId && data.equipmentName) {
@@ -49,6 +55,7 @@ export function useSocketNotifications() {
     socket.on('notification:new', handleNotification)
 
     return () => {
+      socket.off('connect', handleConnect)
       socket.off('notification:new', handleNotification)
     }
   }, [user?.id])
