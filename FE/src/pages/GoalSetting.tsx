@@ -23,6 +23,7 @@ export default function GoalSettingPage() {
   function handleNext() {
     navigate(
       `/reservation/wait-request?equipmentId=${equipmentId}&name=${encodeURIComponent(equipmentName)}&sets=${sets}&restSeconds=${restSeconds}`,
+      { replace: true },
     )
   }
 
