@@ -1,0 +1,110 @@
+@use '@styles/variables' as *;
+
+.mypage {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .content-scroll {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: none;
+    padding-bottom: $content-bottom-padding;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__container {
+    padding: 0 $screen-padding;
+  }
+
+  &__greeting {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: r(24) 0;
+
+    &-msg {
+      font-size: r(20);
+      font-weight: 600;
+      color: $c-white;
+      line-height: 1.5;
+
+      p {
+        font-size: r(14);
+        font-weight: 400;
+        color: $c-gray;
+        margin-bottom: r(4);
+      }
+    }
+
+    &-avatar {
+      width: r(52);
+      height: r(52);
+      border-radius: 50%;
+      overflow: hidden;
+      border: 1px solid $c-gray;
+      flex-shrink: 0;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    &-avatar-placeholder {
+      width: r(52);
+      height: r(52);
+      border-radius: 50%;
+      background: $c-primary;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: r(20);
+      font-weight: 600;
+      color: $c-white;
+      flex-shrink: 0;
+    }
+  }
+
+  &__menu-list {
+    display: flex;
+    flex-direction: column;
+    gap: r(8);
+  }
+
+  &__menu {
+    display: flex;
+    align-items: center;
+    gap: r(10);
+    padding: r(16);
+    background: $c-card;
+    border-radius: $card-radius;
+    font-size: r(15);
+    font-weight: 600;
+    color: $c-white;
+    width: 100%;
+    text-align: left;
+
+    &:disabled {
+      opacity: 0.4;
+    }
+
+    &--coming-soon {
+      opacity: 0.4;
+    }
+  }
+
+  &__logout {
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-size: r(14);
+    font-weight: 500;
+    color: $c-gray;
+    margin: r(28) 0 r(16);
+  }
+}

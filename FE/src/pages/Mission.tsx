@@ -109,7 +109,7 @@ function MissionTab({ userName }: { userName: string }) {
   )
 }
 
-function RankingTab({ myId }: { myId?: number }) {
+function RankingTab({ myId: _myId }: { myId?: number }) {
   const [ranking, setRanking] = useState<RankingUser[]>([])
   const [isLoading, setIsLoading] = useState(true)
 

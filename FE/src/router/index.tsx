@@ -12,6 +12,7 @@ import RoutineEditPage from '@/pages/RoutineEdit'
 import RoutineSelectEquipmentPage from '@/pages/RoutineSelectEquipment'
 import MyPage from '@/pages/MyPage'
 import NotificationPage from '@/pages/Notification'
+import GymFinderPage from '@/pages/GymFinder'
 import SelectEquipmentPage from '@/pages/SelectEquipment'
 import GoalSettingPage from '@/pages/GoalSetting'
 import WaitRequestPage from '@/pages/WaitRequest'
@@ -55,6 +56,7 @@ const router = createBrowserRouter([
           { path: '/routine/select-equipment', element: <RoutineSelectEquipmentPage /> },
           { path: '/mypage', element: <MyPage /> },
           { path: '/notifications', element: <NotificationPage /> },
+          { path: '/gym-finder', element: <GymFinderPage /> },
           { path: '/reservation/select-equipment', element: <SelectEquipmentPage /> },
           { path: '/reservation/goal-setting', element: <GoalSettingPage /> },
           { path: '/reservation/wait-request', element: <WaitRequestPage /> },
