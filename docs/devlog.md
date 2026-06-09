@@ -105,3 +105,68 @@
 - `workout` 페이지 진입 가드 추가
 - 운동 완료 API 실패 처리 개선
 - `quick-start` / `start` 기구 점유 중복 방지 추가
+
+---
+
+## Day 5 — 미션/랭킹 + 루틴 구현
+
+### 완료
+
+#### 미션/랭킹
+- `GET /api/missions` — 전체 미션 + 유저 진행도 조회
+- `GET /api/missions/ranking` — 포인트 기준 상위 10명
+- 운동 완료 시 미션 진행도 자동 업데이트 (`TOTAL_SETS`, `TOTAL_EQUIPMENTS`, `STREAK_DAYS`)
+- 미션 완료 시 포인트 지급, 완료 미션 목록 API 응답 포함
+- `Mission` 페이지: 미션/랭킹 탭, MUI LinearProgress 프로그레스 바
+- `Complete` 페이지: 운동 완료 시 달성 미션 MUI Drawer 바텀시트 표시
+- `workoutStore`에 `completedMissions` 상태 추가
+
+#### 루틴
+- `GET/POST/PUT/DELETE /api/routines` 루틴 CRUD
+- `Routine` 페이지 — 루틴 목록, 예상 소요시간·운동 수 표시
+- `RoutineEdit` 페이지 — dnd-kit 드래그 순서 변경, 세트/휴식 설정
+- `RoutineSelectEquipment` 페이지 — 루틴용 기구 선택 (선택 상태 표시)
+- `ConfirmDrawer` 공통 컴포넌트 추출 (삭제/뒤로가기 확인)
+- 루틴모드 기구 로딩 병렬 요청 및 루틴 기구만 표시하도록 최적화
+
+#### 실제 운동 시간 저장
+- `actualWorkMs` / `actualRestMs` WaitingQueue에 저장
+- `restStartedAtRef`로 stale closure 버그 수정
+
+---
+
+## Day 6 — 안정화 + UI 퍼블리싱
+
+### 완료
+
+#### 소켓 안정성
+- Socket.io CORS 와일드카드 `*` → 특정 origin 함수 방식으로 변경 (`withCredentials: true` 충돌 해소)
+- 소켓 재연결 시 `join:user` room 재입장 처리
+- 계정 전환 시 이전 user room 탈퇴 (`leave:user`) 추가
+
+#### 예약 플로우 UX 개선
+- 뒤로가기 히스토리 정리 — `GoalSetting→WaitRequest`, 토스트→`WaitRequest(start)` replace 적용
+- 전체 플로우 완료 후 뒤로가기 1번이면 홈 복귀
+- `Waiting` 뒤로가기 → `SelectEquipment` 고정, `WaitRequest(start)` 뒤로가기 → 홈
+- 토스트 "지금 이동" URL에 기구명 누락 수정
+
+#### 랭킹 페이지 UI (피그마 기준)
+- 1위 카드 배경 `$c-primary`, 순위 번호 원형 `$c-modal` 배경
+- 날짜 앞 `CalendarClock` 아이콘, 헤더 알림 `Bell` 아이콘
+- 배지 컬러 수정 (예약 파란색, 대기 주황색), 시간 텍스트 `$c-primary-light`
+- 토스트 메시지 중앙 정렬 공통 적용
+
+#### 미구현 페이지 레이아웃 퍼블리싱
+- `MyPage` — 프로필, 메뉴 6개 (헬스장 찾기 연결, 나머지 준비중 토스트)
+- `Notification` — 알림 목록 (배지/시간/메시지), 빈 상태 처리
+- `GymFinder` 신규 — 검색바 + 저장됨 탭 + 헬스장 목록, `/gym-finder` 라우터 등록
+
+#### CodeRabbit 리뷰 반영
+- `reset.ts` 운영 환경 가드, 트랜잭션, 실패 종료 코드
+- `waiting.routes.ts` streak 계산 `createdAt` → `updatedAt`
+- `routine.routes.ts` id NaN 검증, 값 범위 검증, PUT 본문 검증
+- `Exercising` `completedMissions` 항상 최신 응답으로 덮어쓰기
+- `Mission` `conditionValue` 0 division by zero 방어
+- `RoutineEdit` 드래그 인덱스 유효성 검증
+- `Routine` `as any` 제거, equipment null 필터링
+- `SelectEquipment` `routineId` NaN 검증
