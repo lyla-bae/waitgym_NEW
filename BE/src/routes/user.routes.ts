@@ -37,17 +37,9 @@ router.delete('/me', authMiddleware, async (req: AuthRequest, res) => {
     process.env.SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
   )
-  const user = await prisma.user.findUnique({ where: { id: req.userId } })
-  if (!user) {
-    res.status(404).json({ message: 'User not found' })
-    return
-  }
+  // Supabase Auth 먼저 삭제 — 실패 시 DB는 그대로 유지
+  await supabaseAdmin.auth.admin.deleteUser(req.supabaseUserId!)
   await prisma.user.delete({ where: { id: req.userId } })
-  if (user.googleId) {
-    const { data: authUsers } = await supabaseAdmin.auth.admin.listUsers()
-    const authUser = authUsers.users.find(u => u.email === user.email)
-    if (authUser) await supabaseAdmin.auth.admin.deleteUser(authUser.id)
-  }
   res.json({ message: '탈퇴가 완료되었습니다.' })
 })
 
