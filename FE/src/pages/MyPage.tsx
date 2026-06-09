@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { User, Dumbbell, Star, Headset, Settings, FileCheck2 } from 'lucide-react'
 import Header from '@/components/Header'
 import NotificationBell from '@/components/NotificationBell'
+import thumbDefault from '@/assets/images/thumb-default.jpg'
 import { useAuthStore } from '@/stores/authStore'
 import { useGlobalToastStore } from '@/stores/globalToastStore'
 
@@ -38,15 +39,9 @@ export default function MyPage() {
               <p>안녕하세요</p>
               <span>{user?.name}</span>님
             </div>
-            {user?.avatar ? (
-              <div className="mypage__greeting-avatar">
-                <img src={user.avatar} alt={user.name} />
-              </div>
-            ) : (
-              <div className="mypage__greeting-avatar-placeholder">
-                {user?.name?.[0] ?? '?'}
-              </div>
-            )}
+            <div className="mypage__greeting-avatar">
+              <img src={user?.avatar ?? thumbDefault} alt={user?.name ?? '프로필'} />
+            </div>
           </div>
 
           <ul className="mypage__menu-list">

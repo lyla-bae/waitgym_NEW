@@ -5,6 +5,7 @@ import Header from '@/components/Header'
 import ConfirmDrawer from '@/components/ConfirmDrawer'
 import { useAuthStore } from '@/stores/authStore'
 import { authFetch } from '@/lib/api'
+import thumbDefault from '@/assets/images/thumb-default.jpg'
 
 export default function ProfilePage() {
   const navigate = useNavigate()
@@ -23,7 +24,6 @@ export default function ProfilePage() {
     }
   }
 
-  const initials = user?.name?.charAt(0)?.toUpperCase() ?? '?'
 
   return (
     <div className="profile-page">
@@ -40,11 +40,11 @@ export default function ProfilePage() {
       <div className="content-scroll">
         <div className="profile-page__container">
           <div className="profile-page__avatar-wrap">
-            {user?.avatar ? (
-              <img src={user.avatar} alt="프로필" className="profile-page__avatar" />
-            ) : (
-              <div className="profile-page__avatar-placeholder">{initials}</div>
-            )}
+            <img
+              src={user?.avatar ?? thumbDefault}
+              alt="프로필"
+              className="profile-page__avatar"
+            />
           </div>
 
           <div className="profile-page__fields">
