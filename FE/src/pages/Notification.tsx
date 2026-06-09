@@ -34,7 +34,7 @@ export default function NotificationPage() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    authFetch<Notification[]>('/api/users/notifications')
+    authFetch<Notification[]>('/users/notifications')
       .then(setNotifications)
       .catch(() => setNotifications([]))
       .finally(() => setIsLoading(false))

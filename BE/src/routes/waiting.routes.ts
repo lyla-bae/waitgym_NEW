@@ -43,6 +43,19 @@ async function notifyNextUser(equipmentId: number) {
     equipmentName: next.equipment.name,
   })
 
+  await prisma.notification.create({
+    data: {
+      userId: next.userId,
+      type: 'YOUR_TURN',
+      category: 'WAITING',
+      title: '내 차례예요!',
+      message: `예약한 ${next.equipment.name}에 자리가 비었어요!`,
+      equipmentId: next.equipment.id,
+      equipmentName: next.equipment.name,
+      queueId: next.id,
+    },
+  })
+
   // 5분 내 미응답 시 자동 취소 후 다음 사람에게 넘김
   scheduleTimeout(`turn:${next.id}`, 5 * 60 * 1000, async () => {
     try {
@@ -302,10 +315,23 @@ router.post('/:id/request', authMiddleware, async (req: AuthRequest, res, next) 
     if (!currentUser) {
       // 아무도 사용 중이 아님 = 내가 1번 → 내 차례 알림
       const equipment = await prisma.equipment.findUnique({ where: { id: waiting.equipmentId } })
+      const equipmentName = equipment?.name ?? ''
       emitUserNotification(userId, {
         type: 'YOUR_TURN',
         waitingId: id,
-        equipmentName: equipment?.name ?? '',
+        equipmentName,
+      })
+      await prisma.notification.create({
+        data: {
+          userId,
+          type: 'YOUR_TURN',
+          category: 'WAITING',
+          title: '내 차례예요!',
+          message: `예약한 ${equipmentName}에 자리가 비었어요!`,
+          equipmentId: waiting.equipmentId,
+          equipmentName,
+          queueId: id,
+        },
       })
       res.json({ myTurn: true })
       return
@@ -320,6 +346,19 @@ router.post('/:id/request', authMiddleware, async (req: AuthRequest, res, next) 
       type: 'HURRY_UP',
       equipmentId: waiting.equipmentId,
       waitingCount,
+    })
+    const equipment = await prisma.equipment.findUnique({ where: { id: waiting.equipmentId } })
+    await prisma.notification.create({
+      data: {
+        userId: currentUser.userId,
+        type: 'HURRY_UP',
+        category: 'WAITING',
+        title: '사용 요청이 왔어요',
+        message: `내 ${equipment?.name ?? ''} 뒤에 기다리는 사람이 ${waitingCount}명 있어요`,
+        equipmentId: waiting.equipmentId,
+        equipmentName: equipment?.name ?? '',
+        queueId: waiting.id,
+      },
     })
 
     res.json({ myTurn: false })

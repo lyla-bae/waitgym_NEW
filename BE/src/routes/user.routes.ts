@@ -14,4 +14,20 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res) => {
   res.json(user)
 })
 
+// GET /api/users/notifications — 내 알림 목록 (최근 7일)
+router.get('/notifications', authMiddleware, async (req: AuthRequest, res) => {
+  const since = new Date()
+  since.setDate(since.getDate() - 7)
+
+  const notifications = await prisma.notification.findMany({
+    where: {
+      userId: req.userId!,
+      createdAt: { gte: since },
+    },
+    orderBy: { createdAt: 'desc' },
+  })
+
+  res.json(notifications)
+})
+
 export default router
