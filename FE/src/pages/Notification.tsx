@@ -35,7 +35,13 @@ export default function NotificationPage() {
 
   useEffect(() => {
     authFetch<Notification[]>('/users/notifications')
-      .then(setNotifications)
+      .then((list) => {
+        setNotifications(list)
+        if (list.some(n => !n.isRead)) {
+          authFetch('/users/notifications/read-all', { method: 'PATCH' }).catch(() => {})
+          setNotifications(list.map(n => ({ ...n, isRead: true })))
+        }
+      })
       .catch(() => setNotifications([]))
       .finally(() => setIsLoading(false))
   }, [])

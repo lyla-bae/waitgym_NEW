@@ -57,3 +57,18 @@
     color: $c-gray;
   }
 }
+
+.notification-bell {
+  position: relative;
+
+  &__dot {
+    position: absolute;
+    top: r(2);
+    right: r(2);
+    width: r(4);
+    height: r(4);
+    border-radius: 50%;
+    background: $c-accent;
+    pointer-events: none;
+  }
+}

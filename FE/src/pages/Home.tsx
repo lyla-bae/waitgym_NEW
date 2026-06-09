@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Bell, Dumbbell, Pencil, Plus } from 'lucide-react'
+import { Dumbbell, Pencil, Plus } from 'lucide-react'
 import Header from '@/components/Header'
+import NotificationBell from '@/components/NotificationBell'
 import { useAuthStore } from '@/stores/authStore'
 import { useRoutineStore } from '@/stores/routineStore'
 import { routineApi } from '@/lib/api'
@@ -54,11 +55,7 @@ export default function HomePage() {
         <Header
           className="header--home"
           leftContent={<img src={logo} alt="기다려짐" className="header__logo" />}
-          rightContent={
-            <button type="button" className="header__action" aria-label="알림" onClick={() => navigate('/notifications')}>
-              <Bell size={22} />
-            </button>
-          }
+          rightContent={<NotificationBell />}
         />
 
         <div className="home-page__greeting">

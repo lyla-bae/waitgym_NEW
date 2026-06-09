@@ -30,4 +30,13 @@ router.get('/notifications', authMiddleware, async (req: AuthRequest, res) => {
   res.json(notifications)
 })
 
+// PATCH /api/users/notifications/read-all — 전체 읽음 처리
+router.patch('/notifications/read-all', authMiddleware, async (req: AuthRequest, res) => {
+  await prisma.notification.updateMany({
+    where: { userId: req.userId!, isRead: false },
+    data: { isRead: true, readAt: new Date() },
+  })
+  res.json({ ok: true })
+})
+
 export default router

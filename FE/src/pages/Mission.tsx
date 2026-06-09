@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import LinearProgress from '@mui/material/LinearProgress'
-import { Bell, CalendarClock } from 'lucide-react'
+import { CalendarClock } from 'lucide-react'
 import Header from '@/components/Header'
+import NotificationBell from '@/components/NotificationBell'
 import { missionApi } from '@/lib/api'
 import { useAuthStore } from '@/stores/authStore'
 import motionStrong from '@/assets/images/motion-strong.png'
@@ -14,7 +14,6 @@ type Tab = 'mission' | 'ranking'
 export default function MissionPage() {
   const [tab, setTab] = useState<Tab>('mission')
   const { user } = useAuthStore()
-  const navigate = useNavigate()
 
   return (
     <div className="mission-page">
@@ -38,11 +37,7 @@ export default function MissionPage() {
             </button>
           </nav>
         }
-        rightContent={
-          <button type="button" className="header__action" onClick={() => navigate('/notifications')} aria-label="알림">
-            <Bell size={24} strokeWidth={1.5} />
-          </button>
-        }
+        rightContent={<NotificationBell />}
       />
       <div className="content-scroll">
         {tab === 'mission' ? (

@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
-import { Bell, User, Dumbbell, Star, Headset, Settings, FileCheck2 } from 'lucide-react'
+import { User, Dumbbell, Star, Headset, Settings, FileCheck2 } from 'lucide-react'
 import Header from '@/components/Header'
+import NotificationBell from '@/components/NotificationBell'
 import { useAuthStore } from '@/stores/authStore'
 import { useGlobalToastStore } from '@/stores/globalToastStore'
 
@@ -26,9 +27,7 @@ export default function MyPage() {
         className="header--sub"
         title="내 정보"
         rightContent={
-          <button type="button" className="header__action" onClick={() => navigate('/notifications')} aria-label="알림">
-            <Bell size={24} strokeWidth={1.5} />
-          </button>
+          <NotificationBell />
         }
       />
 
