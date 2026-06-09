@@ -39,7 +39,6 @@ export default function NotificationPage() {
         setNotifications(list)
         if (list.some(n => !n.isRead)) {
           authFetch('/users/notifications/read-all', { method: 'PATCH' }).catch(() => {})
-          setNotifications(list.map(n => ({ ...n, isRead: true })))
         }
       })
       .catch(() => setNotifications([]))
