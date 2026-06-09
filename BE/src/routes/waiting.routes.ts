@@ -43,7 +43,7 @@ async function notifyNextUser(equipmentId: number) {
     equipmentName: next.equipment.name,
   })
 
-  await prisma.notification.create({
+  prisma.notification.create({
     data: {
       userId: next.userId,
       type: 'YOUR_TURN',
@@ -54,7 +54,7 @@ async function notifyNextUser(equipmentId: number) {
       equipmentName: next.equipment.name,
       queueId: next.id,
     },
-  })
+  }).catch(err => console.error('[notification] YOUR_TURN 저장 실패:', err))
 
   // 5분 내 미응답 시 자동 취소 후 다음 사람에게 넘김
   scheduleTimeout(`turn:${next.id}`, 5 * 60 * 1000, async () => {
@@ -321,7 +321,7 @@ router.post('/:id/request', authMiddleware, async (req: AuthRequest, res, next) 
         waitingId: id,
         equipmentName,
       })
-      await prisma.notification.create({
+      prisma.notification.create({
         data: {
           userId,
           type: 'YOUR_TURN',
@@ -332,7 +332,7 @@ router.post('/:id/request', authMiddleware, async (req: AuthRequest, res, next) 
           equipmentName,
           queueId: id,
         },
-      })
+      }).catch(err => console.error('[notification] YOUR_TURN 저장 실패:', err))
       res.json({ myTurn: true })
       return
     }
@@ -348,7 +348,7 @@ router.post('/:id/request', authMiddleware, async (req: AuthRequest, res, next) 
       waitingCount,
     })
     const equipment = await prisma.equipment.findUnique({ where: { id: waiting.equipmentId } })
-    await prisma.notification.create({
+    prisma.notification.create({
       data: {
         userId: currentUser.userId,
         type: 'HURRY_UP',
@@ -359,7 +359,7 @@ router.post('/:id/request', authMiddleware, async (req: AuthRequest, res, next) 
         equipmentName: equipment?.name ?? '',
         queueId: waiting.id,
       },
-    })
+    }).catch(err => console.error('[notification] HURRY_UP 저장 실패:', err))
 
     res.json({ myTurn: false })
   } catch (err) {
