@@ -44,6 +44,7 @@ export default function ProfilePage() {
               src={user?.avatar ?? thumbDefault}
               alt="프로필"
               className="profile-page__avatar"
+              onError={(e) => { e.currentTarget.src = thumbDefault }}
             />
           </div>
 

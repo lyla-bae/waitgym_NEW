@@ -7,6 +7,7 @@ import { missionApi } from '@/lib/api'
 import { useAuthStore } from '@/stores/authStore'
 import motionStrong from '@/assets/images/motion-strong.png'
 import motionTrophy from '@/assets/images/motion-trophy.png'
+import thumbDefault from '@/assets/images/thumb-default.jpg'
 import type { MissionWithProgress, RankingUser } from '@/types'
 
 type Tab = 'mission' | 'ranking'
@@ -158,11 +159,11 @@ function RankingTab({ myId: _myId }: { myId?: number }) {
                   <span className="ranking-list__rank">{i + 1}</span>
                   <div className="ranking-list__user">
                     <div className="ranking-list__avatar">
-                      {rankUser.avatar ? (
-                        <img src={rankUser.avatar} alt={rankUser.name} />
-                      ) : (
-                        <span className="ranking-list__avatar-placeholder">{rankUser.name[0]}</span>
-                      )}
+                      <img
+                        src={rankUser.avatar ?? thumbDefault}
+                        alt={rankUser.name}
+                        onError={(e) => { e.currentTarget.src = thumbDefault }}
+                      />
                     </div>
                     <span className="ranking-list__name">{rankUser.name}</span>
                   </div>

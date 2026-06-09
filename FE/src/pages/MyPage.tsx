@@ -40,7 +40,11 @@ export default function MyPage() {
               <span>{user?.name}</span>님
             </div>
             <div className="mypage__greeting-avatar">
-              <img src={user?.avatar ?? thumbDefault} alt={user?.name ?? '프로필'} />
+              <img
+                src={user?.avatar ?? thumbDefault}
+                alt={user?.name ?? '프로필'}
+                onError={(e) => { e.currentTarget.src = thumbDefault }}
+              />
             </div>
           </div>
 
