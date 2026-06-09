@@ -13,9 +13,9 @@ export default function MyPage() {
   const comingSoon = () => toast({ message: '준비중입니다.' })
 
   const MENU_ITEMS = [
-    { icon: User,       label: '개인정보 수정',    action: comingSoon },
+    { icon: User,       label: '개인정보 수정',    action: () => navigate('/mypage/profile') },
     { icon: Dumbbell,   label: '이용 헬스장 변경',  action: () => navigate('/gym-finder') },
-    { icon: Star,       label: '즐겨찾기한 기구',   action: comingSoon },
+    { icon: Star,       label: '즐겨찾기한 기구',   action: () => navigate('/mypage/favorites') },
     { icon: Headset,    label: '고객센터',          action: comingSoon },
     { icon: Settings,   label: '앱 설정',           action: comingSoon },
     { icon: FileCheck2, label: '서비스 약관',        action: comingSoon },

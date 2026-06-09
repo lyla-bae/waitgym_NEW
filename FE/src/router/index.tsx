@@ -11,6 +11,8 @@ import MissionPage from '@/pages/Mission'
 import RoutineEditPage from '@/pages/RoutineEdit'
 import RoutineSelectEquipmentPage from '@/pages/RoutineSelectEquipment'
 import MyPage from '@/pages/MyPage'
+import ProfilePage from '@/pages/Profile'
+import FavoritesPage from '@/pages/Favorites'
 import NotificationPage from '@/pages/Notification'
 import GymFinderPage from '@/pages/GymFinder'
 import SelectEquipmentPage from '@/pages/SelectEquipment'
@@ -55,6 +57,8 @@ const router = createBrowserRouter([
           { path: '/routine/:id/edit', element: <RoutineEditPage /> },
           { path: '/routine/select-equipment', element: <RoutineSelectEquipmentPage /> },
           { path: '/mypage', element: <MyPage /> },
+          { path: '/mypage/profile', element: <ProfilePage /> },
+          { path: '/mypage/favorites', element: <FavoritesPage /> },
           { path: '/notifications', element: <NotificationPage /> },
           { path: '/gym-finder', element: <GymFinderPage /> },
           { path: '/reservation/select-equipment', element: <SelectEquipmentPage /> },

@@ -1,0 +1,91 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { ChevronLeft } from 'lucide-react'
+import Header from '@/components/Header'
+import ConfirmDrawer from '@/components/ConfirmDrawer'
+import { useAuthStore } from '@/stores/authStore'
+import { authFetch } from '@/lib/api'
+
+export default function ProfilePage() {
+  const navigate = useNavigate()
+  const { user, signOut } = useAuthStore()
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+
+  async function handleDeleteAccount() {
+    try {
+      await authFetch('/users/me', { method: 'DELETE' })
+      await signOut()
+      navigate('/login', { replace: true })
+    } catch {
+      // 실패해도 로그아웃 처리
+      await signOut()
+      navigate('/login', { replace: true })
+    }
+  }
+
+  const initials = user?.name?.charAt(0)?.toUpperCase() ?? '?'
+
+  return (
+    <div className="profile-page">
+      <Header
+        className="header--sub"
+        leftContent={
+          <button type="button" className="header__back" onClick={() => navigate(-1)} aria-label="뒤로가기">
+            <ChevronLeft size={24} />
+          </button>
+        }
+        title="개인정보 수정"
+      />
+
+      <div className="content-scroll">
+        <div className="profile-page__container">
+          <div className="profile-page__avatar-wrap">
+            {user?.avatar ? (
+              <img src={user.avatar} alt="프로필" className="profile-page__avatar" />
+            ) : (
+              <div className="profile-page__avatar-placeholder">{initials}</div>
+            )}
+          </div>
+
+          <div className="profile-page__fields">
+            <div className="profile-page__field">
+              <p className="profile-page__label">아이디</p>
+              <input
+                type="text"
+                className="profile-page__input"
+                value={user?.email ?? ''}
+                readOnly
+              />
+            </div>
+            <div className="profile-page__field">
+              <p className="profile-page__label">이름</p>
+              <input
+                type="text"
+                className="profile-page__input"
+                value={user?.name ?? ''}
+                readOnly
+              />
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="profile-page__withdraw"
+            onClick={() => setShowDeleteConfirm(true)}
+          >
+            탈퇴하기
+          </button>
+        </div>
+      </div>
+
+      <ConfirmDrawer
+        open={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeleteAccount}
+      >
+        <p className="routine-confirm-drawer__title">정말 탈퇴하시겠어요?</p>
+        <p className="routine-confirm-drawer__desc">탈퇴하면 모든 데이터가 삭제되며 복구할 수 없어요.</p>
+      </ConfirmDrawer>
+    </div>
+  )
+}

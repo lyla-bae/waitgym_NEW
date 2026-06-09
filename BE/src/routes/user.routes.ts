@@ -30,6 +30,27 @@ router.get('/notifications', authMiddleware, async (req: AuthRequest, res) => {
   res.json(notifications)
 })
 
+// DELETE /api/users/me — 회원 탈퇴
+router.delete('/me', authMiddleware, async (req: AuthRequest, res) => {
+  const { createClient } = await import('@supabase/supabase-js')
+  const supabaseAdmin = createClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  )
+  const user = await prisma.user.findUnique({ where: { id: req.userId } })
+  if (!user) {
+    res.status(404).json({ message: 'User not found' })
+    return
+  }
+  await prisma.user.delete({ where: { id: req.userId } })
+  if (user.googleId) {
+    const { data: authUsers } = await supabaseAdmin.auth.admin.listUsers()
+    const authUser = authUsers.users.find(u => u.email === user.email)
+    if (authUser) await supabaseAdmin.auth.admin.deleteUser(authUser.id)
+  }
+  res.json({ message: '탈퇴가 완료되었습니다.' })
+})
+
 // PATCH /api/users/notifications/read-all — 전체 읽음 처리
 router.patch('/notifications/read-all', authMiddleware, async (req: AuthRequest, res) => {
   await prisma.notification.updateMany({
