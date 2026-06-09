@@ -50,8 +50,9 @@ export default function ProfilePage() {
 
           <div className="profile-page__fields">
             <div className="profile-page__field">
-              <p className="profile-page__label">아이디</p>
+              <label htmlFor="profile-email" className="profile-page__label">아이디</label>
               <input
+                id="profile-email"
                 type="text"
                 className="profile-page__input"
                 value={user?.email ?? ''}
@@ -59,8 +60,9 @@ export default function ProfilePage() {
               />
             </div>
             <div className="profile-page__field">
-              <p className="profile-page__label">이름</p>
+              <label htmlFor="profile-name" className="profile-page__label">이름</label>
               <input
+                id="profile-name"
                 type="text"
                 className="profile-page__input"
                 value={user?.name ?? ''}
