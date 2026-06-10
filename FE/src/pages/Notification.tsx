@@ -34,8 +34,13 @@ export default function NotificationPage() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    authFetch<Notification[]>('/api/users/notifications')
-      .then(setNotifications)
+    authFetch<Notification[]>('/users/notifications')
+      .then((list) => {
+        setNotifications(list)
+        if (list.some(n => !n.isRead)) {
+          authFetch('/users/notifications/read-all', { method: 'PATCH' }).catch(() => {})
+        }
+      })
       .catch(() => setNotifications([]))
       .finally(() => setIsLoading(false))
   }, [])

@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom'
-import { Bell, User, Dumbbell, Star, Headset, Settings, FileCheck2 } from 'lucide-react'
+import { User, Dumbbell, Star, Headset, Settings, FileCheck2 } from 'lucide-react'
 import Header from '@/components/Header'
+import NotificationBell from '@/components/NotificationBell'
+import thumbDefault from '@/assets/images/thumb-default.jpg'
 import { useAuthStore } from '@/stores/authStore'
 import { useGlobalToastStore } from '@/stores/globalToastStore'
 
@@ -12,9 +14,9 @@ export default function MyPage() {
   const comingSoon = () => toast({ message: '준비중입니다.' })
 
   const MENU_ITEMS = [
-    { icon: User,       label: '개인정보 수정',    action: comingSoon },
+    { icon: User,       label: '개인정보 수정',    action: () => navigate('/mypage/profile') },
     { icon: Dumbbell,   label: '이용 헬스장 변경',  action: () => navigate('/gym-finder') },
-    { icon: Star,       label: '즐겨찾기한 기구',   action: comingSoon },
+    { icon: Star,       label: '즐겨찾기한 기구',   action: () => navigate('/mypage/favorites') },
     { icon: Headset,    label: '고객센터',          action: comingSoon },
     { icon: Settings,   label: '앱 설정',           action: comingSoon },
     { icon: FileCheck2, label: '서비스 약관',        action: comingSoon },
@@ -26,9 +28,7 @@ export default function MyPage() {
         className="header--sub"
         title="내 정보"
         rightContent={
-          <button type="button" className="header__action" onClick={() => navigate('/notifications')} aria-label="알림">
-            <Bell size={24} strokeWidth={1.5} />
-          </button>
+          <NotificationBell />
         }
       />
 
@@ -39,15 +39,13 @@ export default function MyPage() {
               <p>안녕하세요</p>
               <span>{user?.name}</span>님
             </div>
-            {user?.avatar ? (
-              <div className="mypage__greeting-avatar">
-                <img src={user.avatar} alt={user.name} />
-              </div>
-            ) : (
-              <div className="mypage__greeting-avatar-placeholder">
-                {user?.name?.[0] ?? '?'}
-              </div>
-            )}
+            <div className="mypage__greeting-avatar">
+              <img
+                src={user?.avatar ?? thumbDefault}
+                alt={user?.name ?? '프로필'}
+                onError={(e) => { e.currentTarget.src = thumbDefault }}
+              />
+            </div>
           </div>
 
           <ul className="mypage__menu-list">

@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import LinearProgress from '@mui/material/LinearProgress'
-import { Bell, CalendarClock } from 'lucide-react'
+import { CalendarClock } from 'lucide-react'
 import Header from '@/components/Header'
+import NotificationBell from '@/components/NotificationBell'
 import { missionApi } from '@/lib/api'
 import { useAuthStore } from '@/stores/authStore'
 import motionStrong from '@/assets/images/motion-strong.png'
 import motionTrophy from '@/assets/images/motion-trophy.png'
+import thumbDefault from '@/assets/images/thumb-default.jpg'
 import type { MissionWithProgress, RankingUser } from '@/types'
 
 type Tab = 'mission' | 'ranking'
@@ -14,7 +15,6 @@ type Tab = 'mission' | 'ranking'
 export default function MissionPage() {
   const [tab, setTab] = useState<Tab>('mission')
   const { user } = useAuthStore()
-  const navigate = useNavigate()
 
   return (
     <div className="mission-page">
@@ -38,11 +38,7 @@ export default function MissionPage() {
             </button>
           </nav>
         }
-        rightContent={
-          <button type="button" className="header__action" onClick={() => navigate('/notifications')} aria-label="알림">
-            <Bell size={24} strokeWidth={1.5} />
-          </button>
-        }
+        rightContent={<NotificationBell />}
       />
       <div className="content-scroll">
         {tab === 'mission' ? (
@@ -163,11 +159,11 @@ function RankingTab({ myId: _myId }: { myId?: number }) {
                   <span className="ranking-list__rank">{i + 1}</span>
                   <div className="ranking-list__user">
                     <div className="ranking-list__avatar">
-                      {rankUser.avatar ? (
-                        <img src={rankUser.avatar} alt={rankUser.name} />
-                      ) : (
-                        <span className="ranking-list__avatar-placeholder">{rankUser.name[0]}</span>
-                      )}
+                      <img
+                        src={rankUser.avatar ?? thumbDefault}
+                        alt={rankUser.name}
+                        onError={(e) => { e.currentTarget.src = thumbDefault }}
+                      />
                     </div>
                     <span className="ranking-list__name">{rankUser.name}</span>
                   </div>
