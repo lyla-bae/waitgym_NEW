@@ -131,6 +131,7 @@
   }
 
   &__avatar-wrap {
+    position: relative;
     margin-bottom: r(32);
   }
 
@@ -140,6 +141,29 @@
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid $c-primary;
+  }
+
+  &__avatar-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: r(25);
+    height: r(25);
+    border-radius: 50%;
+    background: $c-gray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $c-white;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
+
+  &__avatar-input {
+    display: none;
   }
 
   &__avatar-placeholder {
@@ -184,6 +208,26 @@
     color: $c-white;
     border: none;
     outline: none;
+
+    &--readonly {
+      opacity: 0.45;
+      cursor: default;
+    }
+  }
+
+  &__save {
+    width: 100%;
+    padding: r(14);
+    background: $c-primary;
+    border-radius: $card-radius;
+    font-size: r(15);
+    font-weight: 600;
+    color: $c-white;
+
+    &:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
   }
 
   &__withdraw {

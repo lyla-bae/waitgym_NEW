@@ -38,6 +38,35 @@ router.get('/notifications', authMiddleware, async (req: AuthRequest, res, next)
   }
 })
 
+// PATCH /api/users/me — 내 정보 수정 (name, avatar)
+router.patch('/me', authMiddleware, async (req: AuthRequest, res, next) => {
+  try {
+    const { name, avatar } = req.body as { name?: string; avatar?: string }
+    if (name !== undefined && (typeof name !== 'string' || !name.trim())) {
+      res.status(400).json({ message: '이름을 입력해주세요.' })
+      return
+    }
+    if (avatar !== undefined && typeof avatar !== 'string') {
+      res.status(400).json({ message: '올바르지 않은 이미지 URL입니다.' })
+      return
+    }
+    const data: { name?: string; avatar?: string } = {}
+    if (name !== undefined) data.name = name.trim()
+    if (avatar !== undefined) data.avatar = avatar
+    if (Object.keys(data).length === 0) {
+      res.status(400).json({ message: '수정할 내용이 없습니다.' })
+      return
+    }
+    const user = await prisma.user.update({
+      where: { id: req.userId },
+      data,
+    })
+    res.json(user)
+  } catch (err) {
+    next(err)
+  }
+})
+
 // DELETE /api/users/me — 회원 탈퇴
 router.delete('/me', authMiddleware, async (req: AuthRequest, res, next) => {
   try {
