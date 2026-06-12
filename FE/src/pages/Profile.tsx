@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Camera, ChevronLeft } from 'lucide-react'
 import Header from '@/components/Header'
@@ -22,6 +22,10 @@ export default function ProfilePage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  useEffect(() => {
+    setName(user?.name ?? '')
+  }, [user?.name])
+
   const isNameChanged = name.trim() !== (user?.name ?? '')
 
   async function handleSaveName() {
@@ -41,7 +45,7 @@ export default function ProfilePage() {
 
   async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
-    if (!file) return
+    if (!file || !user) return
     if (!ALLOWED_TYPES.includes(file.type)) {
       toast({ message: 'jpg, png, webp 파일만 업로드할 수 있어요.' })
       return
@@ -53,7 +57,7 @@ export default function ProfilePage() {
     setAvatarUploading(true)
     try {
       const ext = file.name.split('.').pop()
-      const path = `${user!.id}/${Date.now()}.${ext}`
+      const path = `${user.id}/${Date.now()}.${ext}`
       const { error: uploadError } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
       if (uploadError) throw uploadError
       const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
