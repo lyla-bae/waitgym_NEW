@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { User, Dumbbell, Star, Headset, Settings, FileCheck2 } from 'lucide-react'
+import { User, Star, Headset, Settings, FileCheck2 } from 'lucide-react'
 import Header from '@/components/Header'
 import NotificationBell from '@/components/NotificationBell'
 import thumbDefault from '@/assets/images/thumb-default.jpg'
@@ -15,7 +15,6 @@ export default function MyPage() {
 
   const MENU_ITEMS = [
     { icon: User,       label: '개인정보 수정',    action: () => navigate('/mypage/profile') },
-    { icon: Dumbbell,   label: '이용 헬스장 변경',  action: () => navigate('/gym-finder') },
     { icon: Star,       label: '즐겨찾기한 기구',   action: () => navigate('/mypage/favorites') },
     { icon: Headset,    label: '고객센터',          action: comingSoon },
     { icon: Settings,   label: '앱 설정',           action: comingSoon },
