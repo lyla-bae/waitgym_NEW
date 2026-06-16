@@ -3,7 +3,7 @@ import iconGoogle from '@/assets/images/icon-google.svg'
 import { useAuthStore } from '@/stores/authStore'
 
 export default function LoginPage() {
-  const { signInWithGoogle, signInAnonymously } = useAuthStore()
+  const { signInWithGoogle } = useAuthStore()
 
   return (
     <div className="login-page">
@@ -25,13 +25,6 @@ export default function LoginPage() {
         >
           <img src={iconGoogle} alt="" aria-hidden="true" className="login-page__google-icon" />
           구글아이디로 로그인
-        </button>
-        <button
-          type="button"
-          className="btn btn--primary btn--full"
-          onClick={signInAnonymously}
-        >
-          익명으로 로그인
         </button>
       </div>
     </div>
