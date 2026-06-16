@@ -14,22 +14,23 @@ if [ -z "$EC2_IP" ] || [ -z "$KEY_PATH" ]; then
 fi
 
 EC2_USER="ubuntu"
-REMOTE_DIR="~/waitgym-be"
+REMOTE_DIR="/home/ubuntu/waitgym-be"
 
 echo "📦 빌드 중..."
 npm run build
 
 echo "📤 파일 전송 중..."
 rsync -avz --exclude 'node_modules' --exclude '.env' \
-  -e "ssh -i $KEY_PATH" \
-  dist/ package.json package-lock.json ecosystem.config.js \
-  $EC2_USER@$EC2_IP:$REMOTE_DIR/
+  -e "ssh -i \"$KEY_PATH\"" \
+  dist/ prisma/ package.json package-lock.json ecosystem.config.js \
+  "$EC2_USER@$EC2_IP:$REMOTE_DIR/"
 
 echo "🔧 EC2에서 의존성 설치 및 서버 재시작..."
-ssh -i $KEY_PATH $EC2_USER@$EC2_IP << 'EOF'
-  cd ~/waitgym-be
-  npm install --omit=dev
+ssh -i "$KEY_PATH" "$EC2_USER@$EC2_IP" << 'EOF'
+  cd /home/ubuntu/waitgym-be
+  npm ci
   npx prisma generate
+  npm prune --omit=dev
   pm2 restart ecosystem.config.js --update-env || pm2 start ecosystem.config.js
   pm2 save
 EOF
