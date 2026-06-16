@@ -1,6 +1,6 @@
 <div align="center">
 
-![WaitGym](./readme/00.png)
+![기다려짐](./readme/00.png)
 
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)](https://www.typescriptlang.org/)
@@ -15,7 +15,7 @@
 ## 📖 프로젝트 소개
 
 헬스장에서 불편한 대면 및 대기상황으로 인해 플랜진행이 어려운 문제해결을 위한  
-효율적인 플랜진행을 돕는 **기구 대기 서비스 "WaitGym"** 입니다.
+효율적인 플랜진행을 돕는 **기구 대기 서비스 "기다려짐"** 입니다.
 
 기존 팀 프로젝트를 **혼자 TypeScript로 리빌드**하며 기획/설계/구현/배포 전 과정을 직접 경험했습니다.
 
@@ -221,6 +221,6 @@ waitgym_new/
 
 <div align="center">
 
-Copyright WaitGym. All rights reserved.
+Copyright 기다려짐. All rights reserved.
 
 </div>
