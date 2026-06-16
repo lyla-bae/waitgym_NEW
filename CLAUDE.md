@@ -7,7 +7,7 @@ FE 개발자 포트폴리오용 헬스장 기구 대기 앱 리빌드.
 | 영역 | 기술 | 배포 |
 |---|---|---|
 | FE | React + Vite + TypeScript + SCSS | Vercel |
-| BE | Express + TypeScript | Koyeb |
+| BE | Express + TypeScript | AWS EC2 |
 | DB | Supabase PostgreSQL + Prisma | Supabase |
 | Auth | Supabase Auth (Google OAuth) | Supabase |
 | 실시간 | Socket.io | BE에 포함 |
