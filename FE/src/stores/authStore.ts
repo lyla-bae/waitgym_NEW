@@ -11,7 +11,6 @@ interface AuthState {
   setSession: (session: Session | null) => void
   setUser: (user: AppUser | null) => void
   signInWithGoogle: () => Promise<void>
-  signInAnonymously: () => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -33,10 +32,6 @@ export const useAuthStore = create<AuthState>()(
             redirectTo: `${window.location.origin}/auth/callback`,
           },
         })
-      },
-
-      signInAnonymously: async () => {
-        await supabase.auth.signInAnonymously()
       },
 
       signOut: async () => {

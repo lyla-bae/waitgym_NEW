@@ -7,7 +7,7 @@ FE 개발자 포트폴리오용 헬스장 기구 대기 앱 리빌드.
 | 영역 | 기술 | 배포 |
 |---|---|---|
 | FE | React + Vite + TypeScript + SCSS | Vercel |
-| BE | Express + TypeScript | Koyeb |
+| BE | Express + TypeScript | AWS EC2 |
 | DB | Supabase PostgreSQL + Prisma | Supabase |
 | Auth | Supabase Auth (Google OAuth) | Supabase |
 | 실시간 | Socket.io | BE에 포함 |
@@ -49,10 +49,23 @@ FE 개발자 포트폴리오용 헬스장 기구 대기 앱 리빌드.
 ### 1차 배포 제외
 - 혼잡도, 모바일 앱
 
+## 배포 정보
+- FE: https://waitgym.vercel.app (Vercel)
+- BE: https://waitgym.today (AWS EC2, 서울 리전, t3.micro)
+- BE IP: 43.201.30.37
+- pem 키: ~/Downloads/waitgym-key.pem
+- SSH: `ssh -i ~/Downloads/waitgym-key.pem ubuntu@43.201.30.37`
+
+## 내일 할 것 (2026-06-17)
+- [ ] SSL 발급 완료 확인 (DNS 전파 후 certbot 실행)
+- [ ] Vercel VITE_API_URL → https://waitgym.today 변경 후 재배포
+- [ ] Supabase Auth → URL Configuration → https://waitgym.vercel.app 추가
+- [ ] PR #7 머지
+
 ## 개발 순서
 - 1일차 ✅ DB 스키마 + 프로젝트 세팅 + Socket.io
 - 2일차 기구 목록 FE + API
 - 3일차 웨이팅 플로우 + 실시간
 - 4일차 로그인 + 미션/랭킹
 - 5일차 루틴 + 헬스장 찾기
-- 6일차 UI 다듬기 + 배포
+- 6일차 ✅ UI 다듬기 + 배포
