@@ -1,6 +1,7 @@
 @use '@styles/variables' as *;
 
 .select-equipment-page {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;

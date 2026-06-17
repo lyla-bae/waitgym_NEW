@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ChevronLeft, Star, Users } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { equipmentApi } from '@/lib/api'
 import Header from '@/components/Header'
 import { useGlobalToastStore } from '@/stores/globalToastStore'
@@ -61,7 +62,7 @@ export default function EquipmentDetailPage() {
         }
       />
 
-      <div className="equipment-detail__image-section">
+      <motion.div className="equipment-detail__image-section" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.1, ease: 'easeInOut' }}>
         <div className="equipment-detail__image-wrap">
           {imageUrl ? (
             <img src={imageUrl} alt={name} className="equipment-detail__image" />
@@ -69,9 +70,9 @@ export default function EquipmentDetailPage() {
             <div className="equipment-detail__image-placeholder" />
           )}
         </div>
-      </div>
+      </motion.div>
 
-      <div className="equipment-detail__info-card">
+      <motion.div className="equipment-detail__info-card" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.2, ease: 'easeInOut' }}>
         <div className="equipment-detail__info-row">
           <span className="equipment-detail__info-label">카테고리</span>
           <span className="equipment-detail__info-value">{category}</span>
@@ -97,9 +98,9 @@ export default function EquipmentDetailPage() {
             </div>
           </div>
         )}
-      </div>
+      </motion.div>
 
-      <div className="equipment-detail__cta">
+      <motion.div className="equipment-detail__cta" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.3, ease: 'easeInOut' }}>
         <button
           type="button"
           className="btn btn--white btn--full"
@@ -111,7 +112,7 @@ export default function EquipmentDetailPage() {
         >
           {equipment.isBeingUsed || (equipment.waitingCount ?? 0) > 0 ? '대기하기' : '이용하기'}
         </button>
-      </div>
+      </motion.div>
     </div>
   )
 }

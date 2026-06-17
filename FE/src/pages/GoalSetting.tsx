@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ChevronLeft, Plus, Minus } from 'lucide-react'
+import { motion } from 'framer-motion'
 import Header from '@/components/Header'
 
 function formatSeconds(seconds: number): string {
@@ -28,7 +29,7 @@ export default function GoalSettingPage() {
   }
 
   return (
-    <div className="goal-setting-page">
+    <motion.div className="goal-setting-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2, delay: 0.2, ease: 'easeInOut' }}>
       <main className="content-scroll">
         <Header
           className="header--sub"
@@ -119,6 +120,6 @@ export default function GoalSettingPage() {
           예약하기
         </button>
       </div>
-    </div>
+    </motion.div>
   )
 }

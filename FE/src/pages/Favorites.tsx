@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft } from 'lucide-react'
+import { motion } from 'framer-motion'
 import Header from '@/components/Header'
 import EquipmentCard from '@/components/EquipmentCard'
 import { equipmentApi } from '@/lib/api'
@@ -47,7 +48,7 @@ export default function FavoritesPage() {
   }
 
   return (
-    <div className="favorites-page">
+    <motion.div className="favorites-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.2, ease: 'easeInOut' }}>
       <Header
         className="header--sub"
         leftContent={
@@ -93,6 +94,6 @@ export default function FavoritesPage() {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   )
 }

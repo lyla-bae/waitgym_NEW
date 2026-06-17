@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { User, Star, Headset, Settings, FileCheck2 } from 'lucide-react'
 import Header from '@/components/Header'
 import NotificationBell from '@/components/NotificationBell'
@@ -22,7 +23,7 @@ export default function MyPage() {
   ]
 
   return (
-    <div className="mypage">
+    <motion.div className="mypage" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.2, ease: 'easeInOut' }}>
       <Header
         className="header--sub"
         title="내 정보"
@@ -63,6 +64,6 @@ export default function MyPage() {
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }

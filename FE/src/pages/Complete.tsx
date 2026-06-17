@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CheckCircle2, Dumbbell, Timer } from 'lucide-react'
+import { motion } from 'framer-motion'
 import Drawer from '@mui/material/Drawer'
 import motionClap from '@/assets/images/motion-clap.png'
 import motionTrophy from '@/assets/images/motion-trophy.png'
@@ -33,7 +34,7 @@ export default function CompletePage() {
   }
 
   return (
-    <div className="complete-page">
+    <motion.div className="complete-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2, delay: 0.2, ease: 'easeInOut' }}>
       <main className="complete-page__content">
         <div className="complete-page__title">
           <div className="complete-page__icon">
@@ -98,6 +99,6 @@ export default function CompletePage() {
           </button>
         </div>
       </Drawer>
-    </div>
+    </motion.div>
   )
 }

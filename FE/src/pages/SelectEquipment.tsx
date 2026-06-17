@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ChevronLeft, Search, Star } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { equipmentApi, routineApi } from '@/lib/api'
 import Header from '@/components/Header'
 import EquipmentCard from '@/components/EquipmentCard'
@@ -89,7 +90,7 @@ export default function SelectEquipmentPage() {
   }
 
   return (
-    <div className="select-equipment-page">
+    <motion.div className="select-equipment-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2, delay: 0.2, ease: 'easeInOut' }}>
       <Header
         className="header--sub"
         leftContent={
@@ -181,6 +182,6 @@ export default function SelectEquipmentPage() {
           </ul>
         )}
       </section>
-    </div>
+    </motion.div>
   )
 }

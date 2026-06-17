@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Dumbbell, Pencil, Plus } from 'lucide-react'
+import { motion } from 'framer-motion'
 import Header from '@/components/Header'
 import { routineApi } from '@/lib/api'
 import { useRoutineStore } from '@/stores/routineStore'
@@ -40,7 +41,7 @@ export default function RoutinePage() {
   }
 
   return (
-    <div className="routine-page">
+    <motion.div className="routine-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.2, ease: 'easeInOut' }}>
       <Header title="루틴" />
       <div className="content-scroll">
         <div className="routine-page__container">
@@ -95,6 +96,6 @@ export default function RoutinePage() {
           루틴 추가
         </button>
       </div>
-    </div>
+    </motion.div>
   )
 }

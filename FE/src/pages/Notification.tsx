@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft } from 'lucide-react'
+import { motion } from 'framer-motion'
 import Header from '@/components/Header'
 import { authFetch } from '@/lib/api'
 
@@ -46,7 +47,7 @@ export default function NotificationPage() {
   }, [])
 
   return (
-    <div className="notification-page">
+    <motion.div className="notification-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.2, ease: 'easeInOut' }}>
       <Header
         className="header--sub"
         leftContent={
@@ -83,6 +84,6 @@ export default function NotificationPage() {
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }

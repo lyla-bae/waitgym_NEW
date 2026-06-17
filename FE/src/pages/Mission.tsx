@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import LinearProgress from '@mui/material/LinearProgress'
 import { CalendarClock } from 'lucide-react'
 import Header from '@/components/Header'
@@ -17,7 +18,7 @@ export default function MissionPage() {
   const { user } = useAuthStore()
 
   return (
-    <div className="mission-page">
+    <motion.div className="mission-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.2, ease: 'easeInOut' }}>
       <Header
         className="header--mission"
         leftContent={
@@ -47,7 +48,7 @@ export default function MissionPage() {
           <RankingTab myId={user?.id} />
         )}
       </div>
-    </div>
+    </motion.div>
   )
 }
 

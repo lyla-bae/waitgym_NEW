@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { CircleCheck, Circle, Plus, Minus } from 'lucide-react'
 import Header from '@/components/Header'
@@ -139,7 +140,7 @@ export default function ExercisingPage() {
   if (isResting) {
     const progress = restTotalSec > 0 ? (restLeftSec / restTotalSec) * 100 : 0
     return (
-      <div className="exercising-page exercising-page--rest">
+      <motion.div className="exercising-page exercising-page--rest" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2, delay: 0.2, ease: 'easeInOut' }}>
         <Header className="header--exercising" />
 
         <main className="exercising-page__content">
@@ -179,12 +180,12 @@ export default function ExercisingPage() {
         <p className="visually-hidden" aria-live="polite">
           휴식 중, 남은 시간 {formatSec(restLeftSec)}
         </p>
-      </div>
+      </motion.div>
     )
   }
 
   return (
-    <div className="exercising-page">
+    <motion.div className="exercising-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2, delay: 0.2, ease: 'easeInOut' }}>
       <Header
         className="header--exercising"
         rightContent={
@@ -213,6 +214,6 @@ export default function ExercisingPage() {
       <p className="visually-hidden" aria-live="polite">
         {sets}개 중 {currentSet}세트 완료
       </p>
-    </div>
+    </motion.div>
   )
 }
