@@ -82,6 +82,50 @@
   &__msg   { width: 75%; height: r(14); }
 }
 
+// 미션 카드 스켈레톤
+.mission-card-sk {
+  background: $c-card;
+  border-radius: $card-radius;
+  padding: r(16);
+  display: flex;
+  flex-direction: column;
+  gap: r(12);
+
+  &__info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__title  { width: 55%; height: r(16); }
+  &__points { width: r(32); height: r(16); }
+  &__desc   { width: 80%; height: r(13); }
+  &__bar    { width: 100%; height: r(6); border-radius: r(3); }
+}
+
+// 랭킹 아이템 스켈레톤
+.ranking-item-sk {
+  display: flex;
+  align-items: center;
+  gap: r(12);
+  background: $c-card;
+  border-radius: $card-radius;
+  padding: r(12) r(16);
+
+  &__rank   { width: r(20); height: r(20); border-radius: 50%; flex-shrink: 0; }
+
+  &__user {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: r(10);
+  }
+
+  &__avatar { width: r(36); height: r(36); border-radius: 50%; flex-shrink: 0; }
+  &__name   { width: 40%; height: r(15); }
+  &__points { width: r(48); height: r(15); }
+}
+
 // 기구 상세 스켈레톤
 .detail-sk {
   &__image-section {
