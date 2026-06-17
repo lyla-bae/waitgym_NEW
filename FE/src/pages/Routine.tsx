@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Dumbbell, Pencil, Plus } from 'lucide-react'
 import { motion } from 'framer-motion'
 import Header from '@/components/Header'
+import { Skeleton } from '@/components/ui/Skeleton'
 import { routineApi } from '@/lib/api'
 import { useRoutineStore } from '@/stores/routineStore'
 import type { WorkoutRoutine, RoutineExercise } from '@/types'
@@ -46,7 +47,17 @@ export default function RoutinePage() {
       <div className="content-scroll">
         <div className="routine-page__container">
           {isLoading ? (
-            <p className="routine-page__loading">로딩 중...</p>
+            <ul className="routine-page__list" aria-hidden="true">
+              {[0, 1, 2].map((i) => (
+                <li key={i} className="routine-card-sk">
+                  <Skeleton className="routine-card-sk__icon" />
+                  <div className="routine-card-sk__body">
+                    <Skeleton className="routine-card-sk__title" />
+                    <Skeleton className="routine-card-sk__detail" />
+                  </div>
+                </li>
+              ))}
+            </ul>
           ) : routines.length === 0 ? (
             <ul className="routine-page__list">
               <li>

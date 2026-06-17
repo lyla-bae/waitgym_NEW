@@ -4,6 +4,7 @@ import { ChevronLeft, Star, Users } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { equipmentApi } from '@/lib/api'
 import Header from '@/components/Header'
+import { Skeleton } from '@/components/ui/Skeleton'
 import { useGlobalToastStore } from '@/stores/globalToastStore'
 import type { Equipment } from '@/types'
 
@@ -33,7 +34,36 @@ export default function EquipmentDetailPage() {
     }
   }
 
-  if (loading) return <p className="home-page__empty">불러오는 중...</p>
+  if (loading) {
+    return (
+      <div className="equipment-detail">
+        <Header
+          className="header--sub"
+          leftContent={
+            <button type="button" className="header__back" onClick={() => navigate(-1)} aria-label="뒤로 가기">
+              <ChevronLeft size={24} />
+            </button>
+          }
+          title=""
+        />
+        <div className="detail-sk__image-section" aria-hidden="true">
+          <Skeleton className="detail-sk__image" />
+        </div>
+        <div className="detail-sk__info-card" aria-hidden="true">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="detail-sk__row">
+              <Skeleton className="detail-sk__label" />
+              <Skeleton className="detail-sk__value" />
+            </div>
+          ))}
+        </div>
+        <div className="equipment-detail__cta" aria-hidden="true">
+          <Skeleton className="detail-sk__cta" style={{ width: '100%' }} />
+        </div>
+      </div>
+    )
+  }
+
   if (!equipment) return <p className="home-page__empty">기구를 찾을 수 없어요</p>
 
   const { name, imageUrl, category, isFavorite, currentUsage, waitingCount } = equipment

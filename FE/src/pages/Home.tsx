@@ -69,8 +69,8 @@ export default function HomePage() {
             {isLoading ? (
               <ul className="home-page__routine-list">
                 {[0, 1].map((i) => (
-                  <li key={i}>
-                    <div className="home-page__routine-item home-page__routine-item--skeleton" />
+                  <li key={i} aria-hidden="true">
+                    <div className="home-page__routine-item home-page__routine-item--skeleton skeleton" />
                   </li>
                 ))}
               </ul>

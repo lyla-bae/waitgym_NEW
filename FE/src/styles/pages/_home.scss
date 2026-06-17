@@ -50,16 +50,7 @@
 
     &--skeleton {
       height: r(76);
-      background: linear-gradient(90deg, $c-card 25%, rgba($c-primary, 0.3) 50%, $c-card 75%);
-      background-size: 200% 100%;
-      animation: skeleton-shimmer 1.4s infinite;
-      border-radius: $card-radius;
     }
-  }
-
-  @keyframes skeleton-shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
   }
 
   &__routine-start {

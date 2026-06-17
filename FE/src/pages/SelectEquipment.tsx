@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { equipmentApi, routineApi } from '@/lib/api'
 import Header from '@/components/Header'
 import EquipmentCard from '@/components/EquipmentCard'
+import { Skeleton } from '@/components/ui/Skeleton'
 import { useGlobalToastStore } from '@/stores/globalToastStore'
 import type { Equipment } from '@/types'
 
@@ -154,7 +155,19 @@ export default function SelectEquipmentPage() {
 
       <section className="select-equipment-page__list">
         {loading ? (
-          <p className="select-equipment-page__empty">불러오는 중...</p>
+          <ul className="select-equipment-page__equipment-list" aria-hidden="true">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <li key={i}>
+                <div className="equipment-card equipment-card-sk">
+                  <Skeleton className="equipment-card-sk__image" />
+                  <div className="equipment-card-sk__body">
+                    <Skeleton className="equipment-card-sk__name" />
+                    <Skeleton className="equipment-card-sk__status" />
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
         ) : error ? (
           <div className="select-equipment-page__error">
             <p className="select-equipment-page__error-msg">오류: {error}</p>
