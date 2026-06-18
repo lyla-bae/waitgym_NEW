@@ -19,6 +19,7 @@ import GoalSettingPage from '@/pages/GoalSetting'
 import WaitRequestPage from '@/pages/WaitRequest'
 import ExercisingPage from '@/pages/Exercising'
 import CompletePage from '@/pages/Complete'
+import NotFoundPage from '@/pages/NotFound'
 
 function ProtectedRoute() {
   const { session, isLoading } = useAuthStore()
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
   {
     path: '/login',
     element: <LoginPage />,
+  },
+  {
+    path: '*',
+    element: <NotFoundPage />,
   },
   {
     path: '/auth/callback',
