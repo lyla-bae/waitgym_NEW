@@ -1,0 +1,67 @@
+@use '@styles/variables' as *;
+@use 'sass:string';
+
+.floating-rest-timer {
+  position: fixed;
+  right: string.unquote('max(#{$screen-padding}, calc((100vw - 480px) / 2 + #{$screen-padding}))');
+  bottom: r(164);
+  z-index: 200;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: r(70);
+  height: r(70);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 r(2) r(15) rgba(0, 0, 0, 0.35);
+  background: $c-bg;
+  transition: transform 0.15s ease;
+
+  &:active {
+    transform: scale(0.92);
+  }
+
+  .MuiCircularProgress-root {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  &__track {
+    color: $c-primary-light !important;
+    opacity: 0.3;
+  }
+
+  &__progress {
+    color: $c-accent !important;
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    transform: rotate(90deg) scaleX(-1) !important;
+  }
+
+  &__inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: r(3);
+  }
+
+  &__label {
+    font-size: r(11);
+    font-weight: 600;
+    color: $c-white;
+    line-height: 1;
+  }
+
+  &__time {
+    font-size: r(14);
+    font-weight: 700;
+    color: $c-accent;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+}

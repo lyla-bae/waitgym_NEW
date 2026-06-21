@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { CircleCheck, Circle, Plus, Minus } from "lucide-react";
@@ -36,6 +36,8 @@ export default function ExercisingPage() {
     setCompletedMissions,
     routineId,
     routineName,
+    setRestEndAt,
+    setRestStartedAt,
   } = useWorkoutStore();
 
   // 운동 타이머 (ms)
@@ -47,7 +49,23 @@ export default function ExercisingPage() {
   const [restLeftSec, setRestLeftSec] = useState(0);
   const [restTotalSec, setRestTotalSec] = useState(0);
   const restRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const restStartedAtRef = useRef<number>(0);
+
+  // store에서 휴식 시작 시각을 읽는 헬퍼 (interval 클로저 내부에서 항상 최신값 사용)
+  const getRestStartedAt = useCallback(
+    () => useWorkoutStore.getState().restStartedAt ?? Date.now(),
+    [],
+  );
+
+  // 현황보기로 이탈 후 복귀 시 휴식 타이머 복원
+  useEffect(() => {
+    const { restEndAt } = useWorkoutStore.getState();
+    if (restEndAt && restEndAt > Date.now()) {
+      const remaining = Math.ceil((restEndAt - Date.now()) / 1000);
+      setRestTotalSec(remaining);
+      setRestLeftSec(remaining);
+      setIsResting(true);
+    }
+  }, []);
 
   // isResting에 따라 운동/휴식 타이머 전환
   useEffect(() => {
@@ -59,7 +77,9 @@ export default function ExercisingPage() {
         setRestLeftSec((prev) => {
           if (prev <= 1) {
             clearInterval(restRef.current!);
-            addRestMs(Date.now() - restStartedAtRef.current);
+            addRestMs(Date.now() - getRestStartedAt());
+            setRestStartedAt(null);
+            setRestEndAt(null);
             setIsResting(false);
             setElapsed(0);
             return 0;
@@ -125,12 +145,15 @@ export default function ExercisingPage() {
     if (exerciseRef.current) clearInterval(exerciseRef.current);
     setRestTotalSec(restSeconds);
     setRestLeftSec(restSeconds);
-    restStartedAtRef.current = Date.now();
+    setRestStartedAt(Date.now());
+    setRestEndAt(Date.now() + restSeconds * 1000);
     setIsResting(true);
   }
 
   function handleSkipRest() {
-    addRestMs(Date.now() - restStartedAtRef.current);
+    addRestMs(Date.now() - getRestStartedAt());
+    setRestStartedAt(null);
+    setRestEndAt(null);
     setElapsed(0);
     setIsResting(false);
   }

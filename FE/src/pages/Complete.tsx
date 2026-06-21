@@ -25,12 +25,15 @@ function eulReul(name: string) {
 
 export default function CompletePage() {
   const navigate = useNavigate()
-  const { equipmentName, startedAt, totalWorkMs, totalRestMs, completedMissions, reset } = useWorkoutStore()
+  const { equipmentName, startedAt, totalWorkMs, totalRestMs, completedMissions, routineId, routineName, reset } = useWorkoutStore()
   const [drawerOpen, setDrawerOpen] = useState(completedMissions.length > 0)
 
   function handleConfirm() {
+    const dest = routineId
+      ? `/reservation/select-equipment?routineId=${routineId}&routineName=${encodeURIComponent(routineName)}`
+      : '/reservation/select-equipment'
     reset()
-    navigate('/reservation/select-equipment', { replace: true })
+    navigate(dest, { replace: true })
   }
 
   return (

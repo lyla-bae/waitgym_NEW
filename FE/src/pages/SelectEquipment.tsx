@@ -128,7 +128,7 @@ export default function SelectEquipmentPage() {
       <Header
         className="header--sub"
         leftContent={
-          <button type="button" className="header__back" onClick={() => navigate(-1)} aria-label="뒤로가기">
+          <button type="button" className="header__back" onClick={() => isRoutineMode ? navigate('/') : navigate(-1)} aria-label="뒤로가기">
             <ChevronLeft size={24} />
           </button>
         }

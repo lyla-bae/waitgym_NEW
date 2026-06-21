@@ -119,7 +119,7 @@ export default function GoalSettingPage() {
 
       <div className="btn-wrap">
         <button type="button" className="btn btn--white btn--full" onClick={handleNext}>
-          예약하기
+          설정 완료
         </button>
       </div>
     </motion.div>

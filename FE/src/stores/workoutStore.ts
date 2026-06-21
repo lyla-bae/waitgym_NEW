@@ -12,6 +12,8 @@ interface WorkoutState {
   completedMissions: { id: number; name: string; rewardPoints: number }[]
   routineId: number | null
   routineName: string
+  restEndAt: number | null
+  restStartedAt: number | null
   start: (params: {
     waitingId: number
     equipmentName: string
@@ -23,6 +25,8 @@ interface WorkoutState {
   completeSet: (workMs: number) => boolean
   addRestMs: (ms: number) => void
   setCompletedMissions: (missions: { id: number; name: string; rewardPoints: number }[]) => void
+  setRestEndAt: (endAt: number | null) => void
+  setRestStartedAt: (at: number | null) => void
   reset: () => void
 }
 
@@ -38,6 +42,8 @@ const initialState = {
   completedMissions: [] as { id: number; name: string; rewardPoints: number }[],
   routineId: null,
   routineName: '',
+  restEndAt: null,
+  restStartedAt: null,
 }
 
 export const useWorkoutStore = create<WorkoutState>((set, get) => ({
@@ -69,6 +75,10 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
   addRestMs: (ms) => set((s) => ({ totalRestMs: s.totalRestMs + ms })),
 
   setCompletedMissions: (missions) => set({ completedMissions: missions }),
+
+  setRestEndAt: (endAt) => set({ restEndAt: endAt }),
+
+  setRestStartedAt: (at) => set({ restStartedAt: at }),
 
   reset: () => set(initialState),
 }))
