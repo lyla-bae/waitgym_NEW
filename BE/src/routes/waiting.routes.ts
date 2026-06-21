@@ -258,6 +258,8 @@ router.post('/quick-start', authMiddleware, async (req: AuthRequest, res, next) 
       }
     })
 
+    emitEquipmentUpdate(equipmentId, { equipmentId, waitingCount: 0 })
+    emitEquipmentListUpdate()
     res.status(201).json(record)
   } catch (err) {
     next(err)
@@ -431,6 +433,10 @@ router.patch('/:id/start', authMiddleware, async (req: AuthRequest, res, next) =
       }
     })
 
+    const waitingCount = await prisma.waitingQueue.count({
+      where: { equipmentId: waiting.equipmentId, status: 'WAITING' },
+    })
+    emitEquipmentUpdate(waiting.equipmentId, { equipmentId: waiting.equipmentId, waitingCount })
     emitEquipmentListUpdate()
 
     res.json(updated)

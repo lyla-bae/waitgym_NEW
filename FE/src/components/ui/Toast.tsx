@@ -17,11 +17,15 @@ export function Toast({ message, duration = 2000, action, onClose }: ToastProps)
   const [visible, setVisible] = useState(true)
 
   useEffect(() => {
+    let closeTimer: ReturnType<typeof setTimeout> | null = null
     const timer = setTimeout(() => {
       setVisible(false)
-      setTimeout(onClose, 300)
+      closeTimer = setTimeout(onClose, 300)
     }, duration)
-    return () => clearTimeout(timer)
+    return () => {
+      clearTimeout(timer)
+      if (closeTimer) clearTimeout(closeTimer)
+    }
   }, [duration, onClose])
 
   return (

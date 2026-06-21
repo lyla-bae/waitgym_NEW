@@ -101,13 +101,16 @@ export default function ExercisingPage() {
 
   async function finishWorkout(workMs: number) {
     if (exerciseRef.current) clearInterval(exerciseRef.current);
-    completeSet(workMs);
-    if (!waitingId) return;
+    if (!waitingId) {
+      completeSet(workMs);
+      return;
+    }
     try {
       const result = await waitingApi.complete(waitingId, {
         actualWorkMs: totalWorkMs + workMs,
         actualRestMs: totalRestMs,
       });
+      completeSet(workMs);
       setCompletedMissions(result.completedMissions ?? []);
       navigate("/workout/complete", { replace: true });
     } catch (e) {
@@ -121,15 +124,20 @@ export default function ExercisingPage() {
   }
 
   async function handleSetComplete() {
-    const isLast = completeSet(elapsed);
+    const isLast = currentSet >= sets;
     if (isLast) {
       if (exerciseRef.current) clearInterval(exerciseRef.current);
-      if (!waitingId) return;
+      if (!waitingId) {
+        completeSet(elapsed);
+        navigate("/workout/complete", { replace: true });
+        return;
+      }
       try {
         const result = await waitingApi.complete(waitingId, {
           actualWorkMs: totalWorkMs + elapsed,
           actualRestMs: totalRestMs,
         });
+        completeSet(elapsed);
         setCompletedMissions(result.completedMissions ?? []);
         navigate("/workout/complete", { replace: true });
       } catch (e) {
@@ -142,6 +150,7 @@ export default function ExercisingPage() {
       }
       return;
     }
+    completeSet(elapsed);
     if (exerciseRef.current) clearInterval(exerciseRef.current);
     setRestTotalSec(restSeconds);
     setRestLeftSec(restSeconds);
