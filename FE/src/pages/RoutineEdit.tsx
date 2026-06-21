@@ -48,12 +48,10 @@ function formatSeconds(s: number) {
 
 function SortableExerciseItem({
   item,
-  index,
   onUpdate,
   onRemoveRequest,
 }: {
   item: RoutineExerciseItem;
-  index: number;
   onUpdate: (
     id: number,
     field: "targetSets" | "restSeconds",
@@ -341,11 +339,10 @@ export default function RoutineEditPage() {
                 strategy={verticalListSortingStrategy}
               >
                 <ul className="routine-edit__box-list">
-                  {exercises.map((item, i) => (
+                  {exercises.map((item) => (
                     <SortableExerciseItem
                       key={item.equipmentId}
                       item={item}
-                      index={i}
                       onUpdate={updateExercise}
                       onRemoveRequest={setRemoveTargetId}
                     />

@@ -224,7 +224,7 @@ export default function SelectEquipmentPage() {
         ) : error ? (
           <div className="select-equipment-page__error">
             <p className="select-equipment-page__error-msg">오류: {error}</p>
-            <button type="button" className="select-equipment-page__retry" onClick={isRoutineMode ? fetchRoutineEquipments : fetchEquipments}>
+            <button type="button" className="select-equipment-page__retry" onClick={() => isRoutineMode ? fetchRoutineEquipments() : fetchEquipments()}>
               다시 시도
             </button>
           </div>
