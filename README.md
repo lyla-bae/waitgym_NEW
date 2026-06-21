@@ -4,9 +4,9 @@
 
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)](https://www.typescriptlang.org/)
-[![Vercel](https://img.shields.io/badge/Vercel-Deploy-black?logo=vercel)](https://waitgym.vercel.app)
+[![Vercel](https://img.shields.io/badge/Vercel-Deploy-black?logo=vercel)](https://waitgym.today)
 
-[🌐 서비스 바로가기](https://waitgym.vercel.app)
+[🌐 서비스 바로가기](https://waitgym.today)
 
 ---
 
@@ -17,7 +17,7 @@
 헬스장에서 불편한 대면 및 대기상황으로 인해 플랜진행이 어려운 문제해결을 위한  
 효율적인 플랜진행을 돕는 **기구 대기 서비스 "기다려짐"** 입니다.
 
-기존 팀 프로젝트를 **혼자 TypeScript로 리빌드**하며 기획/설계/구현/배포 전 과정을 직접 경험했습니다.
+기존 팀 프로젝트를 **혼자 리빌드**하며 기획/설계/구현/배포 전 과정을 직접 경험했습니다.
 
 ### 🎯 핵심 기능
 
@@ -31,7 +31,8 @@
 
 ### 2. 📋 **기구 대기열 파악**
 
-> 기구마다 **현재 대기 인원**과 **사용 현황**을 실시간으로 파악하여, 효율적인 운동 계획이 가능합니다.
+> 기구마다 **현재 대기 인원**과 **사용 현황**을 Socket.io로 실시간 갱신합니다.  
+> **자동 제안** 토글로 대기가 적은 기구를 우선 정렬하여 효율적인 운동 계획이 가능합니다.
 
 ![기구 대기열 파악](./readme/02.png)
 
@@ -42,6 +43,13 @@
 > 사용 중인 기구를 실시간으로 대기 등록하고, 내 차례가 되면 알림을 받아 효율적으로 운동할 수 있습니다.
 
 ![기구 대기 및 실시간 알림](./readme/03.png)
+
+---
+
+### 4. ⏱️ **세트 / 휴식 타이머**
+
+> 세트 완료 후 휴식 타이머가 자동으로 시작됩니다.  
+> 루틴 현황 보기로 이탈해도 **플로팅 타이머**로 운동 흐름이 유지되며, 타이머 종료 시 운동 화면으로 자동 복귀합니다.
 
 ---
 
@@ -176,22 +184,6 @@ waitgym_new/
 **✅ 해결**
 
 - 드래그 감도값 조정으로 스크롤과 드래그 이벤트 분리
-
----
-
-## ⚠️ 에러 코드
-
-| 코드 | 의미 |
-|---|---|
-| 200 | OK |
-| 201 | Created |
-| 204 | No Content |
-| 400 | Bad Request |
-| 401 | Unauthorized |
-| 403 | Forbidden |
-| 404 | Not Found |
-| 409 | Conflict |
-| 500 | Server Error |
 
 ---
 
