@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { authMiddleware } from '../middleware/auth.middleware'
 import { prisma } from '../lib/prisma'
-import { emitEquipmentUpdate, emitUserNotification } from '../socket/socket.server'
+import { emitEquipmentUpdate, emitEquipmentListUpdate, emitUserNotification } from '../socket/socket.server'
 import type { AuthRequest } from '../middleware/auth.middleware'
 
 const router = Router()
@@ -72,6 +72,7 @@ async function notifyNextUser(equipmentId: number) {
 
       const waitingCount = await prisma.waitingQueue.count({ where: { equipmentId, status: 'WAITING' } })
       emitEquipmentUpdate(equipmentId, { equipmentId, waitingCount })
+      emitEquipmentListUpdate()
       await notifyNextUser(equipmentId)
     } catch (err) {
       console.error('[timeout] turn timeout error:', err)
@@ -150,6 +151,7 @@ async function completeWaiting(id: number, equipmentId: number, actualWorkMs?: n
 
   const waitingCount = await prisma.waitingQueue.count({ where: { equipmentId, status: 'WAITING' } })
   emitEquipmentUpdate(equipmentId, { equipmentId, waitingCount })
+  emitEquipmentListUpdate()
   await notifyNextUser(equipmentId)
   return updateMissionProgress(userId)
 }
@@ -193,6 +195,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res, next) => {
       where: { equipmentId, status: 'WAITING' },
     })
     emitEquipmentUpdate(equipmentId, { equipmentId, waitingCount })
+    emitEquipmentListUpdate()
 
     res.status(201).json({ ...waiting, waitingCount })
   } catch (err) {
@@ -423,6 +426,8 @@ router.patch('/:id/start', authMiddleware, async (req: AuthRequest, res, next) =
       }
     })
 
+    emitEquipmentListUpdate()
+
     res.json(updated)
   } catch (err) {
     next(err)
@@ -499,6 +504,7 @@ router.delete('/:id', authMiddleware, async (req: AuthRequest, res, next) => {
       where: { equipmentId: waiting.equipmentId, status: 'WAITING' },
     })
     emitEquipmentUpdate(waiting.equipmentId, { equipmentId: waiting.equipmentId, waitingCount })
+    emitEquipmentListUpdate()
 
     res.json({ message: '대기가 취소되었습니다.' })
   } catch (err) {

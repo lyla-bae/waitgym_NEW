@@ -63,3 +63,8 @@ export function emitEquipmentUpdate(equipmentId: number, data: unknown) {
 export function emitUserNotification(userId: number, notification: unknown) {
   getIo().to(`user:${userId}`).emit('notification:new', notification)
 }
+
+// 기구 목록 전체 갱신 브로드캐스트
+export function emitEquipmentListUpdate() {
+  getIo().emit('equipment:list:updated')
+}
