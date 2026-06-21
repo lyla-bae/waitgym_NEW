@@ -17,13 +17,15 @@ export default function GoalSettingPage() {
   const equipmentId = searchParams.get('equipmentId') ?? ''
   const equipmentName = searchParams.get('name') ?? ''
   const imageUrl = searchParams.get('imageUrl') ?? ''
+  const routineId = searchParams.get('routineId')
+  const routineName = searchParams.get('routineName')
 
   const [sets, setSets] = useState(3)
   const [restSeconds, setRestSeconds] = useState(60)
 
   function handleNext() {
     navigate(
-      `/reservation/wait-request?equipmentId=${equipmentId}&name=${encodeURIComponent(equipmentName)}&sets=${sets}&restSeconds=${restSeconds}`,
+      `/reservation/wait-request?equipmentId=${equipmentId}&name=${encodeURIComponent(equipmentName)}&sets=${sets}&restSeconds=${restSeconds}${routineId ? `&routineId=${routineId}&routineName=${encodeURIComponent(routineName ?? '')}` : ''}`,
       { replace: true },
     )
   }

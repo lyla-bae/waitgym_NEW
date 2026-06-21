@@ -237,7 +237,7 @@ export default function SelectEquipmentPage() {
                   onFavoriteToggle={!isRoutineMode ? handleFavoriteToggle : undefined}
                   onClick={() =>
                     navigate(
-                      `/reservation/goal-setting?equipmentId=${equipment.id}&name=${encodeURIComponent(equipment.name)}&imageUrl=${encodeURIComponent(equipment.imageUrl ?? '')}`,
+                      `/reservation/goal-setting?equipmentId=${equipment.id}&name=${encodeURIComponent(equipment.name)}&imageUrl=${encodeURIComponent(equipment.imageUrl ?? '')}${parsedRoutineId ? `&routineId=${parsedRoutineId}&routineName=${encodeURIComponent(routineName ?? '')}` : ''}`,
                     )
                   }
                 />

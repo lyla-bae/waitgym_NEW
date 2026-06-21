@@ -10,11 +10,15 @@ interface WorkoutState {
   totalWorkMs: number
   totalRestMs: number
   completedMissions: { id: number; name: string; rewardPoints: number }[]
+  routineId: number | null
+  routineName: string
   start: (params: {
     waitingId: number
     equipmentName: string
     sets: number
     restSeconds: number
+    routineId?: number | null
+    routineName?: string
   }) => void
   completeSet: (workMs: number) => boolean
   addRestMs: (ms: number) => void
@@ -32,6 +36,8 @@ const initialState = {
   totalWorkMs: 0,
   totalRestMs: 0,
   completedMissions: [] as { id: number; name: string; rewardPoints: number }[],
+  routineId: null,
+  routineName: '',
 }
 
 export const useWorkoutStore = create<WorkoutState>((set, get) => ({
@@ -47,6 +53,8 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
       startedAt: new Date(),
       totalWorkMs: 0,
       totalRestMs: 0,
+      routineId: params.routineId ?? null,
+      routineName: params.routineName ?? '',
     }),
 
   // workMs: 이번 세트 운동 시간. true 반환 시 마지막 세트 완료

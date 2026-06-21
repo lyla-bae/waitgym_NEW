@@ -21,6 +21,8 @@ export default function WaitRequestPage() {
   const sets = Number(searchParams.get('sets') ?? 3)
   const restSeconds = Number(searchParams.get('restSeconds') ?? 60)
   const waitingId = Number(searchParams.get('waitingId'))
+  const routineId = searchParams.get('routineId') ? Number(searchParams.get('routineId')) : null
+  const routineName = searchParams.get('routineName') ?? ''
 
   const [equipment, setEquipment] = useState<Equipment | null>(null)
   const [loading, setLoading] = useState(false)
@@ -54,6 +56,8 @@ export default function WaitRequestPage() {
         equipmentName: result.equipment?.name ?? equipmentName,
         sets: result.sets,
         restSeconds: result.restSeconds,
+        routineId,
+        routineName,
       })
       navigate('/workout/exercising', { replace: true })
     } catch (e) {
@@ -78,6 +82,8 @@ export default function WaitRequestPage() {
         equipmentName: result.equipment?.name ?? equipmentName,
         sets: result.sets,
         restSeconds: result.restSeconds,
+        routineId,
+        routineName,
       })
       navigate('/workout/exercising', { replace: true })
     } catch (e) {
