@@ -48,7 +48,7 @@ async function notifyNextUser(equipmentId: number) {
     data: {
       userId: next.userId,
       type: 'YOUR_TURN',
-      category: 'WAITING',
+      category: 'queue',
       title: '내 차례예요!',
       message: `예약한 ${next.equipment.name}에 자리가 비었어요!`,
       equipmentId: next.equipment.id,
@@ -333,7 +333,7 @@ router.post('/:id/request', authMiddleware, async (req: AuthRequest, res, next) 
         data: {
           userId,
           type: 'YOUR_TURN',
-          category: 'WAITING',
+          category: 'queue',
           title: '내 차례예요!',
           message: `예약한 ${equipmentName}에 자리가 비었어요!`,
           equipmentId: waiting.equipmentId,
@@ -360,7 +360,7 @@ router.post('/:id/request', authMiddleware, async (req: AuthRequest, res, next) 
       data: {
         userId: currentUser.userId,
         type: 'HURRY_UP',
-        category: 'WAITING',
+        category: 'queue',
         title: '사용 요청이 왔어요',
         message: `내 ${equipment?.name ?? ''} 뒤에 기다리는 사람이 ${waitingCount}명 있어요`,
         equipmentId: waiting.equipmentId,
