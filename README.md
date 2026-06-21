@@ -164,17 +164,6 @@ waitgym_new/
 
 - 폰트 용량 **95% 감소** (2MB → 107KB)
 
-### Mixed Content 해결 — EC2 HTTPS 적용
-
-**🚨 문제**
-
-- Vercel(HTTPS)에서 EC2(HTTP)로 API 요청 시 브라우저 차단
-
-**✅ 해결**
-
-- AWS EC2에 nginx + Let's Encrypt(Certbot)으로 HTTPS 적용
-- `waitgym.today` 도메인 연결
-
 ### Socket.io 이벤트 중복 호출 최소화
 
 **🚨 문제**
