@@ -85,17 +85,19 @@ export default function SelectEquipmentPage() {
   fetchRef.current = isRoutineMode ? fetchRoutineEquipments : fetchEquipments
 
   useEffect(() => {
-    let timer: ReturnType<typeof setTimeout> | null = null
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null
+    const pollTimer = setInterval(() => fetchRef.current?.(), 60_000)
 
     function handleListUpdate() {
-      if (timer) clearTimeout(timer)
-      timer = setTimeout(() => fetchRef.current?.(), 300)
+      if (debounceTimer) clearTimeout(debounceTimer)
+      debounceTimer = setTimeout(() => fetchRef.current?.(), 300)
     }
 
     socket.on('equipment:list:updated', handleListUpdate)
     return () => {
       socket.off('equipment:list:updated', handleListUpdate)
-      if (timer) clearTimeout(timer)
+      if (debounceTimer) clearTimeout(debounceTimer)
+      clearInterval(pollTimer)
     }
   }, [])
 

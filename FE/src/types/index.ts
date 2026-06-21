@@ -18,6 +18,8 @@ export interface Equipment {
   currentUsage?: EquipmentUsage | null
   waitingCount?: number
   isBeingUsed?: boolean
+  isMyCurrentUsage?: boolean
+  estimatedWaitMs?: number | null
 }
 
 export type EquipmentCategory =

@@ -29,24 +29,45 @@ router.get('/', authMiddleware, async (req: AuthRequest, res) => {
         },
       },
       waitingQueues: {
-        where: { status: 'USING' },
-        take: 1,
+        where: { status: { in: ['USING', 'WAITING'] } },
+        select: { status: true, sets: true, restSeconds: true, userId: true, startedAt: true },
+        orderBy: { queuePosition: 'asc' },
       },
     },
     orderBy: { name: 'asc' },
   })
 
-  let result = equipments.map((e) => ({
-    ...e,
-    isFavorite: e.favorites.length > 0,
-    currentUsage: e.equipmentUsages[0] ?? null,
-    waitingCount: e._count.waitingQueues,
-    isBeingUsed: e.waitingQueues.length > 0,
-    favorites: undefined,
-    equipmentUsages: undefined,
-    waitingQueues: undefined,
-    _count: undefined,
-  }))
+  let result = equipments.map((e) => {
+    const currentUsage = e.equipmentUsages[0] ?? null
+    const usingQueue = e.waitingQueues.filter((q) => q.status === 'USING')
+    const waitingQueues = e.waitingQueues.filter((q) => q.status === 'WAITING')
+
+    const usingEntry = usingQueue[0] ?? null
+
+    let estimatedWaitMs = 0
+    if (usingEntry?.startedAt) {
+      const totalMs = usingEntry.sets * 3 * 60 * 1000 + (usingEntry.sets - 1) * usingEntry.restSeconds * 1000
+      const elapsed = Date.now() - usingEntry.startedAt.getTime()
+      estimatedWaitMs += Math.max(0, totalMs - elapsed)
+    }
+    for (const q of waitingQueues) {
+      estimatedWaitMs += q.sets * 3 * 60 * 1000 + (q.sets - 1) * q.restSeconds * 1000
+    }
+
+    return {
+      ...e,
+      isFavorite: e.favorites.length > 0,
+      currentUsage,
+      waitingCount: e._count.waitingQueues,
+      isBeingUsed: usingQueue.length > 0,
+      isMyCurrentUsage: usingEntry?.userId === userId,
+      estimatedWaitMs: estimatedWaitMs > 0 ? estimatedWaitMs : null,
+      favorites: undefined,
+      equipmentUsages: undefined,
+      waitingQueues: undefined,
+      _count: undefined,
+    }
+  })
 
   if (favorites === 'true') {
     result = result.filter((e) => e.isFavorite)

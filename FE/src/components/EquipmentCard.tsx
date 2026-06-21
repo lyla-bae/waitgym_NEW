@@ -7,10 +7,15 @@ interface Props {
   onClick?: () => void
 }
 
+function formatWaitMin(ms: number) {
+  return Math.max(1, Math.round(ms / 60000))
+}
+
 export default function EquipmentCard({ equipment, onFavoriteToggle, onClick }: Props) {
-  const { id, name, imageUrl, isFavorite, isBeingUsed, waitingCount } = equipment
+  const { id, name, imageUrl, isFavorite, isBeingUsed, isMyCurrentUsage, waitingCount, estimatedWaitMs } = equipment
   const isInUse = !!isBeingUsed
   const hasWaiting = waitingCount !== undefined && waitingCount > 0
+  const showWaitTime = (isInUse || hasWaiting) && !!estimatedWaitMs && !isMyCurrentUsage
 
   return (
     <button className="equipment-card" onClick={onClick} type="button">
@@ -47,12 +52,18 @@ export default function EquipmentCard({ equipment, onFavoriteToggle, onClick }: 
           {isInUse && !hasWaiting && (
             <span className="equipment-card__status-in-use">이용중</span>
           )}
-          {hasWaiting && (
+          {showWaitTime && (
             <>
               <span className="equipment-card__status-dot" aria-hidden="true" />
               <span className="equipment-card__status-waiting">
-                {waitingCount}명
+                대기 {formatWaitMin(estimatedWaitMs!)}분
               </span>
+            </>
+          )}
+          {hasWaiting && (
+            <>
+              <span className="equipment-card__status-dot" aria-hidden="true" />
+              <span className="equipment-card__status-waiting">{waitingCount}명</span>
             </>
           )}
         </div>
