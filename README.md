@@ -34,6 +34,7 @@
 ### 2. 📋 **기구 대기열 파악**
 
 > 기구마다 **현재 대기 인원**과 **사용 현황**을 Socket.io로 실시간 갱신합니다.  
+> **예상 대기시간(대기 N분)**을 USING 잔여시간 + WAITING 대기자 합산으로 계산해 표시합니다.  
 > **자동 제안** 토글로 대기가 적은 기구를 우선 정렬하여 효율적인 운동 계획이 가능합니다.
 
 ![기구 대기열 파악](./readme/02.png)
@@ -48,12 +49,21 @@
 
 ---
 
+<!--
 ### 4. ⏱️ **세트 / 휴식 타이머**
 
 > 세트 완료 후 휴식 타이머가 자동으로 시작됩니다.  
 > 루틴 현황 보기로 이탈해도 **플로팅 타이머**로 운동 흐름이 유지되며, 타이머 종료 시 운동 화면으로 자동 복귀합니다.
 
 ---
+
+### 5. 🏆 **미션 & 랭킹**
+
+> 운동 완료 시 총 세트 수·기구 종류·연속 출석일 기준으로 **미션 진행도가 자동 갱신**됩니다.  
+> 미션 달성 시 포인트를 적립하고, 전체 유저 **포인트 랭킹** 상위 10명을 확인할 수 있습니다.
+
+---
+-->
 
 ## 🛠 기술 스택
 
@@ -62,19 +72,21 @@ Frontend Framework    React 18 + TypeScript
 Build Tool           Vite
 State Management     Zustand
 Styling              Sass (SCSS)
+Animation            framer-motion
 Drag & Drop          @dnd-kit
 Real-time            Socket.io-client
+UI Components        @mui/material
 ```
 
 **선택 이유:**
+
+- **React (vs Next.js)**: Socket.io는 지속적인 WebSocket 연결이 필요해 서버리스 모델의 Next.js와 맞지 않아 Vite + React SPA 선택
 
 - **TypeScript**: 정적 타입 지원으로 코드 안정성 및 가독성 향상, 런타임 오류 사전 방지
 
 - **Zustand**: 가볍고 간단한 API로 복잡한 보일러플레이트 없이 효율적인 상태 관리. 웨이팅 플로우를 상태 머신 패턴으로 모델링
 
 - **Sass**: Tailwind CSS 대신 선택 — 세밀한 디자인 커스터마이징 요구사항 충족. 변수, 믹스인, 중첩으로 재사용 가능한 스타일 시스템 구축
-
-- **React (vs Next.js)**: Socket.io는 지속적인 WebSocket 연결이 필요해 서버리스 모델의 Next.js와 맞지 않아 Vite + React SPA 선택
 
 - **Socket.io**: 실시간 대기열 업데이트 및 알림. ws 라이브러리 대신 선택하여 자동 재연결, 이벤트 기반 API 활용
 
@@ -88,9 +100,9 @@ Real-time            Socket.io-client
 FE (Vercel)          BE (AWS EC2 + nginx)      DB (Supabase)
 ┌──────────┐  HTTPS  ┌──────────────────┐      ┌──────────────┐
 │  React   │ ──────► │  Express + TS    │ ───► │  PostgreSQL  │
-│  Zustand │         │  Socket.io       │      │  Prisma ORM  │
-│  SCSS    │ ◄────── │  Supabase Auth   │      └──────────────┘
-└──────────┘  WS     └──────────────────┘
+│  Zustand │◄──────► │  Socket.io       │      │  Prisma ORM  │
+│  SCSS    │         │  Supabase Auth   │      └──────────────┘
+└──────────┘         └──────────────────┘
 ```
 
 ---
@@ -136,8 +148,10 @@ erDiagram
         int queuePosition
         string status
         int sets
+        int restSeconds
         int actualWorkMs
         int actualRestMs
+        datetime notifiedAt
     }
     WorkoutRoutine {
         int id PK
@@ -159,6 +173,7 @@ erDiagram
         string condition
         int conditionValue
         int rewardPoints
+        boolean isActive
     }
     UserMission {
         int id PK
@@ -172,6 +187,9 @@ erDiagram
         int userId FK
         int equipmentId FK
         string type
+        string category
+        string title
+        string message
         boolean isRead
     }
     SavedGym {
@@ -180,6 +198,9 @@ erDiagram
         string kakaoId
         string name
         string address
+        string roadAddress
+        float latitude
+        float longitude
     }
 
     User ||--o{ Favorite : "즐겨찾기"
@@ -231,25 +252,28 @@ waitgym_new/
 
 **컬러 토큰**
 
-| 토큰 | 값 | 용도 |
-|---|---|---|
-| `$c-bg` | `#293241` | 페이지 배경 |
-| `$c-card` | `#334155` | 카드 배경 |
-| `$c-modal` | `#272c34` | 모달 배경 |
-| `$c-primary` | `#3d5a80` | 주요 버튼 |
+| 토큰               | 값        | 용도        |
+| ------------------ | --------- | ----------- |
+| `$c-bg`            | `#293241` | 페이지 배경 |
+| `$c-card`          | `#334155` | 카드 배경   |
+| `$c-modal`         | `#272c34` | 모달 배경   |
+| `$c-primary`       | `#3d5a80` | 주요 버튼   |
 | `$c-primary-light` | `#98c1d9` | 보조 강조색 |
-| `$c-accent` | `#ef754d` | 포인트 컬러 |
-| `$c-gray` | `#9299a5` | 보조 텍스트 |
-| `$c-error` | `#f87171` | 오류 표시 |
+| `$c-accent`        | `#ef754d` | 포인트 컬러 |
+| `$c-gray`          | `#9299a5` | 보조 텍스트 |
+| `$c-error`         | `#f87171` | 오류 표시   |
 
-**스페이싱 토큰** (`r(px)` → px ÷ 16 = rem)
+**타이포그래피 토큰** (Pretendard Variable · `r(px)` → px ÷ 16 = rem)
 
-| 토큰 | 환산 | 용도 |
-|---|---|---|
-| `$screen-padding` | 24px | 좌우 여백 |
-| `$header-height` | 52px | 헤더 높이 |
-| `$nav-height` | 75px | 하단 네비게이션 높이 |
-| `$card-radius` | 8px | 카드 모서리 반경 |
+| 토큰                   | 값   | 용도        |
+| ---------------------- | ---- | ----------- |
+| `font-size-xs`         | 12px | 뱃지·캡션   |
+| `font-size-base`       | 14px | 기본 본문   |
+| `font-size-md`         | 16px | 강조 본문   |
+| `font-size-lg`         | 18px | 소제목      |
+| `font-weight-medium`   | 500  | 일반 강조   |
+| `font-weight-semibold` | 600  | 버튼·레이블 |
+| `font-weight-bold`     | 700  | 제목·타이머 |
 
 ---
 
@@ -264,9 +288,29 @@ waitgym_new/
 
 **Socket.io** 기반 실시간 업데이트
 
-- 대기열 순서 변경 즉시 반영
-- 기구 사용 가능 시 알림 수신
+- 대기 등록·취소 시 기구 룸 구독자에게 즉시 브로드캐스트 (`equipment:updated`)
+- 기구 목록 전체 갱신 신호 (`equipment:list:updated`) + 60초 폴링으로 예상 대기시간 보정
+- `YOUR_TURN` / `HURRY_UP` 유저 개인 알림 (`notification:new`)
 - 자동 재연결로 연결 안정성 보장
+
+### ⏳ 예상 대기시간 계산
+
+```
+estimatedWaitMs = USING 잔여시간 + Σ(WAITING 대기자 예상 시간)
+
+USING 잔여시간 = (sets × 3분 + (sets-1) × restSeconds) - 경과시간
+WAITING 예상   = sets × 3분 + (sets-1) × restSeconds  (1인당)
+```
+
+- 내가 이용 중인 기구는 대기시간 미표시 (`isMyCurrentUsage`)
+- 운동시간은 변수여서 세트당 3분 기본값 적용
+
+### 🕐 타임아웃 정책
+
+| 상황                   | 시간 | 처리                              |
+| ---------------------- | ---- | --------------------------------- |
+| 내 차례 알림 후 미응답 | 5분  | CANCELLED → 다음 대기자 알림      |
+| USING 상태 초과        | 30분 | 강제 COMPLETED → 다음 대기자 알림 |
 
 ### 🎭 인터랙티브 UI
 
@@ -328,7 +372,7 @@ waitgym_new/
 
 ## 📆 프로젝트 기간
 
-- 개발 기간: `2026.06`
+- 개발 기간: `2026.06` (약 2주)
 - 리빌드 대상: [기다려짐](https://github.com/WaitGYM) (팀 프로젝트)
 
 ---
