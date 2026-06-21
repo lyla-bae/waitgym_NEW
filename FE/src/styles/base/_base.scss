@@ -18,6 +18,13 @@ body {
   overflow: hidden;
 }
 
+.page-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100dvh;
+}
+
 .auth-callback {
   display: flex;
   align-items: center;

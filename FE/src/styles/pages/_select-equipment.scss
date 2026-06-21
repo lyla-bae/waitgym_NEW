@@ -1,6 +1,7 @@
 @use '@styles/variables' as *;
 
 .select-equipment-page {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -61,5 +62,21 @@
   &__routine-edit {
     font-size: r(15);
     color: $c-gray;
+  }
+
+  &__toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 $screen-padding r(4);
+  }
+
+  &__auto-suggest {
+    display: flex;
+    align-items: center;
+    gap: r(4);
+    font-size: r(13);
+    color: $c-gray;
+    cursor: pointer;
   }
 }

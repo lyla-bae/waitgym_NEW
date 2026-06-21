@@ -7,3 +7,4 @@ dist/
 .mcp.json
 figma-preview/
 FE/.vite/
+.vercel

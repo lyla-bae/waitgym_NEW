@@ -10,15 +10,23 @@ interface WorkoutState {
   totalWorkMs: number
   totalRestMs: number
   completedMissions: { id: number; name: string; rewardPoints: number }[]
+  routineId: number | null
+  routineName: string
+  restEndAt: number | null
+  restStartedAt: number | null
   start: (params: {
     waitingId: number
     equipmentName: string
     sets: number
     restSeconds: number
+    routineId?: number | null
+    routineName?: string
   }) => void
   completeSet: (workMs: number) => boolean
   addRestMs: (ms: number) => void
   setCompletedMissions: (missions: { id: number; name: string; rewardPoints: number }[]) => void
+  setRestEndAt: (endAt: number | null) => void
+  setRestStartedAt: (at: number | null) => void
   reset: () => void
 }
 
@@ -32,6 +40,10 @@ const initialState = {
   totalWorkMs: 0,
   totalRestMs: 0,
   completedMissions: [] as { id: number; name: string; rewardPoints: number }[],
+  routineId: null,
+  routineName: '',
+  restEndAt: null,
+  restStartedAt: null,
 }
 
 export const useWorkoutStore = create<WorkoutState>((set, get) => ({
@@ -47,6 +59,10 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
       startedAt: new Date(),
       totalWorkMs: 0,
       totalRestMs: 0,
+      routineId: params.routineId ?? null,
+      routineName: params.routineName ?? '',
+      restEndAt: null,
+      restStartedAt: null,
     }),
 
   // workMs: 이번 세트 운동 시간. true 반환 시 마지막 세트 완료
@@ -61,6 +77,10 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
   addRestMs: (ms) => set((s) => ({ totalRestMs: s.totalRestMs + ms })),
 
   setCompletedMissions: (missions) => set({ completedMissions: missions }),
+
+  setRestEndAt: (endAt) => set({ restEndAt: endAt }),
+
+  setRestStartedAt: (at) => set({ restStartedAt: at }),
 
   reset: () => set(initialState),
 }))

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ChevronLeft, UsersRound } from 'lucide-react'
+import { motion } from 'framer-motion'
 import Header from '@/components/Header'
 import { equipmentApi, waitingApi } from '@/lib/api'
 import { useGlobalToastStore } from '@/stores/globalToastStore'
@@ -20,6 +21,8 @@ export default function WaitRequestPage() {
   const sets = Number(searchParams.get('sets') ?? 3)
   const restSeconds = Number(searchParams.get('restSeconds') ?? 60)
   const waitingId = Number(searchParams.get('waitingId'))
+  const routineId = searchParams.get('routineId') ? Number(searchParams.get('routineId')) : null
+  const routineName = searchParams.get('routineName') ?? ''
 
   const [equipment, setEquipment] = useState<Equipment | null>(null)
   const [loading, setLoading] = useState(false)
@@ -53,6 +56,8 @@ export default function WaitRequestPage() {
         equipmentName: result.equipment?.name ?? equipmentName,
         sets: result.sets,
         restSeconds: result.restSeconds,
+        routineId,
+        routineName,
       })
       navigate('/workout/exercising', { replace: true })
     } catch (e) {
@@ -66,7 +71,9 @@ export default function WaitRequestPage() {
   const waitingCount = equipment?.waitingCount ?? 0
   const isBeingUsed = equipment?.isBeingUsed ?? false
   const canStartNow = !isStartMode && !isBeingUsed && waitingCount === 0
-  const estimatedMinutes = Math.ceil(waitingCount * 10)
+  const estimatedMinutes = equipment?.estimatedWaitMs
+    ? Math.max(1, Math.round(equipment.estimatedWaitMs / 60000))
+    : Math.ceil(waitingCount * 10)
 
   async function handleRegisterAndStart() {
     setLoading(true)
@@ -77,6 +84,8 @@ export default function WaitRequestPage() {
         equipmentName: result.equipment?.name ?? equipmentName,
         sets: result.sets,
         restSeconds: result.restSeconds,
+        routineId,
+        routineName,
       })
       navigate('/workout/exercising', { replace: true })
     } catch (e) {
@@ -88,7 +97,7 @@ export default function WaitRequestPage() {
   }
 
   return (
-    <div className="wait-request-page">
+    <motion.div className="wait-request-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2, delay: 0.2, ease: 'easeInOut' }}>
       <Header
         className="header--sub"
         leftContent={
@@ -127,6 +136,6 @@ export default function WaitRequestPage() {
         </button>
       </div>
 
-    </div>
+    </motion.div>
   )
 }

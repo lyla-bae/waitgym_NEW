@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ChevronLeft, Plus, Minus } from 'lucide-react'
+import { motion } from 'framer-motion'
 import Header from '@/components/Header'
 
 function formatSeconds(seconds: number): string {
@@ -16,19 +17,21 @@ export default function GoalSettingPage() {
   const equipmentId = searchParams.get('equipmentId') ?? ''
   const equipmentName = searchParams.get('name') ?? ''
   const imageUrl = searchParams.get('imageUrl') ?? ''
+  const routineId = searchParams.get('routineId')
+  const routineName = searchParams.get('routineName')
 
   const [sets, setSets] = useState(3)
   const [restSeconds, setRestSeconds] = useState(60)
 
   function handleNext() {
     navigate(
-      `/reservation/wait-request?equipmentId=${equipmentId}&name=${encodeURIComponent(equipmentName)}&sets=${sets}&restSeconds=${restSeconds}`,
+      `/reservation/wait-request?equipmentId=${equipmentId}&name=${encodeURIComponent(equipmentName)}&sets=${sets}&restSeconds=${restSeconds}${routineId ? `&routineId=${routineId}&routineName=${encodeURIComponent(routineName ?? '')}` : ''}`,
       { replace: true },
     )
   }
 
   return (
-    <div className="goal-setting-page">
+    <motion.div className="goal-setting-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2, delay: 0.2, ease: 'easeInOut' }}>
       <main className="content-scroll">
         <Header
           className="header--sub"
@@ -116,9 +119,9 @@ export default function GoalSettingPage() {
 
       <div className="btn-wrap">
         <button type="button" className="btn btn--white btn--full" onClick={handleNext}>
-          예약하기
+          설정 완료
         </button>
       </div>
-    </div>
+    </motion.div>
   )
 }

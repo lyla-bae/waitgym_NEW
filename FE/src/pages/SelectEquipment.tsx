@@ -1,9 +1,13 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ChevronLeft, Search, Star } from 'lucide-react'
+import { motion } from 'framer-motion'
+import Switch from '@mui/material/Switch'
 import { equipmentApi, routineApi } from '@/lib/api'
+import { socket } from '@/lib/socket'
 import Header from '@/components/Header'
 import EquipmentCard from '@/components/EquipmentCard'
+import { Skeleton } from '@/components/ui/Skeleton'
 import { useGlobalToastStore } from '@/stores/globalToastStore'
 import type { Equipment } from '@/types'
 
@@ -22,6 +26,7 @@ export default function SelectEquipmentPage() {
   const [equipments, setEquipments] = useState<Equipment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [autoSuggest, setAutoSuggest] = useState(false)
   const toast = useGlobalToastStore((s) => s.show)
 
   // 루틴모드: 루틴의 기구 목록만 표시
@@ -75,6 +80,38 @@ export default function SelectEquipmentPage() {
     return () => clearTimeout(timer)
   }, [isRoutineMode, fetchEquipments, search])
 
+  // 소켓 equipment:list:updated 수신 시 목록 재조회 (debounce 300ms)
+  const fetchRef = useRef<(() => void) | null>(null)
+  fetchRef.current = isRoutineMode ? fetchRoutineEquipments : fetchEquipments
+
+  useEffect(() => {
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null
+    const pollTimer = setInterval(() => fetchRef.current?.(), 60_000)
+
+    function handleListUpdate() {
+      if (debounceTimer) clearTimeout(debounceTimer)
+      debounceTimer = setTimeout(() => fetchRef.current?.(), 300)
+    }
+
+    socket.on('equipment:list:updated', handleListUpdate)
+    return () => {
+      socket.off('equipment:list:updated', handleListUpdate)
+      if (debounceTimer) clearTimeout(debounceTimer)
+      clearInterval(pollTimer)
+    }
+  }, [])
+
+  const displayedEquipments = useMemo(() => {
+    if (!autoSuggest) return equipments
+    return [...equipments].sort((a, b) => {
+      const aFree = !a.isBeingUsed && a.waitingCount === 0
+      const bFree = !b.isBeingUsed && b.waitingCount === 0
+      if (aFree && !bFree) return -1
+      if (!aFree && bFree) return 1
+      return (a.waitingCount ?? 0) - (b.waitingCount ?? 0)
+    })
+  }, [equipments, autoSuggest])
+
   const handleFavoriteToggle = async (id: number) => {
     try {
       const { isFavorite } = await equipmentApi.toggleFavorite(id)
@@ -89,11 +126,11 @@ export default function SelectEquipmentPage() {
   }
 
   return (
-    <div className="select-equipment-page">
+    <motion.div className="select-equipment-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2, delay: 0.2, ease: 'easeInOut' }}>
       <Header
         className="header--sub"
         leftContent={
-          <button type="button" className="header__back" onClick={() => navigate(-1)} aria-label="뒤로가기">
+          <button type="button" className="header__back" onClick={() => isRoutineMode ? navigate('/') : navigate(-1)} aria-label="뒤로가기">
             <ChevronLeft size={24} />
           </button>
         }
@@ -151,9 +188,39 @@ export default function SelectEquipmentPage() {
         </>
       )}
 
+      {!isRoutineMode && (
+        <div className="select-equipment-page__toolbar">
+          <label className="select-equipment-page__auto-suggest">
+            <span>자동제안</span>
+            <Switch
+              checked={autoSuggest}
+              size="small"
+              onChange={(e) => setAutoSuggest(e.target.checked)}
+              slotProps={{ input: { 'aria-label': '자동제안' } }}
+              sx={{
+                '& .MuiSwitch-switchBase.Mui-checked': { color: '#ef754d' },
+                '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#ef754d' },
+              }}
+            />
+          </label>
+        </div>
+      )}
+
       <section className="select-equipment-page__list">
         {loading ? (
-          <p className="select-equipment-page__empty">불러오는 중...</p>
+          <ul className="select-equipment-page__equipment-list" aria-hidden="true">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <li key={i}>
+                <div className="equipment-card equipment-card-sk">
+                  <Skeleton className="equipment-card-sk__image" />
+                  <div className="equipment-card-sk__body">
+                    <Skeleton className="equipment-card-sk__name" />
+                    <Skeleton className="equipment-card-sk__status" />
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
         ) : error ? (
           <div className="select-equipment-page__error">
             <p className="select-equipment-page__error-msg">오류: {error}</p>
@@ -161,18 +228,18 @@ export default function SelectEquipmentPage() {
               다시 시도
             </button>
           </div>
-        ) : equipments.length === 0 ? (
+        ) : displayedEquipments.length === 0 ? (
           <p className="select-equipment-page__empty">기구를 찾을 수 없어요</p>
         ) : (
           <ul className="select-equipment-page__equipment-list">
-            {equipments.map((equipment) => (
+            {displayedEquipments.map((equipment) => (
               <li key={equipment.id}>
                 <EquipmentCard
                   equipment={equipment}
                   onFavoriteToggle={!isRoutineMode ? handleFavoriteToggle : undefined}
                   onClick={() =>
                     navigate(
-                      `/reservation/goal-setting?equipmentId=${equipment.id}&name=${encodeURIComponent(equipment.name)}&imageUrl=${encodeURIComponent(equipment.imageUrl ?? '')}`,
+                      `/reservation/goal-setting?equipmentId=${equipment.id}&name=${encodeURIComponent(equipment.name)}&imageUrl=${encodeURIComponent(equipment.imageUrl ?? '')}${parsedRoutineId ? `&routineId=${parsedRoutineId}&routineName=${encodeURIComponent(routineName ?? '')}` : ''}`,
                     )
                   }
                 />
@@ -181,6 +248,6 @@ export default function SelectEquipmentPage() {
           </ul>
         )}
       </section>
-    </div>
+    </motion.div>
   )
 }

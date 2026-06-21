@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { Dumbbell, Pencil, Plus } from 'lucide-react'
 import Header from '@/components/Header'
@@ -50,7 +51,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="home-page">
+    <motion.div className="home-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2, delay: 0.2, ease: 'easeInOut' }}>
       <main className="content-scroll">
         <Header
           className="header--home"
@@ -68,8 +69,8 @@ export default function HomePage() {
             {isLoading ? (
               <ul className="home-page__routine-list">
                 {[0, 1].map((i) => (
-                  <li key={i}>
-                    <div className="home-page__routine-item home-page__routine-item--skeleton" />
+                  <li key={i} aria-hidden="true">
+                    <div className="home-page__routine-item home-page__routine-item--skeleton skeleton" />
                   </li>
                 ))}
               </ul>
@@ -137,6 +138,6 @@ export default function HomePage() {
           루틴 추가
         </button>
       </div>
-    </div>
+    </motion.div>
   )
 }

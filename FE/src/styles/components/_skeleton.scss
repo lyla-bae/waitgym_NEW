@@ -1,0 +1,163 @@
+@use '@styles/variables' as *;
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, $c-card 25%, rgba($c-white, 0.06) 50%, $c-card 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.8s ease-in-out infinite;
+  border-radius: r(6);
+}
+
+// 기구 카드 스켈레톤
+.equipment-card-sk {
+  pointer-events: none;
+
+  &__image {
+    width: r(80);
+    height: r(80);
+    flex-shrink: 0;
+    border-radius: $card-radius;
+  }
+
+  &__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: r(8);
+  }
+
+  &__name   { width: 60%; height: r(16); }
+  &__status { width: 35%; height: r(13); }
+}
+
+// 루틴 카드 스켈레톤
+.routine-card-sk {
+  display: flex;
+  align-items: center;
+  gap: r(8);
+  background: $c-card;
+  border-radius: $card-radius;
+  padding: r(8) r(16);
+  height: r(76);
+
+  &__icon {
+    width: r(48);
+    height: r(48);
+    flex-shrink: 0;
+    border-radius: r(8);
+  }
+
+  &__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: r(8);
+  }
+
+  &__title  { width: 55%; height: r(18); }
+  &__detail { width: 40%; height: r(13); }
+}
+
+// 알림 아이템 스켈레톤
+.notification-item-sk {
+  display: flex;
+  flex-direction: column;
+  gap: r(8);
+  padding: r(16);
+  border-radius: $card-radius;
+  background: $c-card;
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: r(8);
+  }
+
+  &__badge { width: r(40); height: r(20); border-radius: r(4); }
+  &__time  { width: r(50); height: r(12); }
+  &__msg   { width: 75%; height: r(14); }
+}
+
+// 미션 카드 스켈레톤
+.mission-card-sk {
+  background: $c-card;
+  border-radius: $card-radius;
+  padding: r(16);
+  display: flex;
+  flex-direction: column;
+  gap: r(12);
+
+  &__info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__title  { width: 55%; height: r(16); }
+  &__points { width: r(32); height: r(16); }
+  &__desc   { width: 80%; height: r(13); }
+  &__bar    { width: 100%; height: r(6); border-radius: r(3); }
+}
+
+// 랭킹 아이템 스켈레톤
+.ranking-item-sk {
+  display: flex;
+  align-items: center;
+  gap: r(12);
+  background: $c-card;
+  border-radius: $card-radius;
+  padding: r(12) r(16);
+
+  &__rank   { width: r(20); height: r(20); border-radius: 50%; flex-shrink: 0; }
+
+  &__user {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: r(10);
+  }
+
+  &__avatar { width: r(36); height: r(36); border-radius: 50%; flex-shrink: 0; }
+  &__name   { width: 40%; height: r(15); }
+  &__points { width: r(48); height: r(15); }
+}
+
+// 기구 상세 스켈레톤
+.detail-sk {
+  &__image-section {
+    display: flex;
+    justify-content: center;
+    padding: r(24) 0;
+  }
+
+  &__image {
+    width: r(176);
+    height: r(176);
+    border-radius: r(12);
+  }
+
+  &__info-card {
+    background-color: $c-card;
+    border-radius: r(12);
+    padding: r(16);
+    display: flex;
+    flex-direction: column;
+    gap: r(16);
+    margin-bottom: r(16);
+  }
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__label { width: r(56); height: r(14); }
+  &__value { width: r(80); height: r(14); }
+
+  &__cta { height: r(48); border-radius: $card-radius; }
+}

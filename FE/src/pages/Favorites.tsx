@@ -1,8 +1,10 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft } from 'lucide-react'
+import { motion } from 'framer-motion'
 import Header from '@/components/Header'
 import EquipmentCard from '@/components/EquipmentCard'
+import { Skeleton } from '@/components/ui/Skeleton'
 import { equipmentApi } from '@/lib/api'
 import { useGlobalToastStore } from '@/stores/globalToastStore'
 import type { Equipment } from '@/types'
@@ -47,7 +49,7 @@ export default function FavoritesPage() {
   }
 
   return (
-    <div className="favorites-page">
+    <motion.div className="favorites-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.2, ease: 'easeInOut' }}>
       <Header
         className="header--sub"
         leftContent={
@@ -76,7 +78,19 @@ export default function FavoritesPage() {
       )}
 
       <div className="favorites-page__list">
-        {isLoading ? null : filtered.length === 0 ? (
+        {isLoading ? (
+          <div className="favorites-page__equipment-list" aria-hidden="true">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="equipment-card equipment-card-sk">
+                <Skeleton className="equipment-card-sk__image" />
+                <div className="equipment-card-sk__body">
+                  <Skeleton className="equipment-card-sk__name" />
+                  <Skeleton className="equipment-card-sk__status" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : filtered.length === 0 ? (
           <p className="favorites-page__empty">
             {equipments.length === 0 ? '즐겨찾기한 기구가 없어요' : '해당 카테고리에 즐겨찾기한 기구가 없어요'}
           </p>
@@ -93,6 +107,6 @@ export default function FavoritesPage() {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   )
 }

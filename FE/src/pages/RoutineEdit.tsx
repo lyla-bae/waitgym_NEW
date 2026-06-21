@@ -20,6 +20,7 @@ import {
 } from '@dnd-kit/sortable'
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { CSS } from '@dnd-kit/utilities'
+import { motion } from 'framer-motion'
 import Header from '@/components/Header'
 import ConfirmDrawer from '@/components/ConfirmDrawer'
 import { routineApi } from '@/lib/api'
@@ -37,10 +38,12 @@ function formatSeconds(s: number) {
 
 function SortableExerciseItem({
   item,
+  index,
   onUpdate,
   onRemoveRequest,
 }: {
   item: RoutineExerciseItem
+  index: number
   onUpdate: (id: number, field: 'targetSets' | 'restSeconds', delta: number) => void
   onRemoveRequest: (id: number) => void
 }) {
@@ -55,7 +58,14 @@ function SortableExerciseItem({
   }
 
   return (
-    <li ref={setNodeRef} style={style} className="routine-edit__box">
+    <motion.li
+      ref={setNodeRef}
+      style={style}
+      className="routine-edit__box"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, delay: index * 0.06, ease: 'easeInOut' }}
+    >
       <div className="routine-edit__equipment">
         <div className="routine-edit__equip-info">
           <div className="routine-edit__equip-img">
@@ -113,7 +123,7 @@ function SortableExerciseItem({
           </div>
         </div>
       </div>
-    </li>
+    </motion.li>
   )
 }
 
@@ -197,7 +207,7 @@ export default function RoutineEditPage() {
   }
 
   return (
-    <div className="routine-edit-page">
+    <motion.div className="routine-edit-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2, delay: 0.2, ease: 'easeInOut' }}>
       <main className="content-scroll">
         <Header
           className="header--sub"
@@ -253,10 +263,11 @@ export default function RoutineEditPage() {
                 strategy={verticalListSortingStrategy}
               >
                 <ul className="routine-edit__box-list">
-                  {exercises.map((item) => (
+                  {exercises.map((item, i) => (
                     <SortableExerciseItem
                       key={item.equipmentId}
                       item={item}
+                      index={i}
                       onUpdate={updateExercise}
                       onRemoveRequest={setRemoveTargetId}
                     />
@@ -311,6 +322,6 @@ export default function RoutineEditPage() {
           <strong className="routine-confirm-drawer__accent">삭제</strong>하시겠어요?
         </p>
       </ConfirmDrawer>
-    </div>
+    </motion.div>
   )
 }

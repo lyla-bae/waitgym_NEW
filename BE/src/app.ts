@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { type Request, type Response, type NextFunction } from 'express'
 import cors from 'cors'
 import equipmentRouter from './routes/equipment.routes'
 import waitingRouter from './routes/waiting.routes'
@@ -30,5 +30,10 @@ app.use('/api/waiting', waitingRouter)
 app.use('/api/missions', missionRouter)
 app.use('/api/routines', routineRouter)
 app.use('/api/users', userRouter)
+
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+  console.error('[error]', err.message)
+  res.status(500).json({ message: '서버 오류가 발생했습니다.' })
+})
 
 export default app

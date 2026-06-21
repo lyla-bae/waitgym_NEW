@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 
 interface ToastAction {
   label: string
@@ -16,29 +17,44 @@ export function Toast({ message, duration = 2000, action, onClose }: ToastProps)
   const [visible, setVisible] = useState(true)
 
   useEffect(() => {
+    let closeTimer: ReturnType<typeof setTimeout> | null = null
     const timer = setTimeout(() => {
       setVisible(false)
-      setTimeout(onClose, 300)
+      closeTimer = setTimeout(onClose, 300)
     }, duration)
-    return () => clearTimeout(timer)
+    return () => {
+      clearTimeout(timer)
+      if (closeTimer) clearTimeout(closeTimer)
+    }
   }, [duration, onClose])
 
   return (
-    <div className={`toast${visible ? ' toast--visible' : ''}${action ? ' toast--with-action' : ''}`}>
-      <span className="toast__message">{message}</span>
-      {action && (
-        <button
-          type="button"
-          className="toast__action"
-          onClick={() => {
-            action.onClick()
-            onClose()
-          }}
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          className={`toast${action ? ' toast--with-action' : ''}`}
+          style={{ x: '-50%' }}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
         >
-          {action.label}
-        </button>
+          <span className="toast__message">{message}</span>
+          {action && (
+            <button
+              type="button"
+              className="toast__action"
+              onClick={() => {
+                action.onClick()
+                onClose()
+              }}
+            >
+              {action.label}
+            </button>
+          )}
+        </motion.div>
       )}
-    </div>
+    </AnimatePresence>
   )
 }
 

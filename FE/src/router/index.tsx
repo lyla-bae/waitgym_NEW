@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider, Outlet, Navigate } from 'react-router-dom'
+import CircularProgress from '@mui/material/CircularProgress'
 import { useAuthStore } from '@/stores/authStore'
 import { useWorkoutStore } from '@/stores/workoutStore'
 import Layout from '@/components/Layout'
@@ -19,10 +20,11 @@ import GoalSettingPage from '@/pages/GoalSetting'
 import WaitRequestPage from '@/pages/WaitRequest'
 import ExercisingPage from '@/pages/Exercising'
 import CompletePage from '@/pages/Complete'
+import NotFoundPage from '@/pages/NotFound'
 
 function ProtectedRoute() {
   const { session, isLoading } = useAuthStore()
-  if (isLoading) return <div className="flex items-center justify-center h-dvh">로딩 중...</div>
+  if (isLoading) return <div className="page-loader"><CircularProgress size={32} sx={{ color: '#98c1d9' }} /></div>
   if (!session) return <Navigate to="/login" replace />
   return <Outlet />
 }
@@ -37,6 +39,10 @@ const router = createBrowserRouter([
   {
     path: '/login',
     element: <LoginPage />,
+  },
+  {
+    path: '*',
+    element: <NotFoundPage />,
   },
   {
     path: '/auth/callback',

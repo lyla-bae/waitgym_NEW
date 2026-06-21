@@ -1,7 +1,8 @@
 import { Router } from 'express'
 import { authMiddleware } from '../middleware/auth.middleware'
 import { prisma } from '../lib/prisma'
-import { emitEquipmentUpdate, emitUserNotification } from '../socket/socket.server'
+import { calcEstimatedWaitMs } from '../lib/waitUtils'
+import { emitEquipmentUpdate, emitEquipmentListUpdate, emitUserNotification } from '../socket/socket.server'
 import type { AuthRequest } from '../middleware/auth.middleware'
 
 const router = Router()
@@ -72,6 +73,7 @@ async function notifyNextUser(equipmentId: number) {
 
       const waitingCount = await prisma.waitingQueue.count({ where: { equipmentId, status: 'WAITING' } })
       emitEquipmentUpdate(equipmentId, { equipmentId, waitingCount })
+      emitEquipmentListUpdate()
       await notifyNextUser(equipmentId)
     } catch (err) {
       console.error('[timeout] turn timeout error:', err)
@@ -150,6 +152,7 @@ async function completeWaiting(id: number, equipmentId: number, actualWorkMs?: n
 
   const waitingCount = await prisma.waitingQueue.count({ where: { equipmentId, status: 'WAITING' } })
   emitEquipmentUpdate(equipmentId, { equipmentId, waitingCount })
+  emitEquipmentListUpdate()
   await notifyNextUser(equipmentId)
   return updateMissionProgress(userId)
 }
@@ -193,6 +196,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res, next) => {
       where: { equipmentId, status: 'WAITING' },
     })
     emitEquipmentUpdate(equipmentId, { equipmentId, waitingCount })
+    emitEquipmentListUpdate()
 
     res.status(201).json({ ...waiting, waitingCount })
   } catch (err) {
@@ -254,6 +258,8 @@ router.post('/quick-start', authMiddleware, async (req: AuthRequest, res, next) 
       }
     })
 
+    emitEquipmentUpdate(equipmentId, { equipmentId, waitingCount: 0 })
+    emitEquipmentListUpdate()
     res.status(201).json(record)
   } catch (err) {
     next(err)
@@ -273,10 +279,14 @@ router.get('/my', authMiddleware, async (req: AuthRequest, res, next) => {
 
     const result = await Promise.all(
       waitings.map(async (w) => {
-        const waitingCount = await prisma.waitingQueue.count({
-          where: { equipmentId: w.equipmentId, status: 'WAITING' },
+        const queues = await prisma.waitingQueue.findMany({
+          where: { equipmentId: w.equipmentId, status: { in: ['USING', 'WAITING'] } },
+          select: { status: true, sets: true, restSeconds: true, userId: true, startedAt: true },
+          orderBy: { queuePosition: 'asc' },
         })
-        return { ...w, waitingCount }
+        const { estimatedWaitMs } = calcEstimatedWaitMs(queues, userId)
+        const waitingCount = queues.filter((q) => q.status === 'WAITING').length
+        return { ...w, waitingCount, estimatedWaitMs }
       })
     )
 
@@ -423,6 +433,12 @@ router.patch('/:id/start', authMiddleware, async (req: AuthRequest, res, next) =
       }
     })
 
+    const waitingCount = await prisma.waitingQueue.count({
+      where: { equipmentId: waiting.equipmentId, status: 'WAITING' },
+    })
+    emitEquipmentUpdate(waiting.equipmentId, { equipmentId: waiting.equipmentId, waitingCount })
+    emitEquipmentListUpdate()
+
     res.json(updated)
   } catch (err) {
     next(err)
@@ -499,6 +515,7 @@ router.delete('/:id', authMiddleware, async (req: AuthRequest, res, next) => {
       where: { equipmentId: waiting.equipmentId, status: 'WAITING' },
     })
     emitEquipmentUpdate(waiting.equipmentId, { equipmentId: waiting.equipmentId, waitingCount })
+    emitEquipmentListUpdate()
 
     res.json({ message: '대기가 취소되었습니다.' })
   } catch (err) {

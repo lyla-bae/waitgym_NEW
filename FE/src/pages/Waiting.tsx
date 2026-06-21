@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ChevronLeft, UsersRound } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import Header from '@/components/Header'
 import { waitingApi } from '@/lib/api'
 import { useGlobalToastStore } from '@/stores/globalToastStore'
@@ -100,10 +101,12 @@ export default function WaitingPage() {
   const isMaxReached = requestCount >= MAX_REQUESTS
   const isDisabled = isOnCooldown || isMaxReached
 
-  const estimatedMinutes = Math.ceil(waitingCount * 10)
+  const estimatedMinutes = waiting?.estimatedWaitMs
+    ? Math.max(1, Math.round(waiting.estimatedWaitMs / 60000))
+    : Math.ceil(waitingCount * 10)
 
   return (
-    <div className="waiting-page">
+    <motion.div className="waiting-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2, delay: 0.2, ease: 'easeInOut' }}>
       <Header
         leftContent={
           <button type="button" className="header__back" onClick={() => navigate('/reservation/select-equipment', { replace: true })} aria-label="뒤로가기">
@@ -120,10 +123,32 @@ export default function WaitingPage() {
       <section className="waiting-page__content">
         <div className="waiting-page__text-wrap">
           <h1 className="waiting-page__name">{waiting?.equipment?.name ?? '불러오는 중...'}</h1>
-          <p className="waiting-page__timer">{estimatedMinutes}분 대기</p>
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={estimatedMinutes}
+              className="waiting-page__timer"
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.85 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+            >
+              {estimatedMinutes}분 대기
+            </motion.p>
+          </AnimatePresence>
           <div className="waiting-page__queue">
             <UsersRound size={20} strokeWidth={1.5} />
-            <span className="waiting-page__queue-count">{waitingCount}명</span>
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={waitingCount}
+                className="waiting-page__queue-count"
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 8 }}
+                transition={{ duration: 0.25, ease: 'easeInOut' }}
+              >
+                {waitingCount}명
+              </motion.span>
+            </AnimatePresence>
             <span>기다리는중</span>
           </div>
         </div>
@@ -140,6 +165,6 @@ export default function WaitingPage() {
         </button>
       </div>
 
-    </div>
+    </motion.div>
   )
 }

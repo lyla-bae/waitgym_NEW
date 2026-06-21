@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Camera, ChevronLeft } from 'lucide-react'
+import { motion } from 'framer-motion'
 import Header from '@/components/Header'
 import ConfirmDrawer from '@/components/ConfirmDrawer'
 import { useAuthStore } from '@/stores/authStore'
@@ -90,7 +91,7 @@ export default function ProfilePage() {
 
 
   return (
-    <div className="profile-page">
+    <motion.div className="profile-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.2, ease: 'easeInOut' }}>
       <Header
         className="header--sub"
         leftContent={
@@ -177,6 +178,6 @@ export default function ProfilePage() {
         <p className="routine-confirm-drawer__title">정말 탈퇴하시겠어요?</p>
         <p className="routine-confirm-drawer__desc">탈퇴하면 모든 데이터가 삭제되며 복구할 수 없어요.</p>
       </ConfirmDrawer>
-    </div>
+    </motion.div>
   )
 }

@@ -4,9 +4,9 @@
 
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)](https://www.typescriptlang.org/)
-[![Vercel](https://img.shields.io/badge/Vercel-Deploy-black?logo=vercel)](https://waitgym.vercel.app)
+[![Vercel](https://img.shields.io/badge/Vercel-Deploy-black?logo=vercel)](https://waitgym.today)
 
-[🌐 서비스 바로가기](https://waitgym.vercel.app)
+[🌐 서비스 바로가기](https://waitgym.today)
 
 ---
 
@@ -17,7 +17,9 @@
 헬스장에서 불편한 대면 및 대기상황으로 인해 플랜진행이 어려운 문제해결을 위한  
 효율적인 플랜진행을 돕는 **기구 대기 서비스 "기다려짐"** 입니다.
 
-기존 팀 프로젝트를 **혼자 TypeScript로 리빌드**하며 기획/설계/구현/배포 전 과정을 직접 경험했습니다.
+기존 팀 프로젝트를 **혼자 리빌드**하며 기획/설계/구현/배포 전 과정을 직접 경험했습니다.
+
+> 📄 [PRD (기획 문서)](./docs/PRD.md) · 📓 [개발 일지](./docs/devlog.md)
 
 ### 🎯 핵심 기능
 
@@ -31,7 +33,8 @@
 
 ### 2. 📋 **기구 대기열 파악**
 
-> 기구마다 **현재 대기 인원**과 **사용 현황**을 실시간으로 파악하여, 효율적인 운동 계획이 가능합니다.
+> 기구마다 **현재 대기 인원**과 **사용 현황**을 Socket.io로 실시간 갱신합니다.  
+> **자동 제안** 토글로 대기가 적은 기구를 우선 정렬하여 효율적인 운동 계획이 가능합니다.
 
 ![기구 대기열 파악](./readme/02.png)
 
@@ -42,6 +45,13 @@
 > 사용 중인 기구를 실시간으로 대기 등록하고, 내 차례가 되면 알림을 받아 효율적으로 운동할 수 있습니다.
 
 ![기구 대기 및 실시간 알림](./readme/03.png)
+
+---
+
+### 4. ⏱️ **세트 / 휴식 타이머**
+
+> 세트 완료 후 휴식 타이머가 자동으로 시작됩니다.  
+> 루틴 현황 보기로 이탈해도 **플로팅 타이머**로 운동 흐름이 유지되며, 타이머 종료 시 운동 화면으로 자동 복귀합니다.
 
 ---
 
@@ -64,6 +74,8 @@ Real-time            Socket.io-client
 
 - **Sass**: Tailwind CSS 대신 선택 — 세밀한 디자인 커스터마이징 요구사항 충족. 변수, 믹스인, 중첩으로 재사용 가능한 스타일 시스템 구축
 
+- **React (vs Next.js)**: Socket.io는 지속적인 WebSocket 연결이 필요해 서버리스 모델의 Next.js와 맞지 않아 Vite + React SPA 선택
+
 - **Socket.io**: 실시간 대기열 업데이트 및 알림. ws 라이브러리 대신 선택하여 자동 재연결, 이벤트 기반 API 활용
 
 - **Supabase Auth**: Passport.js + JWT 직접 구현 대신 선택. OAuth 토큰 검증을 미들웨어로 위임하여 보안 책임 분리
@@ -79,6 +91,111 @@ FE (Vercel)          BE (AWS EC2 + nginx)      DB (Supabase)
 │  Zustand │         │  Socket.io       │      │  Prisma ORM  │
 │  SCSS    │ ◄────── │  Supabase Auth   │      └──────────────┘
 └──────────┘  WS     └──────────────────┘
+```
+
+---
+
+## 🗄 데이터베이스 설계
+
+> Prisma 스키마 기반 ERD — `BE/prisma/schema.prisma` 자동 반영
+
+```mermaid
+erDiagram
+    User {
+        int id PK
+        string email
+        string name
+        string googleId
+        string avatar
+        int points
+    }
+    Equipment {
+        int id PK
+        string name
+        string category
+        string muscleGroup
+    }
+    Favorite {
+        int id PK
+        int userId FK
+        int equipmentId FK
+    }
+    EquipmentUsage {
+        int id PK
+        int equipmentId FK
+        int userId FK
+        string status
+        int totalSets
+        int currentSet
+        string setStatus
+    }
+    WaitingQueue {
+        int id PK
+        int equipmentId FK
+        int userId FK
+        int queuePosition
+        string status
+        int sets
+        int actualWorkMs
+        int actualRestMs
+    }
+    WorkoutRoutine {
+        int id PK
+        int userId FK
+        string name
+        boolean isActive
+    }
+    RoutineExercise {
+        int id PK
+        int routineId FK
+        int equipmentId FK
+        int order
+        int targetSets
+        int restSeconds
+    }
+    Mission {
+        int id PK
+        string name
+        string condition
+        int conditionValue
+        int rewardPoints
+    }
+    UserMission {
+        int id PK
+        int userId FK
+        int missionId FK
+        int progress
+        boolean isCompleted
+    }
+    Notification {
+        int id PK
+        int userId FK
+        int equipmentId FK
+        string type
+        boolean isRead
+    }
+    SavedGym {
+        int id PK
+        int userId FK
+        string kakaoId
+        string name
+        string address
+    }
+
+    User ||--o{ Favorite : "즐겨찾기"
+    Equipment ||--o{ Favorite : ""
+    User ||--o{ EquipmentUsage : "사용 기록"
+    Equipment ||--o{ EquipmentUsage : ""
+    User ||--o{ WaitingQueue : "대기열"
+    Equipment ||--o{ WaitingQueue : ""
+    User ||--o{ WorkoutRoutine : "루틴"
+    WorkoutRoutine ||--o{ RoutineExercise : "기구 목록"
+    Equipment ||--o{ RoutineExercise : ""
+    User ||--o{ Notification : "알림"
+    Equipment ||--o{ Notification : ""
+    User ||--o{ UserMission : "미션 진행도"
+    Mission ||--o{ UserMission : ""
+    User ||--o{ SavedGym : "저장된 헬스장"
 ```
 
 ---
@@ -111,6 +228,28 @@ waitgym_new/
 
 `_spacing.scss`, `_functions.scss`의 변수/함수로 매직 넘버 없이 일관된 스타일 유지.  
 컴포넌트 내부에서 태그 선택자 금지 — 전부 클래스 선택자로 작성.
+
+**컬러 토큰**
+
+| 토큰 | 값 | 용도 |
+|---|---|---|
+| `$c-bg` | `#293241` | 페이지 배경 |
+| `$c-card` | `#334155` | 카드 배경 |
+| `$c-modal` | `#272c34` | 모달 배경 |
+| `$c-primary` | `#3d5a80` | 주요 버튼 |
+| `$c-primary-light` | `#98c1d9` | 보조 강조색 |
+| `$c-accent` | `#ef754d` | 포인트 컬러 |
+| `$c-gray` | `#9299a5` | 보조 텍스트 |
+| `$c-error` | `#f87171` | 오류 표시 |
+
+**스페이싱 토큰** (`r(px)` → px ÷ 16 = rem)
+
+| 토큰 | 환산 | 용도 |
+|---|---|---|
+| `$screen-padding` | 24px | 좌우 여백 |
+| `$header-height` | 52px | 헤더 높이 |
+| `$nav-height` | 75px | 하단 네비게이션 높이 |
+| `$card-radius` | 8px | 카드 모서리 반경 |
 
 ---
 
@@ -156,42 +295,17 @@ waitgym_new/
 
 - 폰트 용량 **95% 감소** (2MB → 107KB)
 
-### Mixed Content 해결 — EC2 HTTPS 적용
+### Socket.io 이벤트 중복 호출 최소화
 
 **🚨 문제**
 
-- Vercel(HTTPS)에서 EC2(HTTP)로 API 요청 시 브라우저 차단
+- 검색어·카테고리 상태가 바뀔 때마다 fetch 함수가 새로 생성되어, 이를 의존성 배열에 포함하면 소켓 리스너가 계속 재등록됨
+- 기구 상태 변경 이벤트가 짧은 시간에 연속으로 발생할 경우 API가 중복 호출됨
 
 **✅ 해결**
 
-- AWS EC2에 nginx + Let's Encrypt(Certbot)으로 HTTPS 적용
-- `waitgym.today` 도메인 연결
-
-### 드래그 앤 드롭 스크롤 충돌 해결
-
-**🚨 문제**
-
-- `@dnd-kit` 사용 시 페이지 전체 스크롤 불가 이슈
-
-**✅ 해결**
-
-- 드래그 감도값 조정으로 스크롤과 드래그 이벤트 분리
-
----
-
-## ⚠️ 에러 코드
-
-| 코드 | 의미 |
-|---|---|
-| 200 | OK |
-| 201 | Created |
-| 204 | No Content |
-| 400 | Bad Request |
-| 401 | Unauthorized |
-| 403 | Forbidden |
-| 404 | Not Found |
-| 409 | Conflict |
-| 500 | Server Error |
+- `useRef`로 항상 최신 fetch 함수를 참조하게 하고, `useEffect` 의존성 배열을 `[]`로 고정해 리스너를 마운트 시 한 번만 등록
+- 디바운싱(300ms)으로 연속 이벤트를 묶어 API 호출 횟수 최소화
 
 ---
 

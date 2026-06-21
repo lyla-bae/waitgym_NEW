@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import LinearProgress from '@mui/material/LinearProgress'
 import { CalendarClock } from 'lucide-react'
 import Header from '@/components/Header'
 import NotificationBell from '@/components/NotificationBell'
 import { missionApi } from '@/lib/api'
+import { Skeleton } from '@/components/ui/Skeleton'
 import { useAuthStore } from '@/stores/authStore'
 import motionStrong from '@/assets/images/motion-strong.png'
 import motionTrophy from '@/assets/images/motion-trophy.png'
@@ -17,7 +19,7 @@ export default function MissionPage() {
   const { user } = useAuthStore()
 
   return (
-    <div className="mission-page">
+    <motion.div className="mission-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.2, ease: 'easeInOut' }}>
       <Header
         className="header--mission"
         leftContent={
@@ -47,7 +49,7 @@ export default function MissionPage() {
           <RankingTab myId={user?.id} />
         )}
       </div>
-    </div>
+    </motion.div>
   )
 }
 
@@ -74,7 +76,18 @@ function MissionTab({ userName }: { userName: string }) {
       </div>
 
       {isLoading ? (
-        <p className="mission-page__loading">로딩 중...</p>
+        <ul className="mission-list" aria-hidden="true">
+          {[0, 1, 2, 3].map((i) => (
+            <li key={i} className="mission-card-sk">
+              <div className="mission-card-sk__info">
+                <Skeleton className="mission-card-sk__title" />
+                <Skeleton className="mission-card-sk__points" />
+              </div>
+              <Skeleton className="mission-card-sk__desc" />
+              <Skeleton className="mission-card-sk__bar" />
+            </li>
+          ))}
+        </ul>
       ) : (
         <div className="mission-page__section">
           <p className="mission-page__count">총 {missions.length}개 미션</p>
@@ -137,7 +150,18 @@ function RankingTab({ myId: _myId }: { myId?: number }) {
       </div>
 
       {isLoading ? (
-        <p className="mission-page__loading">로딩 중...</p>
+        <ul className="ranking-list" aria-hidden="true">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <li key={i} className="ranking-item-sk">
+              <Skeleton className="ranking-item-sk__rank" />
+              <div className="ranking-item-sk__user">
+                <Skeleton className="ranking-item-sk__avatar" />
+                <Skeleton className="ranking-item-sk__name" />
+              </div>
+              <Skeleton className="ranking-item-sk__points" />
+            </li>
+          ))}
+        </ul>
       ) : (
         <div className="mission-page__section">
           <div className="mission-page__ranking-header">

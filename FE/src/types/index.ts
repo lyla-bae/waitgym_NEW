@@ -18,6 +18,8 @@ export interface Equipment {
   currentUsage?: EquipmentUsage | null
   waitingCount?: number
   isBeingUsed?: boolean
+  isMyCurrentUsage?: boolean
+  estimatedWaitMs?: number | null
 }
 
 export type EquipmentCategory =
@@ -56,6 +58,8 @@ export interface WaitingQueue {
   startedAt?: string
   createdAt: string
   notifiedAt?: string
+  waitingCount?: number
+  estimatedWaitMs?: number | null
 }
 
 export interface WorkoutRoutine {
@@ -84,7 +88,7 @@ export interface Notification {
   id: number
   userId: number
   type: string
-  category: 'queue' | 'workout' | 'eta' | 'other'
+  category: string
   priority: number
   title: string
   message: string
