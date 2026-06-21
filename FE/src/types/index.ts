@@ -88,7 +88,7 @@ export interface Notification {
   id: number
   userId: number
   type: string
-  category: 'queue' | 'workout' | 'eta' | 'other'
+  category: string
   priority: number
   title: string
   message: string
