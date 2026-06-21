@@ -1,6 +1,7 @@
 import { Router, type NextFunction } from 'express'
 import { authMiddleware } from '../middleware/auth.middleware'
 import { prisma } from '../lib/prisma'
+import { calcEstimatedWaitMs } from '../lib/waitUtils'
 import type { AuthRequest } from '../middleware/auth.middleware'
 
 const router = Router()
@@ -34,27 +35,15 @@ router.get('/', authMiddleware, async (req: AuthRequest, res, next: NextFunction
     })
 
     let result = equipments.map((e) => {
-      const usingQueue = e.waitingQueues.filter((q) => q.status === 'USING')
-      const waitingQueues = e.waitingQueues.filter((q) => q.status === 'WAITING')
-      const usingEntry = usingQueue[0] ?? null
-
-      let estimatedWaitMs = 0
-      if (usingEntry?.startedAt) {
-        const totalMs = usingEntry.sets * 3 * 60 * 1000 + (usingEntry.sets - 1) * usingEntry.restSeconds * 1000
-        const elapsed = Date.now() - usingEntry.startedAt.getTime()
-        estimatedWaitMs += Math.max(0, totalMs - elapsed)
-      }
-      for (const q of waitingQueues) {
-        estimatedWaitMs += q.sets * 3 * 60 * 1000 + (q.sets - 1) * q.restSeconds * 1000
-      }
+      const { estimatedWaitMs, isMyCurrentUsage, isBeingUsed } = calcEstimatedWaitMs(e.waitingQueues, userId)
 
       return {
         ...e,
         isFavorite: e.favorites.length > 0,
         waitingCount: e._count.waitingQueues,
-        isBeingUsed: usingQueue.length > 0,
-        isMyCurrentUsage: usingEntry?.userId === userId,
-        estimatedWaitMs: estimatedWaitMs > 0 ? estimatedWaitMs : null,
+        isBeingUsed,
+        isMyCurrentUsage,
+        estimatedWaitMs,
         favorites: undefined,
         waitingQueues: undefined,
         _count: undefined,
@@ -77,18 +66,16 @@ router.get('/:id', authMiddleware, async (req: AuthRequest, res, next: NextFunct
     const id = parseInt(req.params.id as string)
     const userId = req.userId!
 
-    const [equipment, usingCount] = await Promise.all([
+    const [equipment, queues] = await Promise.all([
       prisma.equipment.findUnique({
         where: { id },
-        include: {
-          favorites: { where: { userId } },
-          waitingQueues: {
-            where: { status: 'WAITING' },
-            orderBy: { queuePosition: 'asc' },
-          },
-        },
+        include: { favorites: { where: { userId } } },
       }),
-      prisma.waitingQueue.count({ where: { equipmentId: id, status: 'USING' } }),
+      prisma.waitingQueue.findMany({
+        where: { equipmentId: id, status: { in: ['USING', 'WAITING'] } },
+        select: { status: true, sets: true, restSeconds: true, userId: true, startedAt: true },
+        orderBy: { queuePosition: 'asc' },
+      }),
     ])
 
     if (!equipment) {
@@ -96,13 +83,17 @@ router.get('/:id', authMiddleware, async (req: AuthRequest, res, next: NextFunct
       return
     }
 
+    const { estimatedWaitMs, isMyCurrentUsage, isBeingUsed } = calcEstimatedWaitMs(queues, userId)
+    const waitingCount = queues.filter((q) => q.status === 'WAITING').length
+
     res.json({
       ...equipment,
       isFavorite: equipment.favorites.length > 0,
-      waitingCount: equipment.waitingQueues.length,
-      isBeingUsed: usingCount > 0,
+      waitingCount,
+      isBeingUsed,
+      isMyCurrentUsage,
+      estimatedWaitMs,
       favorites: undefined,
-      waitingQueues: undefined,
     })
   } catch (err) {
     next(err)

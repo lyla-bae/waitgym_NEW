@@ -58,6 +58,8 @@ export interface WaitingQueue {
   startedAt?: string
   createdAt: string
   notifiedAt?: string
+  waitingCount?: number
+  estimatedWaitMs?: number | null
 }
 
 export interface WorkoutRoutine {

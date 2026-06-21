@@ -101,7 +101,9 @@ export default function WaitingPage() {
   const isMaxReached = requestCount >= MAX_REQUESTS
   const isDisabled = isOnCooldown || isMaxReached
 
-  const estimatedMinutes = Math.ceil(waitingCount * 10)
+  const estimatedMinutes = waiting?.estimatedWaitMs
+    ? Math.max(1, Math.round(waiting.estimatedWaitMs / 60000))
+    : Math.ceil(waitingCount * 10)
 
   return (
     <motion.div className="waiting-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2, delay: 0.2, ease: 'easeInOut' }}>

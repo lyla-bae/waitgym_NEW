@@ -71,7 +71,9 @@ export default function WaitRequestPage() {
   const waitingCount = equipment?.waitingCount ?? 0
   const isBeingUsed = equipment?.isBeingUsed ?? false
   const canStartNow = !isStartMode && !isBeingUsed && waitingCount === 0
-  const estimatedMinutes = Math.ceil(waitingCount * 10)
+  const estimatedMinutes = equipment?.estimatedWaitMs
+    ? Math.max(1, Math.round(equipment.estimatedWaitMs / 60000))
+    : Math.ceil(waitingCount * 10)
 
   async function handleRegisterAndStart() {
     setLoading(true)

@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { authMiddleware } from '../middleware/auth.middleware'
 import { prisma } from '../lib/prisma'
+import { calcEstimatedWaitMs } from '../lib/waitUtils'
 import { emitEquipmentUpdate, emitEquipmentListUpdate, emitUserNotification } from '../socket/socket.server'
 import type { AuthRequest } from '../middleware/auth.middleware'
 
@@ -276,10 +277,14 @@ router.get('/my', authMiddleware, async (req: AuthRequest, res, next) => {
 
     const result = await Promise.all(
       waitings.map(async (w) => {
-        const waitingCount = await prisma.waitingQueue.count({
-          where: { equipmentId: w.equipmentId, status: 'WAITING' },
+        const queues = await prisma.waitingQueue.findMany({
+          where: { equipmentId: w.equipmentId, status: { in: ['USING', 'WAITING'] } },
+          select: { status: true, sets: true, restSeconds: true, userId: true, startedAt: true },
+          orderBy: { queuePosition: 'asc' },
         })
-        return { ...w, waitingCount }
+        const { estimatedWaitMs } = calcEstimatedWaitMs(queues, userId)
+        const waitingCount = queues.filter((q) => q.status === 'WAITING').length
+        return { ...w, waitingCount, estimatedWaitMs }
       })
     )
 
