@@ -30,8 +30,8 @@ export default function SelectEquipmentPage() {
   const toast = useGlobalToastStore((s) => s.show)
 
   // 루틴모드: 루틴의 기구 목록만 표시
-  const fetchRoutineEquipments = useCallback(async () => {
-    setLoading(true)
+  const fetchRoutineEquipments = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true)
     setError(null)
     try {
       const [routine, allEquipments] = await Promise.all([
@@ -46,13 +46,13 @@ export default function SelectEquipmentPage() {
     } catch (e) {
       setError(e instanceof Error ? e.message : '알 수 없는 오류')
     } finally {
-      setLoading(false)
+      if (!silent) setLoading(false)
     }
   }, [parsedRoutineId])
 
   // 일반모드: 전체 기구 목록
-  const fetchEquipments = useCallback(async () => {
-    setLoading(true)
+  const fetchEquipments = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true)
     setError(null)
     try {
       const data = await equipmentApi.list({
@@ -64,7 +64,7 @@ export default function SelectEquipmentPage() {
     } catch (e) {
       setError(e instanceof Error ? e.message : '알 수 없는 오류')
     } finally {
-      setLoading(false)
+      if (!silent) setLoading(false)
     }
   }, [activeCategory, search])
 
@@ -81,16 +81,16 @@ export default function SelectEquipmentPage() {
   }, [isRoutineMode, fetchEquipments, search])
 
   // 소켓 equipment:list:updated 수신 시 목록 재조회 (debounce 300ms)
-  const fetchRef = useRef<(() => void) | null>(null)
+  const fetchRef = useRef<((silent?: boolean) => void) | null>(null)
   fetchRef.current = isRoutineMode ? fetchRoutineEquipments : fetchEquipments
 
   useEffect(() => {
     let debounceTimer: ReturnType<typeof setTimeout> | null = null
-    const pollTimer = setInterval(() => fetchRef.current?.(), 60_000)
+    const pollTimer = setInterval(() => fetchRef.current?.(true), 60_000)
 
     function handleListUpdate() {
       if (debounceTimer) clearTimeout(debounceTimer)
-      debounceTimer = setTimeout(() => fetchRef.current?.(), 300)
+      debounceTimer = setTimeout(() => fetchRef.current?.(true), 300)
     }
 
     socket.on('equipment:list:updated', handleListUpdate)
