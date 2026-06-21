@@ -162,6 +162,7 @@ export default function ExercisingPage() {
     setRestLeftSec((prev) => {
       const newLeft = Math.max(1, Math.min(prev + delta, 600));
       setRestTotalSec((prevTotal) => Math.max(prevTotal, newLeft));
+      setRestEndAt(Date.now() + newLeft * 1000);
       return newLeft;
     });
   }

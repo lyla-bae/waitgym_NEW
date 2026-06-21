@@ -61,6 +61,8 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
       totalRestMs: 0,
       routineId: params.routineId ?? null,
       routineName: params.routineName ?? '',
+      restEndAt: null,
+      restStartedAt: null,
     }),
 
   // workMs: 이번 세트 운동 시간. true 반환 시 마지막 세트 완료
