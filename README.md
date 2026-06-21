@@ -19,6 +19,8 @@
 
 기존 팀 프로젝트를 **혼자 리빌드**하며 기획/설계/구현/배포 전 과정을 직접 경험했습니다.
 
+> 📄 [PRD (기획 문서)](./docs/PRD.md) · 📓 [개발 일지](./docs/devlog.md)
+
 ### 🎯 핵심 기능
 
 ### 1. 👤 **운동 루틴 관리**
@@ -72,6 +74,8 @@ Real-time            Socket.io-client
 
 - **Sass**: Tailwind CSS 대신 선택 — 세밀한 디자인 커스터마이징 요구사항 충족. 변수, 믹스인, 중첩으로 재사용 가능한 스타일 시스템 구축
 
+- **React (vs Next.js)**: Socket.io는 지속적인 WebSocket 연결이 필요해 서버리스 모델의 Next.js와 맞지 않아 Vite + React SPA 선택
+
 - **Socket.io**: 실시간 대기열 업데이트 및 알림. ws 라이브러리 대신 선택하여 자동 재연결, 이벤트 기반 API 활용
 
 - **Supabase Auth**: Passport.js + JWT 직접 구현 대신 선택. OAuth 토큰 검증을 미들웨어로 위임하여 보안 책임 분리
@@ -87,6 +91,111 @@ FE (Vercel)          BE (AWS EC2 + nginx)      DB (Supabase)
 │  Zustand │         │  Socket.io       │      │  Prisma ORM  │
 │  SCSS    │ ◄────── │  Supabase Auth   │      └──────────────┘
 └──────────┘  WS     └──────────────────┘
+```
+
+---
+
+## 🗄 데이터베이스 설계
+
+> Prisma 스키마 기반 ERD — `BE/prisma/schema.prisma` 자동 반영
+
+```mermaid
+erDiagram
+    User {
+        int id PK
+        string email
+        string name
+        string googleId
+        string avatar
+        int points
+    }
+    Equipment {
+        int id PK
+        string name
+        string category
+        string muscleGroup
+    }
+    Favorite {
+        int id PK
+        int userId FK
+        int equipmentId FK
+    }
+    EquipmentUsage {
+        int id PK
+        int equipmentId FK
+        int userId FK
+        string status
+        int totalSets
+        int currentSet
+        string setStatus
+    }
+    WaitingQueue {
+        int id PK
+        int equipmentId FK
+        int userId FK
+        int queuePosition
+        string status
+        int sets
+        int actualWorkMs
+        int actualRestMs
+    }
+    WorkoutRoutine {
+        int id PK
+        int userId FK
+        string name
+        boolean isActive
+    }
+    RoutineExercise {
+        int id PK
+        int routineId FK
+        int equipmentId FK
+        int order
+        int targetSets
+        int restSeconds
+    }
+    Mission {
+        int id PK
+        string name
+        string condition
+        int conditionValue
+        int rewardPoints
+    }
+    UserMission {
+        int id PK
+        int userId FK
+        int missionId FK
+        int progress
+        boolean isCompleted
+    }
+    Notification {
+        int id PK
+        int userId FK
+        int equipmentId FK
+        string type
+        boolean isRead
+    }
+    SavedGym {
+        int id PK
+        int userId FK
+        string kakaoId
+        string name
+        string address
+    }
+
+    User ||--o{ Favorite : "즐겨찾기"
+    Equipment ||--o{ Favorite : ""
+    User ||--o{ EquipmentUsage : "사용 기록"
+    Equipment ||--o{ EquipmentUsage : ""
+    User ||--o{ WaitingQueue : "대기열"
+    Equipment ||--o{ WaitingQueue : ""
+    User ||--o{ WorkoutRoutine : "루틴"
+    WorkoutRoutine ||--o{ RoutineExercise : "기구 목록"
+    Equipment ||--o{ RoutineExercise : ""
+    User ||--o{ Notification : "알림"
+    Equipment ||--o{ Notification : ""
+    User ||--o{ UserMission : "미션 진행도"
+    Mission ||--o{ UserMission : ""
+    User ||--o{ SavedGym : "저장된 헬스장"
 ```
 
 ---
@@ -119,6 +228,28 @@ waitgym_new/
 
 `_spacing.scss`, `_functions.scss`의 변수/함수로 매직 넘버 없이 일관된 스타일 유지.  
 컴포넌트 내부에서 태그 선택자 금지 — 전부 클래스 선택자로 작성.
+
+**컬러 토큰**
+
+| 토큰 | 값 | 용도 |
+|---|---|---|
+| `$c-bg` | `#293241` | 페이지 배경 |
+| `$c-card` | `#334155` | 카드 배경 |
+| `$c-modal` | `#272c34` | 모달 배경 |
+| `$c-primary` | `#3d5a80` | 주요 버튼 |
+| `$c-primary-light` | `#98c1d9` | 보조 강조색 |
+| `$c-accent` | `#ef754d` | 포인트 컬러 |
+| `$c-gray` | `#9299a5` | 보조 텍스트 |
+| `$c-error` | `#f87171` | 오류 표시 |
+
+**스페이싱 토큰** (`r(px)` → px ÷ 16 = rem)
+
+| 토큰 | 환산 | 용도 |
+|---|---|---|
+| `$screen-padding` | 24px | 좌우 여백 |
+| `$header-height` | 52px | 헤더 높이 |
+| `$nav-height` | 75px | 하단 네비게이션 높이 |
+| `$card-radius` | 8px | 카드 모서리 반경 |
 
 ---
 
