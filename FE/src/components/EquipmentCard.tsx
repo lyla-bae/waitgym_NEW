@@ -18,7 +18,7 @@ export default function EquipmentCard({ equipment, onFavoriteToggle, onClick }: 
   const showWaitTime = (isInUse || hasWaiting) && !!estimatedWaitMs && !isMyCurrentUsage
 
   return (
-    <button className="equipment-card" onClick={onClick} type="button">
+    <div className="equipment-card" onClick={onClick} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && onClick?.()}>
       <div className="equipment-card__image-wrap">
         {imageUrl ? (
           <img src={imageUrl} alt={name} className="equipment-card__image" />
@@ -68,6 +68,6 @@ export default function EquipmentCard({ equipment, onFavoriteToggle, onClick }: 
           )}
         </div>
       </div>
-    </button>
+    </div>
   )
 }

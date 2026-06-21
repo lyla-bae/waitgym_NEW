@@ -135,6 +135,44 @@
 
 ---
 
+## Day 7 — 실시간 대기 고도화 + 버그 수정
+
+### 완료
+
+#### 기구 예상 대기시간
+- `BE/src/lib/waitUtils.ts` — `calcEstimatedWaitMs` 공통 유틸 함수 추가
+  - USING 항목의 `startedAt` 기준 잔여시간 + WAITING 대기자 합산 (세트당 3분 기준)
+  - `isMyCurrentUsage` 반환 — 내가 이용 중인 기구는 FE에서 대기시간 미표시
+- 기구 목록·상세·내 대기조회 API 모두 `estimatedWaitMs` / `isMyCurrentUsage` 반환
+- 기구 카드에 "대기 N분 · N명" 형식으로 표시 (`showWaitTime` 조건 분기)
+- WaitRequest, Waiting 페이지에도 동일 계산 적용 (기존 `waitingCount * 10` 공식 대체)
+
+#### SelectEquipment 60초 폴링
+- Socket.io `equipment:list:updated` 이벤트 외에 60초 폴링 추가
+- 소켓 이벤트 미수신 구간에서도 예상 대기시간 보정
+- 디바운싱(300ms)으로 소켓 이벤트와 충돌 없이 병행
+
+#### Express 4 비동기 에러 처리
+- Express 4는 async 핸들러 내 rejected Promise를 자동으로 잡지 않음
+- 기구 라우트 핸들러 전체에 try/catch + `next(err)` 적용
+- `app.ts`에 전역 에러 핸들러 추가
+- 불필요한 EquipmentUsage 조인 제거
+
+#### 소켓 emit 누락 수정
+- `quick-start` 라우트: USING 레코드 생성 후 `emitEquipmentUpdate` / `emitEquipmentListUpdate` 누락 → 추가
+- `PATCH /:id/start` (WAITING→USING 전환): `emitEquipmentListUpdate`만 있고 `emitEquipmentUpdate` 누락 → 추가 (Waiting 페이지 실시간 인원 갱신)
+
+### 버그 수정
+
+- **Toast race condition**: 토스트 중첩 시 inner closeTimer(300ms 퇴장 애니)를 클린업하지 않아 이전 토스트의 타이머가 새 토스트를 닫는 문제. closeTimer를 변수에 저장해 클린업에서 함께 제거
+- **Exercising completeSet 순서**: `completeSet()` 호출이 API 이전에 있어 API 실패 시 `totalWorkMs`가 이미 업데이트된 상태로 남는 문제. API 성공 후에만 store 업데이트하도록 순서 변경
+
+### 문서화
+- README: Mermaid ERD, 컬러/스페이싱 토큰 표, React vs Next.js 선택 이유, PRD·devlog 링크 추가
+- `docs/tokens.json`: Figma Tokens Studio 포맷으로 디자인 토큰 추출 (color·spacing·typography 등)
+
+---
+
 ## Day 6 — 안정화 + UI 퍼블리싱
 
 ### 완료
