@@ -1,52 +1,54 @@
-import { createBrowserRouter, RouterProvider, Outlet, Navigate } from 'react-router-dom'
-import CircularProgress from '@mui/material/CircularProgress'
-import { useAuthStore } from '@/stores/authStore'
-import { useWorkoutStore } from '@/stores/workoutStore'
-import Layout from '@/components/Layout'
-import HomePage from '@/pages/Home'
-import LoginPage from '@/pages/Login'
-import AuthCallbackPage from '@/pages/AuthCallback'
-import EquipmentDetailPage from '@/pages/EquipmentDetail'
-import WaitingPage from '@/pages/Waiting'
-import MissionPage from '@/pages/Mission'
-import RoutineEditPage from '@/pages/RoutineEdit'
-import RoutineSelectEquipmentPage from '@/pages/RoutineSelectEquipment'
-import MyPage from '@/pages/MyPage'
-import ProfilePage from '@/pages/Profile'
-import FavoritesPage from '@/pages/Favorites'
-import NotificationPage from '@/pages/Notification'
-import SelectEquipmentPage from '@/pages/SelectEquipment'
-import GoalSettingPage from '@/pages/GoalSetting'
-import WaitRequestPage from '@/pages/WaitRequest'
-import ExercisingPage from '@/pages/Exercising'
-import CompletePage from '@/pages/Complete'
-import NotFoundPage from '@/pages/NotFound'
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Outlet,
+  Navigate,
+} from "react-router-dom";
+import CircularProgress from "@mui/material/CircularProgress";
+import { useAuthStore } from "@/stores/authStore";
+import { useWorkoutStore } from "@/stores/workoutStore";
+import Layout from "@/components/Layout";
 
 function ProtectedRoute() {
-  const { session, isLoading } = useAuthStore()
-  if (isLoading) return <div className="page-loader"><CircularProgress size={32} sx={{ color: '#98c1d9' }} /></div>
-  if (!session) return <Navigate to="/login" replace />
-  return <Outlet />
+  const { session, isLoading } = useAuthStore();
+  if (isLoading)
+    return (
+      <div className="page-loader">
+        <CircularProgress size={32} sx={{ color: "#98c1d9" }} />
+      </div>
+    );
+  if (!session) return <Navigate to="/login" replace />;
+  return <Outlet />;
 }
 
 function WorkoutRoute() {
-  const { waitingId } = useWorkoutStore()
-  if (!waitingId) return <Navigate to="/reservation/select-equipment" replace />
-  return <Outlet />
+  const { waitingId } = useWorkoutStore();
+  if (!waitingId)
+    return <Navigate to="/reservation/select-equipment" replace />;
+  return <Outlet />;
 }
 
 const router = createBrowserRouter([
   {
-    path: '/login',
-    element: <LoginPage />,
+    path: "/login",
+    lazy: async () => {
+      const { default: Component } = await import("@/pages/Login");
+      return { Component };
+    },
   },
   {
-    path: '*',
-    element: <NotFoundPage />,
+    path: "*",
+    lazy: async () => {
+      const { default: Component } = await import("@/pages/NotFound");
+      return { Component };
+    },
   },
   {
-    path: '/auth/callback',
-    element: <AuthCallbackPage />,
+    path: "/auth/callback",
+    lazy: async () => {
+      const { default: Component } = await import("@/pages/AuthCallback");
+      return { Component };
+    },
   },
   {
     element: <ProtectedRoute />,
@@ -54,33 +56,139 @@ const router = createBrowserRouter([
       {
         element: <Layout />,
         children: [
-          { path: '/', element: <HomePage /> },
-          { path: '/equipment/:id', element: <EquipmentDetailPage /> },
-          { path: '/waiting/:id', element: <WaitingPage /> },
-          { path: '/mission', element: <MissionPage /> },
-          { path: '/routine/new', element: <RoutineEditPage /> },
-          { path: '/routine/:id/edit', element: <RoutineEditPage /> },
-          { path: '/routine/select-equipment', element: <RoutineSelectEquipmentPage /> },
-          { path: '/mypage', element: <MyPage /> },
-          { path: '/mypage/profile', element: <ProfilePage /> },
-          { path: '/mypage/favorites', element: <FavoritesPage /> },
-          { path: '/notifications', element: <NotificationPage /> },
-          { path: '/reservation/select-equipment', element: <SelectEquipmentPage /> },
-          { path: '/reservation/goal-setting', element: <GoalSettingPage /> },
-          { path: '/reservation/wait-request', element: <WaitRequestPage /> },
+          {
+            path: "/",
+            lazy: async () => {
+              const { default: Component } = await import("@/pages/Home");
+              return { Component };
+            },
+          },
+          {
+            path: "/equipment/:id",
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/pages/EquipmentDetail");
+              return { Component };
+            },
+          },
+          {
+            path: "/waiting/:id",
+            lazy: async () => {
+              const { default: Component } = await import("@/pages/Waiting");
+              return { Component };
+            },
+          },
+          {
+            path: "/mission",
+            lazy: async () => {
+              const { default: Component } = await import("@/pages/Mission");
+              return { Component };
+            },
+          },
+          {
+            path: "/routine/new",
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/pages/RoutineEdit");
+              return { Component };
+            },
+          },
+          {
+            path: "/routine/:id/edit",
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/pages/RoutineEdit");
+              return { Component };
+            },
+          },
+          {
+            path: "/routine/select-equipment",
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/pages/RoutineSelectEquipment");
+              return { Component };
+            },
+          },
+          {
+            path: "/mypage",
+            lazy: async () => {
+              const { default: Component } = await import("@/pages/MyPage");
+              return { Component };
+            },
+          },
+          {
+            path: "/mypage/profile",
+            lazy: async () => {
+              const { default: Component } = await import("@/pages/Profile");
+              return { Component };
+            },
+          },
+          {
+            path: "/mypage/favorites",
+            lazy: async () => {
+              const { default: Component } = await import("@/pages/Favorites");
+              return { Component };
+            },
+          },
+          {
+            path: "/notifications",
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/pages/Notification");
+              return { Component };
+            },
+          },
+          {
+            path: "/reservation/select-equipment",
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/pages/SelectEquipment");
+              return { Component };
+            },
+          },
+          {
+            path: "/reservation/goal-setting",
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/pages/GoalSetting");
+              return { Component };
+            },
+          },
+          {
+            path: "/reservation/wait-request",
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/pages/WaitRequest");
+              return { Component };
+            },
+          },
           {
             element: <WorkoutRoute />,
             children: [
-              { path: '/workout/exercising', element: <ExercisingPage /> },
-              { path: '/workout/complete', element: <CompletePage /> },
+              {
+                path: "/workout/exercising",
+                lazy: async () => {
+                  const { default: Component } =
+                    await import("@/pages/Exercising");
+                  return { Component };
+                },
+              },
+              {
+                path: "/workout/complete",
+                lazy: async () => {
+                  const { default: Component } =
+                    await import("@/pages/Complete");
+                  return { Component };
+                },
+              },
             ],
           },
         ],
       },
     ],
   },
-])
+]);
 
 export default function AppRouter() {
-  return <RouterProvider router={router} />
+  return <RouterProvider router={router} />;
 }
