@@ -305,9 +305,12 @@
   &__item {
     position: relative;
 
+    .equipment-card {
+      background-color: transparent;
+    }
+
     &--selected .equipment-card {
-      outline: 2px solid $c-primary-light;
-      border-radius: $card-radius;
+      background-color: $c-card;
     }
 
     &--added {

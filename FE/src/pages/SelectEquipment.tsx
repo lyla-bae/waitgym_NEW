@@ -217,6 +217,7 @@ export default function SelectEquipmentPage() {
                     <Skeleton className="equipment-card-sk__name" />
                     <Skeleton className="equipment-card-sk__status" />
                   </div>
+                  <Skeleton className="equipment-card-sk__favorite" />
                 </div>
               </li>
             ))}

@@ -19,10 +19,14 @@
     flex: 1;
     overflow-y: auto;
     scrollbar-width: none;
-    padding: 0 $screen-padding r(16);
+    padding: r(2) $screen-padding r(16);
 
     &::-webkit-scrollbar {
       display: none;
+    }
+
+    &--with-cta {
+      padding-bottom: r(88);
     }
   }
 

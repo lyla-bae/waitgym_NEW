@@ -87,6 +87,7 @@ export default function FavoritesPage() {
                   <Skeleton className="equipment-card-sk__name" />
                   <Skeleton className="equipment-card-sk__status" />
                 </div>
+                <Skeleton className="equipment-card-sk__favorite" />
               </div>
             ))}
           </div>

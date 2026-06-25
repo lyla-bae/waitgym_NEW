@@ -117,7 +117,7 @@ export default function RoutineSelectEquipmentPage() {
         </div>
       </div>
 
-      <section className="select-equipment-page__list">
+      <section className={`select-equipment-page__list${selected.length > 0 ? ' select-equipment-page__list--with-cta' : ''}`}>
         {loading ? (
           <ul className="select-equipment-page__equipment-list" aria-hidden="true">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -128,6 +128,7 @@ export default function RoutineSelectEquipmentPage() {
                     <Skeleton className="equipment-card-sk__name" />
                     <Skeleton className="equipment-card-sk__status" />
                   </div>
+                  <Skeleton className="equipment-card-sk__favorite" />
                 </div>
               </li>
             ))}
