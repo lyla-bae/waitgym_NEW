@@ -340,6 +340,56 @@ WAITING 예상   = sets × 3분 + (sets-1) × restSeconds  (1인당)
 - 폰트 용량 **95% 감소** (2MB → 107KB)
 
 
+### React.lazy vs router lazy — 페이지 번들 분리
+
+**🚨 문제**
+
+- 모든 페이지 컴포넌트가 초기 번들(`index.js`)에 포함되어 첫 접속 시 불필요한 JS를 전부 다운로드
+- Lighthouse 측정 결과 LCP 4.4s, TBT 70ms — 크리티컬 패스: `HTML → index.js → /users/me(801ms)` → LCP 요소 렌더
+
+**✅ 해결**
+
+- `React.lazy` + `Suspense` 대신 react-router `lazy` 속성 채택
+- 페이지 전환 시 현재 페이지를 유지하다가 청크 준비 완료 후 전환 → 자연스러운 UX
+- `React.lazy`는 청크 로딩 중 현재 페이지가 언마운트되어 스피너 깜빡임 발생
+- LCP는 `/users/me` API 응답(EC2 t3.micro) 지연이 근본 원인 — 인프라 개선 없이는 프론트 최적화에 한계
+
+**📊 결과**
+
+- TBT(Total Blocking Time) **70ms → 0ms**
+- Lighthouse 퍼포먼스 점수 **+2점**
+
+---
+
+### useEffect 의존성으로 인한 타이머 초기화 버그
+
+**🚨 문제**
+
+- 루틴 전체 완료 시 3초 후 자동 닫히는 모달이 사라지지 않음
+- 완료 체크 + `setTimeout`을 하나의 `useEffect`에 작성
+- 소켓 이벤트·60초 폴링으로 `equipments` state 갱신 시 effect 재실행 → 클린업이 타이머를 `clearTimeout`
+
+**✅ 해결**
+
+- 완료 체크 effect와 타이머 effect를 분리
+- 타이머 effect는 `routineCompleteModal` 하나만 의존 → 폴링/소켓과 무관하게 3초 유지
+
+```ts
+// 완료 체크 (equipments, completedEquipmentIds에 반응)
+useEffect(() => {
+  if (allDone) setRoutineCompleteModal(true)
+}, [equipments, completedEquipmentIds, ...])
+
+// 타이머 (모달 상태에만 반응)
+useEffect(() => {
+  if (!routineCompleteModal) return
+  const timer = setTimeout(() => setRoutineCompleteModal(false), 3000)
+  return () => clearTimeout(timer)
+}, [routineCompleteModal])
+```
+
+---
+
 ## 👥 멤버 소개
 
 <div align="center">
