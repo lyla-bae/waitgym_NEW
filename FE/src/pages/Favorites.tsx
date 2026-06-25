@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import Header from '@/components/Header'
 import EquipmentCard from '@/components/EquipmentCard'
 import { Skeleton } from '@/components/ui/Skeleton'
-import { equipmentApi } from '@/lib/api'
+import { equipmentApi } from '@/api/equipment'
 import { useGlobalToastStore } from '@/stores/globalToastStore'
 import type { Equipment } from '@/types'
 

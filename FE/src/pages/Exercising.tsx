@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { CircleCheck, Circle, Plus, Minus } from "lucide-react";
 import Header from "@/components/Header";
 import CircularTimer from "@/components/CircularTimer";
-import { waitingApi } from "@/lib/api";
+import { waitingApi } from "@/api/waiting";
 import { useGlobalToastStore } from "@/stores/globalToastStore";
 import { useWorkoutStore } from "@/stores/workoutStore";
 
