@@ -205,19 +205,19 @@ export default function ExercisingPage() {
         <Header
           className="header--exercising"
           rightContent={
-            routineId ? (
-              <button
-                type="button"
-                className="header__stop"
-                onClick={() =>
-                  navigate(
-                    `/reservation/select-equipment?routineId=${routineId}&routineName=${encodeURIComponent(routineName)}`,
-                  )
-                }
-              >
-                루틴 현황 보기
-              </button>
-            ) : null
+            <button
+              type="button"
+              className="header__stop"
+              onClick={() =>
+                navigate(
+                  routineId
+                    ? `/reservation/select-equipment?routineId=${routineId}&routineName=${encodeURIComponent(routineName)}`
+                    : '/reservation/select-equipment',
+                )
+              }
+            >
+              {routineId ? '루틴 현황 보기' : '기구 현황 보기'}
+            </button>
           }
         />
 

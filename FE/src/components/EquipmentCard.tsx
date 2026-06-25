@@ -28,8 +28,6 @@ export default function EquipmentCard({
   } = equipment;
   const isInUse = !!isBeingUsed;
   const hasWaiting = waitingCount !== undefined && waitingCount > 0;
-  const showWaitTime =
-    (isInUse || hasWaiting) && !!estimatedWaitMs && !isMyCurrentUsage;
 
   return (
     <div
@@ -51,27 +49,35 @@ export default function EquipmentCard({
         <span className="equipment-card__name">{name}</span>
 
         <div className="equipment-card__status">
-          {hasWaiting && <span className="badge badge--waiting">대기중</span>}
-          {!isInUse && !hasWaiting && (
+          {isMyCurrentUsage ? (
+            <span className="badge badge--mine">내가 이용중</span>
+          ) : !isInUse && !hasWaiting ? (
             <span className="equipment-card__status-available">이용가능</span>
-          )}
-          {isInUse && !hasWaiting && (
-            <span className="equipment-card__status-in-use">이용중</span>
-          )}
-          {showWaitTime && (
+          ) : (
             <>
-              <span className="equipment-card__status-dot" aria-hidden="true" />
-              <span className="equipment-card__status-waiting">
-                대기 {formatWaitMin(estimatedWaitMs!)}분
-              </span>
-            </>
-          )}
-          {hasWaiting && (
-            <>
-              <span className="equipment-card__status-dot" aria-hidden="true" />
-              <span className="equipment-card__status-waiting">
-                {waitingCount}명
-              </span>
+              {hasWaiting && (
+                <span className="badge badge--waiting">대기중</span>
+              )}
+              {estimatedWaitMs ? (
+                <span className="equipment-card__status-waiting">
+                  대기 {formatWaitMin(estimatedWaitMs)}분
+                </span>
+              ) : (
+                !hasWaiting && (
+                  <span className="equipment-card__status-in-use">이용중</span>
+                )
+              )}
+              {hasWaiting && (
+                <>
+                  <span
+                    className="equipment-card__status-dot"
+                    aria-hidden="true"
+                  />
+                  <span className="equipment-card__status-waiting">
+                    {waitingCount}명
+                  </span>
+                </>
+              )}
             </>
           )}
         </div>
