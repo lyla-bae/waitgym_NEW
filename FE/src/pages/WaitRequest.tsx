@@ -54,6 +54,7 @@ export default function WaitRequestPage() {
       const result = await waitingApi.start(waitingId)
       startWorkout({
         waitingId,
+        equipmentId,
         equipmentName: result.equipment?.name ?? equipmentName,
         sets: result.sets,
         restSeconds: result.restSeconds,
@@ -82,6 +83,7 @@ export default function WaitRequestPage() {
       const result = await waitingApi.quickStart({ equipmentId, sets, restSeconds })
       startWorkout({
         waitingId: result.id,
+        equipmentId,
         equipmentName: result.equipment?.name ?? equipmentName,
         sets: result.sets,
         restSeconds: result.restSeconds,

@@ -84,3 +84,28 @@
     cursor: pointer;
   }
 }
+
+.routine-complete-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: r(16);
+  background-color: rgba($c-bg, 0.85);
+  z-index: 200;
+  pointer-events: none;
+
+  &__img {
+    width: r(80);
+  }
+
+  &__text {
+    font-size: r(20);
+    font-weight: 700;
+    color: $c-white;
+    text-align: center;
+    line-height: 1.5;
+  }
+}

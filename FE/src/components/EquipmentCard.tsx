@@ -5,6 +5,7 @@ interface Props {
   equipment: Equipment;
   onFavoriteToggle?: (id: number) => void;
   onClick?: () => void;
+  isDone?: boolean;
 }
 
 function formatWaitMin(ms: number) {
@@ -15,6 +16,7 @@ export default function EquipmentCard({
   equipment,
   onFavoriteToggle,
   onClick,
+  isDone,
 }: Props) {
   const {
     id,
@@ -49,6 +51,7 @@ export default function EquipmentCard({
         <span className="equipment-card__name">{name}</span>
 
         <div className="equipment-card__status">
+          {isDone && <span className="badge badge--done">운동완</span>}
           {isMyCurrentUsage ? (
             <span className="badge badge--mine">내가 이용중</span>
           ) : !isInUse && !hasWaiting ? (

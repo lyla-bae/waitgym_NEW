@@ -10,6 +10,7 @@ export interface GlobalToastItem {
   message: string
   duration?: number
   action?: ToastAction
+  onClick?: () => void
 }
 
 interface GlobalToastState {

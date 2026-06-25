@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ChevronLeft, Search, Star } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import Switch from '@mui/material/Switch'
 import { equipmentApi } from '@/api/equipment'
 import { routineApi } from '@/api/routine'
@@ -10,6 +10,8 @@ import Header from '@/components/Header'
 import EquipmentCard from '@/components/EquipmentCard'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { useGlobalToastStore } from '@/stores/globalToastStore'
+import { useWorkoutStore } from '@/stores/workoutStore'
+import motionParty from '@/assets/images/motion-party.png'
 import type { Equipment } from '@/types'
 
 const CATEGORIES = ['전체', '즐겨찾기', '가슴', '등', '다리', '어깨', '팔', '유산소'] as const
@@ -28,7 +30,10 @@ export default function SelectEquipmentPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [autoSuggest, setAutoSuggest] = useState(false)
+  const [routineCompleteModal, setRoutineCompleteModal] = useState(false)
+  const shownOnce = useRef(false)
   const toast = useGlobalToastStore((s) => s.show)
+  const completedEquipmentIds = useWorkoutStore((s) => s.completedEquipmentIds)
 
   // 루틴모드: 루틴의 기구 목록만 표시
   const fetchRoutineEquipments = useCallback(async (silent = false) => {
@@ -101,6 +106,23 @@ export default function SelectEquipmentPage() {
       clearInterval(pollTimer)
     }
   }, [])
+
+  // 루틴 모드: 모든 기구 운동 완료 시 모달 표시
+  useEffect(() => {
+    if (!isRoutineMode || shownOnce.current || loading || equipments.length === 0) return
+    if (completedEquipmentIds.length === 0) return
+    const allDone = equipments.every((eq) => completedEquipmentIds.includes(eq.id))
+    if (!allDone) return
+    shownOnce.current = true
+    setRoutineCompleteModal(true)
+  }, [equipments, completedEquipmentIds, isRoutineMode, loading])
+
+  // 모달 3초 자동 닫힘 (위 effect와 분리해야 폴링으로 타이머 리셋되는 것 방지)
+  useEffect(() => {
+    if (!routineCompleteModal) return
+    const timer = setTimeout(() => setRoutineCompleteModal(false), 3000)
+    return () => clearTimeout(timer)
+  }, [routineCompleteModal])
 
   const displayedEquipments = useMemo(() => {
     if (!autoSuggest) return equipments
@@ -234,22 +256,43 @@ export default function SelectEquipmentPage() {
           <p className="select-equipment-page__empty">기구를 찾을 수 없어요</p>
         ) : (
           <ul className="select-equipment-page__equipment-list">
-            {displayedEquipments.map((equipment) => (
-              <li key={equipment.id}>
-                <EquipmentCard
-                  equipment={equipment}
-                  onFavoriteToggle={!isRoutineMode ? handleFavoriteToggle : undefined}
-                  onClick={() =>
-                    navigate(
-                      `/reservation/goal-setting?equipmentId=${equipment.id}&name=${encodeURIComponent(equipment.name)}&imageUrl=${encodeURIComponent(equipment.imageUrl ?? '')}${parsedRoutineId ? `&routineId=${parsedRoutineId}&routineName=${encodeURIComponent(routineName ?? '')}` : ''}`,
-                    )
-                  }
-                />
-              </li>
-            ))}
+            {displayedEquipments.map((equipment) => {
+              const isDone = isRoutineMode && completedEquipmentIds.includes(equipment.id)
+              return (
+                <li key={equipment.id}>
+                  <EquipmentCard
+                    equipment={equipment}
+                    isDone={isDone}
+                    onFavoriteToggle={!isRoutineMode ? handleFavoriteToggle : undefined}
+                    onClick={() =>
+                      navigate(
+                        `/reservation/goal-setting?equipmentId=${equipment.id}&name=${encodeURIComponent(equipment.name)}&imageUrl=${encodeURIComponent(equipment.imageUrl ?? '')}${parsedRoutineId ? `&routineId=${parsedRoutineId}&routineName=${encodeURIComponent(routineName ?? '')}` : ''}`,
+                      )
+                    }
+                  />
+                </li>
+              )
+            })}
           </ul>
         )}
       </section>
+
+      <AnimatePresence>
+        {routineCompleteModal && (
+          <motion.div
+            className="routine-complete-modal"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+          >
+            <img src={motionParty} alt="폭죽" className="routine-complete-modal__img" />
+            <p className="routine-complete-modal__text">
+              오늘도 루틴을<br />멋지게 성공하셨군요!
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }

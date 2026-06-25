@@ -39,11 +39,7 @@ export function useSocketNotifications() {
       if (data.type === 'YOUR_TURN' && data.waitingId && data.equipmentName) {
         showToastRef.current({
           message: `예약한 ${data.equipmentName}에 자리가 비었어요!`,
-          duration: 5 * 60 * 1000,
-          action: {
-            label: '지금 이동',
-            onClick: () => navigateRef.current(`/reservation/wait-request?mode=start&waitingId=${data.waitingId}&name=${encodeURIComponent(data.equipmentName ?? '')}`, { replace: true }),
-          },
+          onClick: () => navigateRef.current(`/reservation/wait-request?mode=start&waitingId=${data.waitingId}&name=${encodeURIComponent(data.equipmentName ?? '')}`, { replace: true }),
         })
       } else if (data.type === 'HURRY_UP' && data.waitingCount != null) {
         showToastRef.current({

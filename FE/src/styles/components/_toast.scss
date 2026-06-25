@@ -20,6 +20,10 @@
   pointer-events: auto;
   z-index: 100;
 
+  &--clickable {
+    cursor: pointer;
+  }
+
   &--with-action {
     justify-content: space-between;
     padding: 0 r(16);
