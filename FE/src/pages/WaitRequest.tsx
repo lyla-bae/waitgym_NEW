@@ -3,7 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ChevronLeft, UsersRound } from 'lucide-react'
 import { motion } from 'framer-motion'
 import Header from '@/components/Header'
-import { equipmentApi, waitingApi } from '@/lib/api'
+import { equipmentApi } from '@/api/equipment'
+import { waitingApi } from '@/api/waiting'
 import { useGlobalToastStore } from '@/stores/globalToastStore'
 import { useWorkoutStore } from '@/stores/workoutStore'
 import type { Equipment } from '@/types'
@@ -53,6 +54,7 @@ export default function WaitRequestPage() {
       const result = await waitingApi.start(waitingId)
       startWorkout({
         waitingId,
+        equipmentId,
         equipmentName: result.equipment?.name ?? equipmentName,
         sets: result.sets,
         restSeconds: result.restSeconds,
@@ -81,6 +83,7 @@ export default function WaitRequestPage() {
       const result = await waitingApi.quickStart({ equipmentId, sets, restSeconds })
       startWorkout({
         waitingId: result.id,
+        equipmentId,
         equipmentName: result.equipment?.name ?? equipmentName,
         sets: result.sets,
         restSeconds: result.restSeconds,

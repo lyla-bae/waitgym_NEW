@@ -30,7 +30,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import ConfirmDrawer from "@/components/ConfirmDrawer";
-import { routineApi } from "@/lib/api";
+import { routineApi } from "@/api/routine";
 import {
   useRoutineStore,
   type RoutineExerciseItem,

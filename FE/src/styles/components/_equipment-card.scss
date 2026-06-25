@@ -1,4 +1,4 @@
-@use '@styles/variables' as *;
+@use "@styles/variables" as *;
 
 .equipment-card {
   display: flex;
@@ -6,7 +6,7 @@
   gap: r(16);
   background-color: $c-card;
   border-radius: $card-radius;
-  padding: r(12);
+  padding: r(8);
   cursor: pointer;
   transition: opacity 0.15s;
   width: 100%;
@@ -17,8 +17,8 @@
 
   &__image-wrap {
     flex-shrink: 0;
-    width: r(80);
-    height: r(80);
+    width: r(64);
+    height: r(64);
     background-color: $c-white;
     border-radius: $card-radius;
     overflow: hidden;
@@ -41,12 +41,6 @@
     gap: r(6);
   }
 
-  &__title-row {
-    display: flex;
-    align-items: center;
-    gap: r(6);
-  }
-
   &__name {
     font-size: r(16);
     font-weight: 700;
@@ -60,7 +54,7 @@
     flex-shrink: 0;
     display: flex;
     align-items: center;
-    color: $c-gray;
+    color: $c-white;
     transition: color 0.15s;
 
     &--active {

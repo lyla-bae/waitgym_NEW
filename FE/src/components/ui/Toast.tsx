@@ -10,10 +10,11 @@ interface ToastProps {
   message: string
   duration?: number
   action?: ToastAction
+  onClick?: () => void
   onClose: () => void
 }
 
-export function Toast({ message, duration = 2000, action, onClose }: ToastProps) {
+export function Toast({ message, duration = 2000, action, onClick, onClose }: ToastProps) {
   const [visible, setVisible] = useState(true)
 
   useEffect(() => {
@@ -28,23 +29,32 @@ export function Toast({ message, duration = 2000, action, onClose }: ToastProps)
     }
   }, [duration, onClose])
 
+  function handleClick() {
+    if (onClick) {
+      onClick()
+      onClose()
+    }
+  }
+
   return (
     <AnimatePresence>
       {visible && (
         <motion.div
-          className={`toast${action ? ' toast--with-action' : ''}`}
+          className={`toast${onClick ? ' toast--clickable' : ''}${action ? ' toast--with-action' : ''}`}
           style={{ x: '-50%' }}
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
+          onClick={handleClick}
         >
           <span className="toast__message">{message}</span>
           {action && (
             <button
               type="button"
               className="toast__action"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
                 action.onClick()
                 onClose()
               }}

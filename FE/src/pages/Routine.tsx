@@ -4,7 +4,7 @@ import { Dumbbell, Pencil, Plus } from 'lucide-react'
 import { motion } from 'framer-motion'
 import Header from '@/components/Header'
 import { Skeleton } from '@/components/ui/Skeleton'
-import { routineApi } from '@/lib/api'
+import { routineApi } from '@/api/routine'
 import { useRoutineStore } from '@/stores/routineStore'
 import type { WorkoutRoutine, RoutineExercise } from '@/types'
 

@@ -142,4 +142,14 @@ input {
     background-color: $c-primary;
     color: $c-white;
   }
+
+  &--mine {
+    background-color: $c-primary-light;
+    color: $c-bg;
+  }
+
+  &--done {
+    background-color: $c-primary;
+    color: $c-white;
+  }
 }

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { CircleCheck, Circle, Plus, Minus } from "lucide-react";
 import Header from "@/components/Header";
 import CircularTimer from "@/components/CircularTimer";
-import { waitingApi } from "@/lib/api";
+import { waitingApi } from "@/api/waiting";
 import { useGlobalToastStore } from "@/stores/globalToastStore";
 import { useWorkoutStore } from "@/stores/workoutStore";
 
@@ -205,19 +205,19 @@ export default function ExercisingPage() {
         <Header
           className="header--exercising"
           rightContent={
-            routineId ? (
-              <button
-                type="button"
-                className="header__stop"
-                onClick={() =>
-                  navigate(
-                    `/reservation/select-equipment?routineId=${routineId}&routineName=${encodeURIComponent(routineName)}`,
-                  )
-                }
-              >
-                루틴 현황 보기
-              </button>
-            ) : null
+            <button
+              type="button"
+              className="header__stop"
+              onClick={() =>
+                navigate(
+                  routineId
+                    ? `/reservation/select-equipment?routineId=${routineId}&routineName=${encodeURIComponent(routineName)}`
+                    : '/reservation/select-equipment',
+                )
+              }
+            >
+              {routineId ? '루틴 현황 보기' : '기구 현황 보기'}
+            </button>
           }
         />
 

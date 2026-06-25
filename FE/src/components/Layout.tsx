@@ -58,6 +58,7 @@ export default function Layout() {
           message={toast.message}
           duration={toast.duration}
           action={toast.action}
+          onClick={toast.onClick}
           onClose={clear}
         />
       )}

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, Search, Star } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { equipmentApi } from '@/lib/api'
+import { equipmentApi } from '@/api/equipment'
 import Header from '@/components/Header'
 import EquipmentCard from '@/components/EquipmentCard'
 import { Skeleton } from '@/components/ui/Skeleton'
@@ -117,7 +117,7 @@ export default function RoutineSelectEquipmentPage() {
         </div>
       </div>
 
-      <section className="select-equipment-page__list">
+      <section className={`select-equipment-page__list${selected.length > 0 ? ' select-equipment-page__list--with-cta' : ''}`}>
         {loading ? (
           <ul className="select-equipment-page__equipment-list" aria-hidden="true">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -128,6 +128,7 @@ export default function RoutineSelectEquipmentPage() {
                     <Skeleton className="equipment-card-sk__name" />
                     <Skeleton className="equipment-card-sk__status" />
                   </div>
+                  <Skeleton className="equipment-card-sk__favorite" />
                 </div>
               </li>
             ))}
