@@ -7,7 +7,7 @@ FE 개발자 포트폴리오용 헬스장 기구 대기 앱 리빌드.
 | 영역 | 기술 | 배포 |
 |---|---|---|
 | FE | React + Vite + TypeScript + SCSS | Vercel |
-| BE | Express + TypeScript | Koyeb |
+| BE | Express + TypeScript | AWS EC2 |
 | DB | Supabase PostgreSQL + Prisma | Supabase |
 | Auth | Supabase Auth (Google OAuth) | Supabase |
 | 실시간 | Socket.io | BE에 포함 |
@@ -49,10 +49,30 @@ FE 개발자 포트폴리오용 헬스장 기구 대기 앱 리빌드.
 ### 1차 배포 제외
 - 혼잡도, 모바일 앱
 
+## 배포 정보
+- FE: https://waitgym.today (Vercel, 커스텀 도메인)
+- BE: https://api.waitgym.today (AWS EC2, 서울 리전, t3.micro)
+- BE IP: 43.201.30.37
+- pem 키: ~/Downloads/waitgym-key.pem
+- SSH: `ssh -i ~/Downloads/waitgym-key.pem ubuntu@43.201.30.37`
+
+## 할 것 (2026-06-17)
+- [x] SSL 발급 완료 확인 (DNS 전파 후 certbot 실행) — 만료 2026-09-14, 자동갱신
+- [x] Vercel VITE_API_URL → https://waitgym.today 변경 후 재배포
+- [x] Supabase Auth → URL Configuration → https://waitgym.vercel.app 추가
+- [ ] PR #7 머지
+
+## Vercel 배포 참고
+- 프로젝트: `waitgym` (waitgym_new 아님, 삭제됨)
+- Root Directory: `FE`
+- 커스텀 도메인: `waitgym.today` (A 레코드 → 76.76.21.21)
+- GitHub 연동: `lyla-bae/waitgym_NEW` — main 머지 시 자동 배포
+- CLI 배포 시: 루트(`waitgym_new/`)에서 `vercel --prod`
+
 ## 개발 순서
 - 1일차 ✅ DB 스키마 + 프로젝트 세팅 + Socket.io
 - 2일차 기구 목록 FE + API
 - 3일차 웨이팅 플로우 + 실시간
 - 4일차 로그인 + 미션/랭킹
 - 5일차 루틴 + 헬스장 찾기
-- 6일차 UI 다듬기 + 배포
+- 6일차 ✅ UI 다듬기 + 배포

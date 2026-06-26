@@ -6,3 +6,5 @@ dist/
 *.pem
 .mcp.json
 figma-preview/
+FE/.vite/
+.vercel

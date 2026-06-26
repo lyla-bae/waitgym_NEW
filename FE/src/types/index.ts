@@ -17,6 +17,9 @@ export interface Equipment {
   isFavorite?: boolean
   currentUsage?: EquipmentUsage | null
   waitingCount?: number
+  isBeingUsed?: boolean
+  isMyCurrentUsage?: boolean
+  estimatedWaitMs?: number | null
 }
 
 export type EquipmentCategory =
@@ -49,9 +52,14 @@ export interface WaitingQueue {
   equipmentId: number
   userId: number
   queuePosition: number
-  status: 'WAITING' | 'NOTIFIED' | 'COMPLETED' | 'CANCELLED' | 'EXPIRED'
+  status: 'WAITING' | 'USING' | 'COMPLETED' | 'CANCELLED'
+  sets: number
+  restSeconds: number
+  startedAt?: string
   createdAt: string
   notifiedAt?: string
+  waitingCount?: number
+  estimatedWaitMs?: number | null
 }
 
 export interface WorkoutRoutine {
@@ -80,7 +88,7 @@ export interface Notification {
   id: number
   userId: number
   type: string
-  category: 'queue' | 'workout' | 'eta' | 'other'
+  category: string
   priority: number
   title: string
   message: string
@@ -100,6 +108,19 @@ export interface Mission {
   condition: string
   conditionValue: number
   rewardPoints: number
+}
+
+export interface MissionWithProgress extends Mission {
+  progress: number
+  isCompleted: boolean
+  completedAt?: string | null
+}
+
+export interface RankingUser {
+  id: number
+  name: string
+  avatar?: string
+  points: number
 }
 
 export interface UserMission {

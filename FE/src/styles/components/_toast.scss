@@ -1,0 +1,45 @@
+@use '@styles/variables' as *;
+
+.toast {
+  position: fixed;
+  top: r(64);
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - #{r(48)});
+  max-width: calc(480px - #{r(48)});
+  height: r(55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $c-modal;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: $card-radius;
+  color: $c-white;
+  font-size: r(16);
+  font-weight: 700;
+  pointer-events: auto;
+  z-index: 100;
+
+  &--clickable {
+    cursor: pointer;
+  }
+
+  &--with-action {
+    justify-content: space-between;
+    padding: 0 r(16);
+  }
+
+  &__message {
+    flex: 1;
+    text-align: center;
+  }
+
+  &__action {
+    flex-shrink: 0;
+    font-size: r(14);
+    font-weight: 700;
+    color: $c-accent;
+    padding: r(4) r(8);
+    white-space: nowrap;
+  }
+}

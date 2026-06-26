@@ -10,6 +10,7 @@ const supabase = createClient(
 export interface AuthRequest extends Request {
   userId?: number
   userEmail?: string
+  supabaseUserId?: string
 }
 
 export async function authMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
@@ -40,5 +41,6 @@ export async function authMiddleware(req: AuthRequest, res: Response, next: Next
 
   req.userId = dbUser.id
   req.userEmail = dbUser.email
+  req.supabaseUserId = user.id
   next()
 }

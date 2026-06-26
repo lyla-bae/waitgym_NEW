@@ -18,6 +18,13 @@ body {
   overflow: hidden;
 }
 
+.page-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100dvh;
+}
+
 .auth-callback {
   display: flex;
   align-items: center;
@@ -132,6 +139,16 @@ input {
   }
 
   &--complete {
+    background-color: $c-primary;
+    color: $c-white;
+  }
+
+  &--mine {
+    background-color: $c-primary-light;
+    color: $c-bg;
+  }
+
+  &--done {
     background-color: $c-primary;
     color: $c-white;
   }

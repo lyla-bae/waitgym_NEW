@@ -6,7 +6,14 @@ let io: SocketServer
 export function initSocket(server: HttpServer) {
   io = new SocketServer(server, {
     cors: {
-      origin: process.env.CLIENT_URL ?? 'http://localhost:5173',
+      origin: (origin, callback) => {
+        const isDev = process.env.NODE_ENV !== 'production'
+        if (!origin || (isDev && /^http:\/\/localhost(:\d+)?$/.test(origin)) || origin === process.env.CLIENT_URL) {
+          callback(null, true)
+        } else {
+          callback(new Error('Not allowed by CORS'))
+        }
+      },
       credentials: true,
     },
   })
@@ -30,6 +37,10 @@ export function initSocket(server: HttpServer) {
       console.log(`[Socket] ${socket.id} joined user:${userId}`)
     })
 
+    socket.on('leave:user', (userId: number) => {
+      socket.leave(`user:${userId}`)
+    })
+
     socket.on('disconnect', () => {
       console.log(`[Socket] disconnected: ${socket.id}`)
     })
@@ -51,4 +62,9 @@ export function emitEquipmentUpdate(equipmentId: number, data: unknown) {
 // 유저에게 알림 전송
 export function emitUserNotification(userId: number, notification: unknown) {
   getIo().to(`user:${userId}`).emit('notification:new', notification)
+}
+
+// 기구 목록 전체 갱신 브로드캐스트
+export function emitEquipmentListUpdate() {
+  getIo().emit('equipment:list:updated')
 }

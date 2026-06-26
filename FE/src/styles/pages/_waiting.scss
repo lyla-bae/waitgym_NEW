@@ -1,0 +1,57 @@
+@use '@styles/variables' as *;
+
+.waiting-page {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &__content {
+    height: 70%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 $screen-padding;
+    position: relative;
+  }
+
+  &__text-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: r(8);
+    text-align: center;
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+  }
+
+  &__name {
+    font-size: r(20);
+    font-weight: 700;
+    color: $c-white;
+    line-height: 1.4;
+  }
+
+  &__timer {
+    font-size: r(80);
+    font-weight: 700;
+    line-height: 1.4;
+    color: $c-accent;
+  }
+
+  &__queue {
+    display: flex;
+    align-items: center;
+    gap: r(8);
+    font-size: r(16);
+    font-weight: 700;
+    color: $c-white;
+  }
+
+  &__queue-count {
+    color: $c-accent;
+  }
+}

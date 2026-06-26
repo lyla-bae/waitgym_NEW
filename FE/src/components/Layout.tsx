@@ -1,5 +1,10 @@
 import { Outlet, NavLink, useLocation } from 'react-router-dom'
 import { Dumbbell, Trophy, CircleUserRound } from 'lucide-react'
+import { Toast } from '@/components/ui/Toast'
+import FloatingRestTimer from '@/components/FloatingRestTimer'
+import { useSocketNotifications } from '@/hooks/useSocketNotifications'
+import { useGlobalToastStore } from '@/stores/globalToastStore'
+import { useWorkoutStore } from '@/stores/workoutStore'
 
 const navItems = [
   { to: '/', icon: Dumbbell, label: '홈' },
@@ -7,11 +12,16 @@ const navItems = [
   { to: '/mypage', icon: CircleUserRound, label: '마이' },
 ]
 
-const NO_NAV_PATHS = ['/waiting', '/reservation', '/workout']
+const NO_NAV_PATHS = ['/waiting', '/reservation', '/workout', '/routine/']
 
 export default function Layout() {
   const location = useLocation()
   const hideNav = NO_NAV_PATHS.some((p) => location.pathname.startsWith(p))
+  const { toast, clear } = useGlobalToastStore()
+  const restEndAt = useWorkoutStore((s) => s.restEndAt)
+  const restSeconds = useWorkoutStore((s) => s.restSeconds)
+
+  useSocketNotifications()
 
   return (
     <div className="layout">
@@ -38,6 +48,19 @@ export default function Layout() {
             ))}
           </ul>
         </nav>
+      )}
+
+      {restEndAt && !location.pathname.startsWith('/workout') && <FloatingRestTimer endAt={restEndAt} totalSec={restSeconds} />}
+
+      {toast && (
+        <Toast
+          key={toast.id}
+          message={toast.message}
+          duration={toast.duration}
+          action={toast.action}
+          onClick={toast.onClick}
+          onClose={clear}
+        />
       )}
     </div>
   )

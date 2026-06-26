@@ -27,13 +27,14 @@
     align-items: center;
     justify-content: center;
     gap: r(4);
-    color: $c-gray;
+    color: $c-white;
     font-size: r(10);
     font-weight: 500;
-    transition: color 0.15s;
+    opacity: 0.4;
+    transition: opacity 0.15s;
 
     &--active {
-      color: $c-white;
+      opacity: 1;
     }
   }
 }

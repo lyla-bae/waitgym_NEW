@@ -51,8 +51,24 @@
     color: $c-white;
   }
 
-  // 서브 페이지: 하단 구분선
-  &--sub {
-    border-bottom: 1px solid $c-card;
+  &__cancel {
+    font-size: r(14);
+    font-weight: 500;
+    color: $c-gray;
+  }
+}
+
+.notification-bell {
+  position: relative;
+
+  &__dot {
+    position: absolute;
+    top: r(2);
+    right: r(2);
+    width: r(4);
+    height: r(4);
+    border-radius: 50%;
+    background: $c-accent;
+    pointer-events: none;
   }
 }

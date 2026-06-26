@@ -1,0 +1,108 @@
+@use '@styles/variables' as *;
+
+.notification-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .content-scroll {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: none;
+    padding-bottom: $content-bottom-padding;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__container {
+    padding: 0 $screen-padding;
+  }
+
+  &__count {
+    font-size: r(13);
+    font-weight: 500;
+    color: $c-gray;
+    margin-bottom: r(8);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: r(8);
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    gap: r(8);
+    padding: r(16);
+    border-radius: $card-radius;
+    background: $c-card;
+
+    &--read {
+      opacity: 0.4;
+    }
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: r(8);
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 r(8);
+    height: r(20);
+    border-radius: r(4);
+    font-size: r(12);
+    font-weight: 500;
+
+    &--reservation {
+      background: $c-primary;
+      color: $c-white;
+    }
+
+    &--waiting {
+      background: $c-accent;
+      color: $c-white;
+    }
+
+    &--expired {
+      background: $c-primary-light;
+      color: $c-primary;
+    }
+  }
+
+  &__time {
+    font-size: r(12);
+    font-weight: 500;
+    color: $c-primary-light;
+  }
+
+  &__msg {
+    font-size: r(14);
+    font-weight: 400;
+    color: $c-white;
+    line-height: 1.4;
+  }
+
+  &__notice {
+    margin: r(20) 0 r(16);
+    text-align: center;
+    font-size: r(12);
+    font-weight: 500;
+    color: $c-primary-light;
+  }
+
+  &__empty {
+    text-align: center;
+    color: $c-gray;
+    font-size: r(14);
+    padding: r(60) 0;
+  }
+}
