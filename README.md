@@ -340,23 +340,27 @@ WAITING 예상   = sets × 3분 + (sets-1) × restSeconds  (1인당)
 - 폰트 용량 **95% 감소** (2MB → 107KB)
 
 
-### React.lazy vs router lazy — 페이지 번들 분리
+### JS 번들 최적화 — 코드 스플리팅 & 청크 분리
 
 **🚨 문제**
 
-- 모든 페이지 컴포넌트가 초기 번들(`index.js`)에 포함되어 첫 접속 시 불필요한 JS를 전부 다운로드
-- Lighthouse 측정 결과 LCP 4.4s, TBT 70ms — 크리티컬 패스: `HTML → index.js → /users/me(801ms)` → LCP 요소 렌더
+- 모든 페이지 컴포넌트 + vendor 라이브러리가 초기 번들(`index.js`) 하나에 포함
+- 첫 접속 시 불필요한 JS를 전부 다운로드, 500kB 초과 경고 발생
+- Lighthouse 측정 결과 LCP 4.3s, TBT 70ms — 크리티컬 패스: `HTML → index.js → /users/me(801ms)` → LCP 요소 렌더
 
 **✅ 해결**
 
-- `React.lazy` + `Suspense` 대신 react-router `lazy` 속성 채택
-- 페이지 전환 시 현재 페이지를 유지하다가 청크 준비 완료 후 전환 → 자연스러운 UX
-- `React.lazy`는 청크 로딩 중 현재 페이지가 언마운트되어 스피너 깜빡임 발생
-- LCP는 `/users/me` API 응답(EC2 t3.micro) 지연이 근본 원인 — 인프라 개선 없이는 프론트 최적화에 한계
+- **코드 스플리팅**: `React.lazy` + `Suspense` 대신 react-router `lazy` 속성 채택
+  - 페이지 전환 시 현재 페이지를 유지하다가 청크 준비 완료 후 전환 → 자연스러운 UX
+  - `React.lazy`는 청크 로딩 중 현재 페이지가 언마운트되어 스피너 깜빡임 발생
+- **청크 분리**: `vite.config.ts`에 `manualChunks`로 역할별 청크 분리
+  - `vendor` (react, react-router-dom) / `mui` / `motion` / `dnd` / `supabase`
+  - 브라우저 병렬 다운로드 + 재방문 시 변경 없는 청크는 캐시 활용
 
 **📊 결과**
 
 - TBT(Total Blocking Time) **70ms → 0ms**
+- LCP **4.3s → 3.6s** (평균 0.7s 개선)
 - Lighthouse 퍼포먼스 점수 **+2점**
 
 ---
